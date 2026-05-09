@@ -1,0 +1,578 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>[TÍTULO DEL RECURSO] — alex.decode</title>
+    <link rel="icon" type="image/svg+xml" href="../favicon.svg">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        :root {
+            --bg:        #FAFAF7;
+            --surface:   #FFFFFF;
+            --border:    #E8E2D9;
+            --text:      #1C1917;
+            --muted:     #78716C;
+            --faint:     #B0A89E;
+            --amber:     #B45309;
+            --amber-mid: #D97706;
+            --amber-dim: rgba(180,83,9,0.07);
+            --rojo:  #DC2626; --rojo-d:  rgba(220,38,38,0.07);
+            --amar:  #D97706; --amar-d:  rgba(217,119,6,0.07);
+            --azul:  #2563EB; --azul-d:  rgba(37,99,235,0.07);
+            --verde: #059669; --verde-d: rgba(5,150,105,0.07);
+            --morad: #7C3AED; --morad-d: rgba(124,58,237,0.07);
+        }
+
+        html { scroll-behavior: smooth; }
+        body {
+            background: var(--bg);
+            color: var(--text);
+            font-family: 'Inter', system-ui, sans-serif;
+            font-size: 15px;
+            line-height: 1.7;
+            min-height: 100vh;
+        }
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0; left: 0; right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, #D97706 0%, var(--amber) 50%, #D97706 100%);
+            z-index: 100;
+        }
+
+        .wrap { max-width: 720px; margin: 0 auto; padding: 0 24px; }
+
+        /* ── NAV ── */
+        .top-nav {
+            padding: 28px 0 0;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 11px;
+            color: var(--faint);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
+        .top-nav a {
+            color: var(--amber);
+            text-decoration: none;
+            transition: opacity .15s;
+        }
+        .top-nav a:hover { opacity: .7; }
+        .top-nav .sep { color: var(--faint); }
+
+        .nav-owl {
+            margin-left: auto;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            color: var(--faint);
+            text-decoration: none;
+            font-size: 10px;
+            letter-spacing: .5px;
+            transition: opacity .15s;
+            animation: owlFloat 5s ease-in-out 1s infinite;
+        }
+        .nav-owl:hover { opacity: .7; color: var(--amber); }
+        @keyframes owlFloat { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-4px)} }
+
+        /* ── HEADER ── */
+        .resource-header { padding: 36px 0 32px; border-bottom: 1px solid var(--border); margin-bottom: 32px; }
+
+        .tag {
+            display: inline-flex; align-items: center; gap: 5px;
+            font-size: 10px; font-weight: 600; padding: 3px 10px;
+            border-radius: 100px; margin-bottom: 16px;
+        }
+        .tag .dot { width: 5px; height: 5px; border-radius: 50%; flex-shrink: 0; }
+        .tag.rojo  { background: var(--rojo-d); color: var(--rojo); } .tag.rojo .dot  { background: var(--rojo); }
+        .tag.amar  { background: var(--amar-d); color: var(--amar); } .tag.amar .dot  { background: var(--amar); }
+        .tag.azul  { background: var(--azul-d); color: var(--azul); } .tag.azul .dot  { background: var(--azul); }
+        .tag.verde { background: var(--verde-d); color: var(--verde); } .tag.verde .dot { background: var(--verde); }
+        .tag.morad { background: var(--morad-d); color: var(--morad); } .tag.morad .dot { background: var(--morad); }
+
+        .resource-title {
+            font-family: 'Playfair Display', Georgia, serif;
+            font-size: clamp(26px, 4vw, 36px);
+            font-weight: 700;
+            line-height: 1.18;
+            letter-spacing: -.3px;
+            margin-bottom: 14px;
+        }
+
+        .resource-meta {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 11px;
+            color: var(--faint);
+            display: flex;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+        .resource-meta span { display: flex; align-items: center; gap: 5px; }
+        .meta-dot { width: 3px; height: 3px; border-radius: 50%; background: var(--faint); }
+
+        /* ── TABLE OF CONTENTS ── */
+        .toc {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 16px 20px;
+            margin-bottom: 48px;
+        }
+        .toc-label {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 9px;
+            color: var(--faint);
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            margin-bottom: 10px;
+        }
+        .toc-links {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+        }
+        .toc-links a {
+            font-size: 12px;
+            color: var(--muted);
+            text-decoration: none;
+            padding: 4px 10px;
+            border-radius: 6px;
+            border: 1px solid var(--border);
+            transition: border-color .15s, color .15s, background .15s;
+            white-space: nowrap;
+        }
+        .toc-links a:hover { border-color: var(--amber); color: var(--amber); background: var(--amber-dim); }
+
+        /* ── CONTENT SECTIONS ── */
+        .section {
+            margin-bottom: 52px;
+            scroll-margin-top: 32px;
+        }
+
+        .section-num {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 10px;
+            color: var(--amber);
+            font-weight: 600;
+            letter-spacing: 1px;
+            margin-bottom: 8px;
+        }
+
+        .section h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: 22px;
+            font-weight: 700;
+            line-height: 1.3;
+            margin-bottom: 16px;
+            color: var(--text);
+        }
+
+        .section p { color: var(--text); margin-bottom: 14px; }
+        .section p:last-child { margin-bottom: 0; }
+
+        /* ── CALLOUT ── */
+        .callout {
+            border-left: 3px solid var(--amber);
+            background: var(--amber-dim);
+            border-radius: 0 8px 8px 0;
+            padding: 14px 18px;
+            margin: 20px 0;
+        }
+        .callout-label {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 9px;
+            font-weight: 600;
+            color: var(--amber);
+            letter-spacing: 1.2px;
+            text-transform: uppercase;
+            margin-bottom: 6px;
+        }
+        .callout p { font-size: 14px; color: var(--text); margin: 0; }
+
+        /* ── COMPARISON TABLE ── */
+        .table-wrap { overflow-x: auto; margin: 20px 0; }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+        }
+        thead th {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 10px;
+            font-weight: 600;
+            letter-spacing: .8px;
+            text-transform: uppercase;
+            padding: 10px 14px;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            color: var(--muted);
+            text-align: left;
+        }
+        thead th:first-child { color: var(--rojo); border-top-left-radius: 8px; }
+        thead th:last-child  { color: var(--verde); border-top-right-radius: 8px; }
+        tbody td {
+            padding: 10px 14px;
+            border: 1px solid var(--border);
+            vertical-align: top;
+            line-height: 1.55;
+            color: var(--text);
+        }
+        tbody tr:last-child td:first-child { border-bottom-left-radius: 8px; }
+        tbody tr:last-child td:last-child  { border-bottom-right-radius: 8px; }
+        tbody tr:nth-child(even) td { background: var(--surface); }
+
+        /* ── CODE BLOCK ── */
+        .code-wrap {
+            position: relative;
+            margin: 20px 0;
+        }
+        .code-label {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 9px;
+            color: var(--faint);
+            letter-spacing: 1.2px;
+            text-transform: uppercase;
+            margin-bottom: 6px;
+        }
+        pre {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 16px 18px;
+            overflow-x: auto;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 12.5px;
+            line-height: 1.65;
+            color: var(--text);
+        }
+        .copy-btn {
+            position: absolute;
+            top: 26px;
+            right: 10px;
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: 4px 10px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 9px;
+            color: var(--faint);
+            cursor: pointer;
+            transition: border-color .15s, color .15s;
+        }
+        .copy-btn:hover { border-color: var(--amber); color: var(--amber); }
+        .copy-btn.copied { color: var(--verde); border-color: var(--verde); }
+
+        /* ── CHECKLIST ── */
+        .checklist-section {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 24px 26px;
+            margin-bottom: 52px;
+        }
+        .checklist-title {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 10px;
+            color: var(--amber);
+            font-weight: 600;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            margin-bottom: 16px;
+        }
+        .checklist-items { list-style: none; display: flex; flex-direction: column; gap: 10px; }
+        .checklist-items li {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            font-size: 13.5px;
+            color: var(--text);
+            line-height: 1.5;
+            cursor: pointer;
+        }
+        .check-box {
+            width: 17px; height: 17px;
+            border: 1.5px solid var(--border);
+            border-radius: 4px;
+            flex-shrink: 0;
+            margin-top: 1px;
+            transition: border-color .15s, background .15s;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 10px;
+            color: white;
+        }
+        .checklist-items li.done .check-box { background: var(--verde); border-color: var(--verde); }
+        .checklist-items li.done .check-text { text-decoration: line-through; color: var(--muted); }
+
+        /* ── FOOTER NAV ── */
+        .resource-footer {
+            border-top: 1px solid var(--border);
+            padding: 32px 0 56px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+        .footer-back {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 12px;
+            color: var(--muted);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: color .15s;
+        }
+        .footer-back:hover { color: var(--amber); }
+        .footer-next {
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--amber);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: gap .15s;
+        }
+        .footer-next:hover { gap: 10px; }
+
+        /* ── RESPONSIVE ── */
+        @media (max-width: 600px) {
+            .wrap { padding: 0 16px; }
+            .resource-title { font-size: 24px; }
+            .toc-links { gap: 4px; }
+        }
+    </style>
+</head>
+<body>
+<div class="wrap">
+
+    <!-- NAV BREADCRUMB -->
+    <nav class="top-nav">
+        <a href="../index.html">alex.decode</a>
+        <span class="sep">/</span>
+        <span>Biblioteca</span>
+        <span class="sep">/</span>
+        <span>Nivel [N]</span>
+        <span class="sep">/</span>
+        <span>[TÍTULO CORTO]</span>
+        <a href="../index.html" class="nav-owl" aria-label="Volver a la biblioteca">
+            <svg width="28" height="32" viewBox="0 0 140 160" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <polygon points="44,32 36,6 52,26" fill="#92400E"/>
+                <polygon points="96,32 104,6 88,26" fill="#92400E"/>
+                <circle cx="70" cy="56" r="38" fill="#B45309"/>
+                <ellipse cx="70" cy="58" rx="26" ry="24" fill="#D97706" opacity="0.28"/>
+                <circle cx="56" cy="52" r="13" fill="#FEF3C7"/>
+                <circle cx="84" cy="52" r="13" fill="#FEF3C7"/>
+                <circle cx="56" cy="52" r="6.5" fill="#1C1917"/>
+                <circle cx="84" cy="52" r="6.5" fill="#1C1917"/>
+                <circle cx="59" cy="49" r="2.2" fill="white"/>
+                <circle cx="87" cy="49" r="2.2" fill="white"/>
+                <polygon points="63,64 77,64 70,75" fill="#D97706"/>
+                <ellipse cx="70" cy="120" rx="34" ry="36" fill="#B45309"/>
+                <ellipse cx="70" cy="126" rx="20" ry="24" fill="#D97706" opacity="0.22"/>
+            </svg>
+        </a>
+    </nav>
+
+    <!-- HEADER -->
+    <header class="resource-header">
+        <!-- Cambiar clase del tag: rojo / amar / azul / verde / morad -->
+        <div class="tag rojo"><span class="dot"></span>[CATEGORÍA]</div>
+        <h1 class="resource-title">[TÍTULO COMPLETO DEL RECURSO]</h1>
+        <div class="resource-meta">
+            <span>[X] min de lectura</span>
+            <span class="meta-dot"></span>
+            <span>Nivel [N]</span>
+            <span class="meta-dot"></span>
+            <span>[MES AÑO]</span>
+        </div>
+    </header>
+
+    <!-- TABLE OF CONTENTS -->
+    <nav class="toc" aria-label="Contenido">
+        <div class="toc-label">En este recurso</div>
+        <div class="toc-links">
+            <a href="#s01">01 [Sección 1]</a>
+            <a href="#s02">02 [Sección 2]</a>
+            <a href="#s03">03 [Sección 3]</a>
+            <a href="#s04">04 [Sección 4]</a>
+            <a href="#s05">05 [Sección 5]</a>
+            <a href="#checklist">Checklist</a>
+        </div>
+    </nav>
+
+    <!-- ── SECCIÓN 01 — texto plano ── -->
+    <section class="section" id="s01">
+        <div class="section-num">01</div>
+        <h2>[Título de la primera sección]</h2>
+        <p>[Párrafo de contenido. Escrito en primera persona, directo, sin rodeos.]</p>
+        <p>[Segundo párrafo si es necesario.]</p>
+
+        <!-- CALLOUT — dato importante -->
+        <div class="callout">
+            <div class="callout-label">Dato importante</div>
+            <p>[El dato, la estadística o el matiz que el lector debe recordar.]</p>
+        </div>
+    </section>
+
+    <!-- ── SECCIÓN 02 — tabla antes / después ── -->
+    <section class="section" id="s02">
+        <div class="section-num">02</div>
+        <h2>[Título — comparación o contraste]</h2>
+        <p>[Introducción breve a la tabla.]</p>
+
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Antes</th>
+                        <th>Después</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr><td>[Situación A sin la información]</td><td>[Situación A con la información]</td></tr>
+                    <tr><td>[Situación B]</td><td>[Situación B mejorada]</td></tr>
+                    <tr><td>[Situación C]</td><td>[Situación C mejorada]</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <!-- ── SECCIÓN 03 — bloque de código / prompt ── -->
+    <section class="section" id="s03">
+        <div class="section-num">03</div>
+        <h2>[Título — el prompt, el comando o el flujo exacto]</h2>
+        <p>[Contexto de por qué usar exactamente esto.]</p>
+
+        <div class="code-wrap">
+            <div class="code-label">Prompt / Comando</div>
+            <pre id="code-01">[Aquí va el prompt, el comando o el bloque de texto exacto
+que el usuario puede copiar y usar directamente.]</pre>
+            <button class="copy-btn" onclick="copyCode('code-01', this)">copiar</button>
+        </div>
+    </section>
+
+    <!-- ── SECCIÓN 04 — texto con callout de aviso ── -->
+    <section class="section" id="s04">
+        <div class="section-num">04</div>
+        <h2>[Título — el error o el matiz que nadie menciona]</h2>
+        <p>[Contenido directo.]</p>
+
+        <div class="callout">
+            <div class="callout-label">Aviso</div>
+            <p>[El error más común o la trampa a evitar en este punto.]</p>
+        </div>
+
+        <p>[Continuación del contenido tras el aviso.]</p>
+    </section>
+
+    <!-- ── SECCIÓN 05 — texto libre ── -->
+    <section class="section" id="s05">
+        <div class="section-num">05</div>
+        <h2>[Título — conclusión o aplicación práctica]</h2>
+        <p>[Párrafo final de la parte narrativa. Qué hacer con todo lo anterior.]</p>
+    </section>
+
+    <!-- ── CHECKLIST FINAL ── -->
+    <div class="checklist-section" id="checklist">
+        <div class="checklist-title">Lista de comprobación</div>
+        <ul class="checklist-items" id="checklistItems">
+            <li onclick="toggleCheck(this)"><span class="check-box"></span><span class="check-text">[Acción 1 que el lector debe haber hecho]</span></li>
+            <li onclick="toggleCheck(this)"><span class="check-box"></span><span class="check-text">[Acción 2]</span></li>
+            <li onclick="toggleCheck(this)"><span class="check-box"></span><span class="check-text">[Acción 3]</span></li>
+            <li onclick="toggleCheck(this)"><span class="check-box"></span><span class="check-text">[Acción 4]</span></li>
+            <li onclick="toggleCheck(this)"><span class="check-box"></span><span class="check-text">[Acción 5]</span></li>
+        </ul>
+    </div>
+
+    <!-- FOOTER NAV -->
+    <footer class="resource-footer">
+        <a href="../index.html" class="footer-back">
+            <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+            Volver a la biblioteca
+        </a>
+        <!-- Descomentar cuando haya siguiente recurso -->
+        <!-- <a href="[SLUG-SIGUIENTE].html" class="footer-next">Siguiente recurso <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a> -->
+    </footer>
+
+</div>
+
+<script>
+function copyCode(id, btn) {
+    const text = document.getElementById(id).textContent;
+    navigator.clipboard.writeText(text).then(() => {
+        btn.textContent = 'copiado';
+        btn.classList.add('copied');
+        setTimeout(() => { btn.textContent = 'copiar'; btn.classList.remove('copied'); }, 2000);
+    });
+}
+
+function toggleCheck(li) {
+    li.classList.toggle('done');
+    li.querySelector('.check-box').textContent = li.classList.contains('done') ? '✓' : '';
+    const items = document.querySelectorAll('#checklistItems li');
+    if ([...items].every(i => i.classList.contains('done'))) launchConfetti();
+}
+
+function launchConfetti() {
+    const canvas = document.getElementById('confettiCanvas');
+    if (!canvas) return;
+    canvas.style.display = 'block';
+    const ctx = canvas.getContext('2d');
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+    const colors = ['#B45309','#D97706','#FDE68A','#059669','#7C3AED','#2563EB','#F59E0B','#10B981','#EF4444'];
+    const pieces = Array.from({length: 140}, () => ({
+        x: Math.random() * canvas.width,
+        y: -10 - Math.random() * canvas.height * 0.6,
+        w: Math.random() * 11 + 5,
+        h: Math.random() * 6 + 3,
+        color: colors[Math.floor(Math.random() * colors.length)],
+        vx: (Math.random() - 0.5) * 4,
+        vy: Math.random() * 3 + 1.5,
+        rot: Math.random() * 360,
+        vrot: (Math.random() - 0.5) * 10,
+        alpha: 1,
+        shape: Math.random() > 0.5 ? 'rect' : 'circle'
+    }));
+    let frame = 0;
+    (function animate() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        pieces.forEach(p => {
+            p.x += p.vx;
+            p.y += p.vy;
+            p.rot += p.vrot;
+            p.vy += 0.06;
+            if (frame > 90) p.alpha = Math.max(0, p.alpha - 0.012);
+            ctx.save();
+            ctx.globalAlpha = p.alpha;
+            ctx.translate(p.x + p.w / 2, p.y + p.h / 2);
+            ctx.rotate(p.rot * Math.PI / 180);
+            ctx.fillStyle = p.color;
+            if (p.shape === 'circle') {
+                ctx.beginPath();
+                ctx.arc(0, 0, p.w / 2, 0, Math.PI * 2);
+                ctx.fill();
+            } else {
+                ctx.fillRect(-p.w / 2, -p.h / 2, p.w, p.h);
+            }
+            ctx.restore();
+        });
+        frame++;
+        if (frame < 170) requestAnimationFrame(animate);
+        else canvas.style.display = 'none';
+    })();
+}
+</script>
+
+<canvas id="confettiCanvas" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:9999;"></canvas>
+</body>
+</html>

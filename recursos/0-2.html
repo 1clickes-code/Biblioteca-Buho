@@ -1,0 +1,848 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>No le preguntes a la IA. Constrúyelo con ella. — alex.decode</title>
+    <link rel="icon" type="image/svg+xml" href="../favicon.svg">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        :root {
+            --bg:        #FAFAF7;
+            --surface:   #FFFFFF;
+            --border:    #E8E2D9;
+            --text:      #1C1917;
+            --muted:     #78716C;
+            --faint:     #B0A89E;
+            --amber:     #B45309;
+            --amber-mid: #D97706;
+            --amber-dim: rgba(180,83,9,0.07);
+            --rojo:  #DC2626; --rojo-d:  rgba(220,38,38,0.07);
+            --amar:  #D97706; --amar-d:  rgba(217,119,6,0.07);
+            --azul:  #2563EB; --azul-d:  rgba(37,99,235,0.07);
+            --verde: #059669; --verde-d: rgba(5,150,105,0.07);
+            --morad: #7C3AED; --morad-d: rgba(124,58,237,0.07);
+        }
+
+        html { scroll-behavior: smooth; }
+        body {
+            background: var(--bg);
+            color: var(--text);
+            font-family: 'Inter', system-ui, sans-serif;
+            font-size: 15px;
+            line-height: 1.7;
+            min-height: 100vh;
+        }
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0; left: 0; right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, #D97706 0%, var(--amber) 50%, #D97706 100%);
+            z-index: 100;
+        }
+
+        .wrap { max-width: 720px; margin: 0 auto; padding: 0 24px; }
+
+        /* ── NAV ── */
+        .top-nav {
+            padding: 28px 0 0;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 11px;
+            color: var(--faint);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
+        .top-nav a { color: var(--amber); text-decoration: none; transition: opacity .15s; }
+        .top-nav a:hover { opacity: .7; }
+        .top-nav .sep { color: var(--faint); }
+
+        .nav-owl {
+            margin-left: auto;
+            display: flex;
+            align-items: center;
+            text-decoration: none;
+            transition: opacity .15s;
+            animation: owlFloat 5s ease-in-out 1s infinite;
+        }
+        .nav-owl:hover { opacity: .7; }
+        @keyframes owlFloat { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-4px)} }
+
+        /* ── COVER ── */
+        .resource-cover {
+            margin: 24px 0 0;
+            border-radius: 14px;
+            overflow: hidden;
+            width: 100%;
+            aspect-ratio: 16/7;
+            background: var(--azul-d);
+            border: 1px solid rgba(37,99,235,0.15);
+        }
+        .resource-cover svg { width: 100%; height: 100%; display: block; }
+
+        /* ── HEADER ── */
+        .resource-header { padding: 28px 0 28px; border-bottom: 1px solid var(--border); margin-bottom: 28px; }
+
+        .tag {
+            display: inline-flex; align-items: center; gap: 5px;
+            font-size: 10px; font-weight: 600; padding: 3px 10px;
+            border-radius: 100px; margin-bottom: 14px;
+        }
+        .tag .dot { width: 5px; height: 5px; border-radius: 50%; flex-shrink: 0; }
+        .tag.azul  { background: var(--azul-d);  color: var(--azul);  } .tag.azul .dot  { background: var(--azul); }
+
+        .resource-title {
+            font-family: 'Playfair Display', Georgia, serif;
+            font-size: clamp(24px, 4vw, 34px);
+            font-weight: 700;
+            line-height: 1.2;
+            letter-spacing: -.3px;
+            margin-bottom: 12px;
+        }
+        .resource-meta {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 11px;
+            color: var(--faint);
+            display: flex;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+        .resource-meta span { display: flex; align-items: center; gap: 5px; }
+        .meta-dot { width: 3px; height: 3px; border-radius: 50%; background: var(--faint); }
+
+        /* ── LO QUE VAS A APRENDER ── */
+        .learn-box {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 20px 22px;
+            margin-bottom: 20px;
+        }
+        .learn-label {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 9px;
+            font-weight: 600;
+            color: var(--amber);
+            letter-spacing: 1.4px;
+            text-transform: uppercase;
+            margin-bottom: 12px;
+        }
+        .learn-list { list-style: none; display: flex; flex-direction: column; gap: 8px; }
+        .learn-list li {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            font-size: 13.5px;
+            color: var(--text);
+            line-height: 1.5;
+        }
+        .learn-dot {
+            width: 6px; height: 6px;
+            border-radius: 50%;
+            background: var(--azul);
+            flex-shrink: 0;
+            margin-top: 7px;
+        }
+
+        /* ── TABLE OF CONTENTS ── */
+        .toc {
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 14px 18px;
+            margin-bottom: 44px;
+        }
+        .toc-label {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 9px;
+            color: var(--faint);
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            margin-bottom: 10px;
+        }
+        .toc-links { display: flex; flex-wrap: wrap; gap: 6px; }
+        .toc-links a {
+            font-size: 12px;
+            color: var(--muted);
+            text-decoration: none;
+            padding: 4px 10px;
+            border-radius: 6px;
+            border: 1px solid var(--border);
+            transition: border-color .15s, color .15s, background .15s;
+            white-space: nowrap;
+        }
+        .toc-links a:hover { border-color: var(--azul); color: var(--azul); background: var(--azul-d); }
+
+        /* ── CONTENT SECTIONS ── */
+        .section { margin-bottom: 48px; scroll-margin-top: 32px; }
+        .section-num {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 10px;
+            color: var(--amber);
+            font-weight: 600;
+            letter-spacing: 1px;
+            margin-bottom: 8px;
+        }
+        .section h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: 21px;
+            font-weight: 700;
+            line-height: 1.3;
+            margin-bottom: 14px;
+        }
+        .section p { color: var(--text); margin-bottom: 12px; font-size: 14.5px; }
+        .section p:last-child { margin-bottom: 0; }
+
+        /* ── CALLOUT ── */
+        .callout {
+            border-left: 3px solid var(--amber);
+            background: var(--amber-dim);
+            border-radius: 0 8px 8px 0;
+            padding: 13px 16px;
+            margin: 18px 0;
+        }
+        .callout.azul  { border-left-color: var(--azul);  background: var(--azul-d); }
+        .callout.verde { border-left-color: var(--verde); background: var(--verde-d); }
+        .callout.rojo  { border-left-color: var(--rojo);  background: var(--rojo-d); }
+
+        .callout-label {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 9px;
+            font-weight: 600;
+            color: var(--amber);
+            letter-spacing: 1.2px;
+            text-transform: uppercase;
+            margin-bottom: 5px;
+        }
+        .callout.azul  .callout-label { color: var(--azul); }
+        .callout.verde .callout-label { color: var(--verde); }
+        .callout.rojo  .callout-label { color: var(--rojo); }
+        .callout p { font-size: 13.5px; color: var(--text); margin: 0; line-height: 1.6; }
+
+        /* ── MINI DICCIONARIO ── */
+        .dict-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 20px 22px;
+            margin: 18px 0;
+        }
+        .dict-card-label {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 9px;
+            font-weight: 600;
+            color: var(--azul);
+            letter-spacing: 1.4px;
+            text-transform: uppercase;
+            margin-bottom: 14px;
+        }
+        .dict-item {
+            display: flex;
+            align-items: baseline;
+            gap: 14px;
+            padding: 9px 0;
+            border-bottom: 1px solid var(--border);
+        }
+        .dict-item:last-child { border-bottom: none; padding-bottom: 0; }
+        .dict-term {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--azul);
+            min-width: 108px;
+            flex-shrink: 0;
+        }
+        .dict-def {
+            font-size: 13px;
+            color: var(--muted);
+            line-height: 1.5;
+        }
+
+        /* ── COMPARISON TABLE ── */
+        .table-wrap { overflow-x: auto; margin: 18px 0; }
+        table { width: 100%; border-collapse: collapse; font-size: 13px; }
+        thead th {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 10px;
+            font-weight: 600;
+            letter-spacing: .8px;
+            text-transform: uppercase;
+            padding: 10px 14px;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            color: var(--muted);
+            text-align: left;
+        }
+        thead th:first-child { color: var(--rojo); border-top-left-radius: 8px; }
+        thead th:last-child  { color: var(--verde); border-top-right-radius: 8px; }
+        tbody td {
+            padding: 10px 14px;
+            border: 1px solid var(--border);
+            vertical-align: top;
+            line-height: 1.5;
+            color: var(--text);
+        }
+        tbody tr:last-child td:first-child { border-bottom-left-radius: 8px; }
+        tbody tr:last-child td:last-child  { border-bottom-right-radius: 8px; }
+        tbody tr:nth-child(even) td { background: var(--surface); }
+
+        /* ── CODE BLOCK ── */
+        .code-wrap { position: relative; margin: 18px 0; }
+        .code-label {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 9px;
+            color: var(--faint);
+            letter-spacing: 1.2px;
+            text-transform: uppercase;
+            margin-bottom: 6px;
+        }
+        pre {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 16px 18px;
+            overflow-x: auto;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 12px;
+            line-height: 1.7;
+            color: var(--text);
+            white-space: pre;
+        }
+        .copy-btn {
+            position: absolute;
+            top: 26px; right: 10px;
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: 4px 10px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 9px;
+            color: var(--faint);
+            cursor: pointer;
+            transition: border-color .15s, color .15s;
+        }
+        .copy-btn:hover { border-color: var(--azul); color: var(--azul); }
+        .copy-btn.copied { color: var(--verde); border-color: var(--verde); }
+
+        /* ── ACCIÓN STEPS ── */
+        .action-steps {
+            background: var(--verde-d);
+            border: 1px solid rgba(5,150,105,0.2);
+            border-radius: 12px;
+            padding: 20px 22px;
+            margin: 18px 0;
+        }
+        .action-steps-label {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 9px;
+            font-weight: 600;
+            color: var(--verde);
+            letter-spacing: 1.4px;
+            text-transform: uppercase;
+            margin-bottom: 14px;
+        }
+        .action-step {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 10px;
+            align-items: flex-start;
+        }
+        .action-step:last-child { margin-bottom: 0; }
+        .step-num {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 10px;
+            font-weight: 600;
+            color: var(--verde);
+            min-width: 18px;
+            margin-top: 3px;
+        }
+        .step-text { font-size: 13.5px; color: var(--text); line-height: 1.5; }
+        .step-text code {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 11.5px;
+            background: rgba(5,150,105,0.12);
+            color: var(--verde);
+            padding: 1px 6px;
+            border-radius: 4px;
+        }
+
+        /* ── CHECKLIST ── */
+        .checklist-section {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 22px 24px;
+            margin-bottom: 48px;
+        }
+        .checklist-title {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 10px;
+            color: var(--amber);
+            font-weight: 600;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            margin-bottom: 14px;
+        }
+        .checklist-items { list-style: none; display: flex; flex-direction: column; gap: 10px; }
+        .checklist-items li {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            font-size: 13px;
+            color: var(--text);
+            line-height: 1.5;
+            cursor: pointer;
+        }
+        .check-box {
+            width: 17px; height: 17px;
+            border: 1.5px solid var(--border);
+            border-radius: 4px;
+            flex-shrink: 0;
+            margin-top: 1px;
+            transition: border-color .15s, background .15s;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 10px;
+            color: white;
+        }
+        .checklist-items li.done .check-box { background: var(--verde); border-color: var(--verde); }
+        .checklist-items li.done .check-text { text-decoration: line-through; color: var(--muted); }
+
+        /* ── FOOTER NAV ── */
+        .resource-footer {
+            border-top: 1px solid var(--border);
+            padding: 28px 0 52px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+        .footer-back {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 12px;
+            color: var(--muted);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: color .15s;
+        }
+        .footer-back:hover { color: var(--amber); }
+        .footer-next {
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--amber);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: gap .15s;
+        }
+        .footer-next:hover { gap: 10px; }
+
+        /* ── RESPONSIVE ── */
+        @media (max-width: 600px) {
+            .wrap { padding: 0 16px; }
+            .resource-title { font-size: 22px; }
+            .dict-term { min-width: 88px; }
+        }
+    </style>
+</head>
+<body>
+<div class="wrap">
+
+    <!-- NAV BREADCRUMB -->
+    <nav class="top-nav">
+        <a href="../index.html">alex.decode</a>
+        <span class="sep">/</span>
+        <span>Biblioteca</span>
+        <span class="sep">/</span>
+        <span>Nivel 0</span>
+        <span class="sep">/</span>
+        <span>Constrúyelo con ella</span>
+        <a href="../index.html" class="nav-owl" aria-label="Volver a la biblioteca">
+            <svg width="28" height="32" viewBox="0 0 140 160" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <polygon points="44,32 36,6 52,26" fill="#92400E"/>
+                <polygon points="96,32 104,6 88,26" fill="#92400E"/>
+                <circle cx="70" cy="56" r="38" fill="#B45309"/>
+                <ellipse cx="70" cy="58" rx="26" ry="24" fill="#D97706" opacity="0.28"/>
+                <circle cx="56" cy="52" r="13" fill="#FEF3C7"/>
+                <circle cx="84" cy="52" r="13" fill="#FEF3C7"/>
+                <circle cx="56" cy="52" r="6.5" fill="#1C1917"/>
+                <circle cx="84" cy="52" r="6.5" fill="#1C1917"/>
+                <circle cx="59" cy="49" r="2.2" fill="white"/>
+                <circle cx="87" cy="49" r="2.2" fill="white"/>
+                <polygon points="63,64 77,64 70,75" fill="#D97706"/>
+                <ellipse cx="70" cy="120" rx="34" ry="36" fill="#B45309"/>
+                <ellipse cx="70" cy="126" rx="20" ry="24" fill="#D97706" opacity="0.22"/>
+            </svg>
+        </a>
+    </nav>
+
+    <!-- PORTADA VISUAL -->
+    <div class="resource-cover">
+        <svg viewBox="0 0 800 350" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice">
+            <rect width="800" height="350" fill="#EFF6FF"/>
+
+            <!-- divider -->
+            <line x1="400" y1="30" x2="400" y2="320" stroke="#BFDBFE" stroke-width="1.5" stroke-dasharray="6,4"/>
+
+            <!-- lado izquierdo — monólogo -->
+            <text x="200" y="68" font-family="JetBrains Mono, monospace" font-size="11" fill="#93C5FD" text-anchor="middle" letter-spacing="2">MONÓLOGO</text>
+
+            <!-- burbuja usuario -->
+            <rect x="80" y="90" width="160" height="36" rx="10" fill="#2563EB" opacity="0.15"/>
+            <text x="160" y="113" font-family="Inter, sans-serif" font-size="12" fill="#1E40AF" text-anchor="middle">"Explícame el marketing"</text>
+
+            <!-- flecha única hacia IA -->
+            <line x1="270" y1="108" x2="310" y2="108" stroke="#93C5FD" stroke-width="2" marker-end="url(#arr-blue)"/>
+            <defs>
+                <marker id="arr-blue" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+                    <path d="M0,0 L0,6 L8,3 z" fill="#93C5FD"/>
+                </marker>
+            </defs>
+
+            <!-- burbuja IA (respuesta genérica) -->
+            <rect x="80" y="158" width="160" height="52" rx="10" fill="white" stroke="#BFDBFE" stroke-width="1.5"/>
+            <text x="160" y="178" font-family="Inter, sans-serif" font-size="11" fill="#78716C" text-anchor="middle">El marketing es...</text>
+            <text x="160" y="196" font-family="Inter, sans-serif" font-size="11" fill="#78716C" text-anchor="middle">una disciplina que...</text>
+
+            <text x="160" y="248" font-family="Inter, sans-serif" font-size="11" fill="#93C5FD" text-anchor="middle">Respuesta genérica.</text>
+            <text x="160" y="266" font-family="Inter, sans-serif" font-size="11" fill="#93C5FD" text-anchor="middle">Tokens quemados.</text>
+
+            <!-- lado derecho — diálogo -->
+            <text x="600" y="68" font-family="JetBrains Mono, monospace" font-size="11" fill="#6EE7B7" text-anchor="middle" letter-spacing="2">DIÁLOGO</text>
+
+            <!-- burbuja usuario con contexto -->
+            <rect x="460" y="84" width="200" height="48" rx="10" fill="#2563EB" opacity="0.15"/>
+            <text x="560" y="104" font-family="Inter, sans-serif" font-size="11" fill="#1E40AF" text-anchor="middle">Soy freelance, necesito</text>
+            <text x="560" y="120" font-family="Inter, sans-serif" font-size="11" fill="#1E40AF" text-anchor="middle">conseguir mi primer cliente.</text>
+
+            <!-- flecha ida -->
+            <path d="M 560 138 Q 600 148 560 158" stroke="#059669" stroke-width="1.5" fill="none" marker-end="url(#arr-green)"/>
+            <defs>
+                <marker id="arr-green" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+                    <path d="M0,0 L0,6 L8,3 z" fill="#059669"/>
+                </marker>
+            </defs>
+
+            <!-- burbuja IA pregunta -->
+            <rect x="460" y="158" width="200" height="36" rx="10" fill="white" stroke="#6EE7B7" stroke-width="1.5"/>
+            <text x="560" y="181" font-family="Inter, sans-serif" font-size="11" fill="#059669" text-anchor="middle">¿En qué sector trabajas?</text>
+
+            <!-- flecha vuelta -->
+            <path d="M 560 200 Q 520 210 560 220" stroke="#2563EB" stroke-width="1.5" fill="none" marker-end="url(#arr-blue2)"/>
+            <defs>
+                <marker id="arr-blue2" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+                    <path d="M0,0 L0,6 L8,3 z" fill="#2563EB"/>
+                </marker>
+            </defs>
+
+            <!-- burbuja resultado -->
+            <rect x="460" y="224" width="200" height="36" rx="10" fill="#059669" opacity="0.12"/>
+            <text x="560" y="247" font-family="Inter, sans-serif" font-size="11" fill="#065F46" text-anchor="middle">Respuesta precisa y accionable</text>
+
+            <!-- etiqueta central -->
+            <rect x="308" y="290" width="184" height="28" rx="6" fill="white" stroke="#E8E2D9" stroke-width="1"/>
+            <text x="400" y="309" font-family="JetBrains Mono, monospace" font-size="10" fill="#B45309" text-anchor="middle" letter-spacing="0.5">misma IA · misma pregunta</text>
+        </svg>
+    </div>
+
+    <!-- HEADER -->
+    <header class="resource-header">
+        <div class="tag azul"><span class="dot"></span>Conceptos</div>
+        <h1 class="resource-title">No le preguntes a la IA. Constrúyelo con ella.</h1>
+        <div class="resource-meta">
+            <span>6 min de lectura</span>
+            <span class="meta-dot"></span>
+            <span>Nivel 0 — Entender</span>
+            <span class="meta-dot"></span>
+            <span>Verano 2026</span>
+        </div>
+    </header>
+
+    <!-- LO QUE VAS A APRENDER -->
+    <div class="learn-box">
+        <div class="learn-label">Lo que vas a aprender</div>
+        <ul class="learn-list">
+            <li><span class="learn-dot"></span>Por qué hablarle bien a una IA es una habilidad, no un don</li>
+            <li><span class="learn-dot"></span>Los 7 conceptos que todo usuario estratégico maneja — en una sola tarjeta</li>
+            <li><span class="learn-dot"></span>Por qué las conversaciones largas degradan la calidad de las respuestas</li>
+            <li><span class="learn-dot"></span>Cómo hacer tu primer intercambio colaborativo real — hoy</li>
+        </ul>
+    </div>
+
+    <!-- TABLE OF CONTENTS -->
+    <nav class="toc" aria-label="Contenido">
+        <div class="toc-label">En este recurso</div>
+        <div class="toc-links">
+            <a href="#s01">01 El paradigma</a>
+            <a href="#s02">02 Mini diccionario</a>
+            <a href="#s03">03 Contexto eficaz</a>
+            <a href="#s04">04 Context rot</a>
+            <a href="#s05">05 Tu primer diálogo</a>
+            <a href="#checklist">Checklist</a>
+        </div>
+    </nav>
+
+    <!-- ── SECCIÓN 01 ── -->
+    <section class="section" id="s01">
+        <div class="section-num">01</div>
+        <h2>El cambio de paradigma — de buscador a colaborador</h2>
+
+        <p>Cuando buscas algo en Google, preguntas. Google devuelve. La conversación termina ahí.</p>
+
+        <p>Con una IA, ese modelo no funciona. Si llegas con una pregunta corta sin contexto, obtienes una respuesta genérica sin utilidad. No porque la IA sea mala — sino porque no sabe nada de ti, de tu situación, de lo que realmente necesitas.</p>
+
+        <div class="callout azul">
+            <div class="callout-label">El cambio de paradigma</div>
+            <p>La IA no es un buscador que responde. Es un colaborador que construye contigo. La calidad del resultado depende directamente de la calidad del intercambio.</p>
+        </div>
+
+        <p>Esto cambia todo: ya no se trata de hacer la pregunta correcta. Se trata de construir el contexto correcto — y de dejar espacio para que la IA también pregunte.</p>
+    </section>
+
+    <!-- ── SECCIÓN 02 — MINI DICCIONARIO ── -->
+    <section class="section" id="s02">
+        <div class="section-num">02</div>
+        <h2>Mini diccionario — los 7 conceptos base</h2>
+
+        <p>Antes de seguir, estos son los términos que aparecen en toda la biblioteca. Una línea cada uno. Guárdalos.</p>
+
+        <div class="dict-card">
+            <div class="dict-card-label">Glosario</div>
+
+            <div class="dict-item">
+                <span class="dict-term">Contexto</span>
+                <span class="dict-def">La información de fondo que le das a la IA para que entienda tu situación real, no una genérica.</span>
+            </div>
+            <div class="dict-item">
+                <span class="dict-term">Prompt</span>
+                <span class="dict-def">El mensaje que construyes para iniciar o continuar una tarea — no es solo una pregunta, es una instrucción con contexto.</span>
+            </div>
+            <div class="dict-item">
+                <span class="dict-term">Iteración</span>
+                <span class="dict-def">El proceso de mejorar un resultado a través de rondas sucesivas de ajuste y feedback. El primer output casi nunca es el final.</span>
+            </div>
+            <div class="dict-item">
+                <span class="dict-term">Token</span>
+                <span class="dict-def">La unidad mínima de texto que procesa la IA. Cada conversación tiene un límite de tokens — gastarlos bien es una habilidad.</span>
+            </div>
+            <div class="dict-item">
+                <span class="dict-term">Upskilling</span>
+                <span class="dict-def">Mejorar habilidades dentro de tu campo actual usando nuevas herramientas, como la IA, para rendir más en lo que ya haces.</span>
+            </div>
+            <div class="dict-item">
+                <span class="dict-term">Reskilling</span>
+                <span class="dict-def">Adquirir habilidades de un campo diferente para adaptarte al mercado — aprender algo nuevo, no solo mejorar lo que ya sabes.</span>
+            </div>
+            <div class="dict-item">
+                <span class="dict-term">Context rot</span>
+                <span class="dict-def">La degradación progresiva de la calidad de respuestas cuando una conversación se alarga demasiado y la IA pierde foco.</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- ── SECCIÓN 03 ── -->
+    <section class="section" id="s03">
+        <div class="section-num">03</div>
+        <h2>Contexto eficaz — calidad sobre cantidad</h2>
+
+        <p>Más texto no es mejor contexto. Un prompt largo y desordenado produce el mismo resultado mediocre que uno demasiado corto. Lo que importa es la precisión: quién eres, qué necesitas y para qué.</p>
+
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr><th>Prompt sin contexto</th><th>Prompt con contexto</th></tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>"Ayúdame con mi estrategia de marketing"</td>
+                        <td>"Soy freelance de diseño, llevo 2 años, quiero conseguir mi primer cliente B2B de menos de 50 empleados. Dame 3 canales concretos para empezar esta semana."</td>
+                    </tr>
+                    <tr>
+                        <td>"Escríbeme un email"</td>
+                        <td>"Escribe un email de seguimiento para un cliente que vio mi propuesta hace 5 días y no ha respondido. Tono directo, sin sonar insistente. Máximo 4 líneas."</td>
+                    </tr>
+                    <tr>
+                        <td>"Explícame cómo funciona esto"</td>
+                        <td>"Explícame context rot como si supiera lo básico de IA pero nunca hubiera oído este término. Una analogía y tres líneas, sin tecnicismos."</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="callout verde">
+            <div class="callout-label">Casos reales — alex.decode</div>
+            <p>Mezclaba 4 o 5 temas distintos en la misma conversación. Resultado: la IA intentaba abarcarlo todo y no profundizaba en nada. Cuando empecé a abrir una conversación por tema, la calidad dio un salto inmediato — y gasté muchos menos tokens para llegar al mismo punto.</p>
+        </div>
+    </section>
+
+    <!-- ── SECCIÓN 04 ── -->
+    <section class="section" id="s04">
+        <div class="section-num">04</div>
+        <h2>Context rot — cuando la conversación se vuelve contra ti</h2>
+
+        <p>Cada conversación tiene una ventana de contexto limitada. A medida que crece, la IA tiene que manejar más información simultánea — y empieza a perder el hilo. Las respuestas se vuelven más genéricas, más repetitivas, menos precisas.</p>
+
+        <div class="callout rojo">
+            <div class="callout-label">La señal de alarma</div>
+            <p>Cuando notes que la IA empieza a repetirse, a contradecir algo que dijo antes o a dar respuestas más largas y menos útiles — eso es context rot. La conversación ha vivido demasiado.</p>
+        </div>
+
+        <p>La solución no es forzar la conversación. Es compactar o empezar de nuevo.</p>
+
+        <div class="code-wrap">
+            <div class="code-label">La regla práctica</div>
+            <pre id="code-01">Conversación corta + contexto preciso = resultado útil
+
+Conversación larga + temas mezclados = context rot
+
+Solución:
+  → Una conversación por tema
+  → Si se alarga: compacta o abre una nueva
+  → Lleva el resumen relevante a la siguiente</pre>
+            <button class="copy-btn" onclick="copyCode('code-01', this)">copiar</button>
+        </div>
+
+        <div class="callout">
+            <div class="callout-label">Segundo caso real</div>
+            <p>No dejaba hablar a la IA. Daba instrucciones largas, esperaba el resultado y seguía dando más instrucciones. Cuando empecé a dejarle preguntar — "¿qué más necesitas saber antes de responder?" — los resultados mejoraron antes de haber cambiado nada más.</p>
+        </div>
+    </section>
+
+    <!-- ── SECCIÓN 05 ── -->
+    <section class="section" id="s05">
+        <div class="section-num">05</div>
+        <h2>Tu primer diálogo colaborativo — ahora mismo</h2>
+
+        <p>No mañana. Antes de cerrar esta página. Cinco pasos, dos minutos.</p>
+
+        <div class="action-steps">
+            <div class="action-steps-label">Hazlo ahora</div>
+            <div class="action-step">
+                <span class="step-num">1.</span>
+                <span class="step-text">Abre una conversación nueva con cualquier IA — Claude, ChatGPT, lo que uses.</span>
+            </div>
+            <div class="action-step">
+                <span class="step-num">2.</span>
+                <span class="step-text">Elige algo concreto que tengas en mente: un email, un problema, una decisión pendiente.</span>
+            </div>
+            <div class="action-step">
+                <span class="step-num">3.</span>
+                <span class="step-text">Escribe el contexto: quién eres, qué necesitas, para qué sirve. Tres líneas máximo.</span>
+            </div>
+            <div class="action-step">
+                <span class="step-num">4.</span>
+                <span class="step-text">Añade al final: <code>"Antes de responder, ¿qué más necesitas saber?"</code></span>
+            </div>
+            <div class="action-step">
+                <span class="step-num">5.</span>
+                <span class="step-text">Lee la pregunta. Respóndela. Ahora sí envía. Compara el resultado con lo que obtenías antes.</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- ── CHECKLIST FINAL ── -->
+    <div class="checklist-section" id="checklist">
+        <div class="checklist-title">Ya lo sé — compruébalo</div>
+        <ul class="checklist-items" id="checklistItems">
+            <li onclick="toggleCheck(this)"><span class="check-box"></span><span class="check-text">Ya sé que "prompt" no es una marca de ropa</span></li>
+            <li onclick="toggleCheck(this)"><span class="check-box"></span><span class="check-text">Tengo el mini diccionario aquí — y sé que puedo volver cuando necesite</span></li>
+            <li onclick="toggleCheck(this)"><span class="check-box"></span><span class="check-text">Entiendo que más texto no es más contexto — calidad, no cantidad</span></li>
+            <li onclick="toggleCheck(this)"><span class="check-box"></span><span class="check-text">He dejado hablar a la IA. Fue raro. Funcionó.</span></li>
+            <li onclick="toggleCheck(this)"><span class="check-box"></span><span class="check-text">Sé cuándo empezar una conversación nueva en lugar de seguir quemando la misma</span></li>
+        </ul>
+    </div>
+
+    <!-- FOOTER NAV -->
+    <footer class="resource-footer">
+        <a href="0-1.html" class="footer-back">
+            <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+            Recurso anterior
+        </a>
+        <a href="0-3.html" class="footer-next">
+            Siguiente recurso
+            <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </a>
+    </footer>
+
+</div>
+
+<script>
+function copyCode(id, btn) {
+    const text = document.getElementById(id).textContent;
+    navigator.clipboard.writeText(text).then(() => {
+        btn.textContent = 'copiado';
+        btn.classList.add('copied');
+        setTimeout(() => { btn.textContent = 'copiar'; btn.classList.remove('copied'); }, 2000);
+    });
+}
+
+function toggleCheck(li) {
+    li.classList.toggle('done');
+    li.querySelector('.check-box').textContent = li.classList.contains('done') ? '✓' : '';
+    const items = document.querySelectorAll('#checklistItems li');
+    if ([...items].every(i => i.classList.contains('done'))) launchConfetti();
+}
+
+function launchConfetti() {
+    const canvas = document.getElementById('confettiCanvas');
+    if (!canvas) return;
+    canvas.style.display = 'block';
+    const ctx = canvas.getContext('2d');
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+    const colors = ['#B45309','#D97706','#FDE68A','#059669','#7C3AED','#2563EB','#F59E0B','#10B981','#EF4444'];
+    const pieces = Array.from({length: 140}, () => ({
+        x: Math.random() * canvas.width,
+        y: -10 - Math.random() * canvas.height * 0.6,
+        w: Math.random() * 11 + 5,
+        h: Math.random() * 6 + 3,
+        color: colors[Math.floor(Math.random() * colors.length)],
+        vx: (Math.random() - 0.5) * 4,
+        vy: Math.random() * 3 + 1.5,
+        rot: Math.random() * 360,
+        vrot: (Math.random() - 0.5) * 10,
+        alpha: 1,
+        shape: Math.random() > 0.5 ? 'rect' : 'circle'
+    }));
+    let frame = 0;
+    (function animate() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        pieces.forEach(p => {
+            p.x += p.vx;
+            p.y += p.vy;
+            p.rot += p.vrot;
+            p.vy += 0.06;
+            if (frame > 90) p.alpha = Math.max(0, p.alpha - 0.012);
+            ctx.save();
+            ctx.globalAlpha = p.alpha;
+            ctx.translate(p.x + p.w / 2, p.y + p.h / 2);
+            ctx.rotate(p.rot * Math.PI / 180);
+            ctx.fillStyle = p.color;
+            if (p.shape === 'circle') {
+                ctx.beginPath();
+                ctx.arc(0, 0, p.w / 2, 0, Math.PI * 2);
+                ctx.fill();
+            } else {
+                ctx.fillRect(-p.w / 2, -p.h / 2, p.w, p.h);
+            }
+            ctx.restore();
+        });
+        frame++;
+        if (frame < 170) requestAnimationFrame(animate);
+        else canvas.style.display = 'none';
+    })();
+}
+</script>
+
+<canvas id="confettiCanvas" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:9999;"></canvas>
+</body>
+</html>

@@ -1,0 +1,748 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>La IA no te va a quitar el trabajo. Pero esta persona sí — alex.decode</title>
+    <link rel="icon" type="image/svg+xml" href="../favicon.svg">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        :root {
+            --bg:        #FAFAF7;
+            --surface:   #FFFFFF;
+            --border:    #E8E2D9;
+            --text:      #1C1917;
+            --muted:     #78716C;
+            --faint:     #B0A89E;
+            --amber:     #B45309;
+            --amber-mid: #D97706;
+            --amber-dim: rgba(180,83,9,0.07);
+            --rojo:  #DC2626; --rojo-d:  rgba(220,38,38,0.07);
+            --amar:  #D97706; --amar-d:  rgba(217,119,6,0.07);
+            --azul:  #2563EB; --azul-d:  rgba(37,99,235,0.07);
+            --verde: #059669; --verde-d: rgba(5,150,105,0.07);
+            --morad: #7C3AED; --morad-d: rgba(124,58,237,0.07);
+        }
+
+        html { scroll-behavior: smooth; }
+        body {
+            background: var(--bg);
+            color: var(--text);
+            font-family: 'Inter', system-ui, sans-serif;
+            font-size: 15px;
+            line-height: 1.7;
+            min-height: 100vh;
+        }
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0; left: 0; right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, #D97706 0%, var(--amber) 50%, #D97706 100%);
+            z-index: 100;
+        }
+
+        .wrap { max-width: 720px; margin: 0 auto; padding: 0 24px; }
+
+        /* ── NAV ── */
+        .top-nav {
+            padding: 28px 0 0;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 11px;
+            color: var(--faint);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
+        .top-nav a { color: var(--amber); text-decoration: none; transition: opacity .15s; }
+        .top-nav a:hover { opacity: .7; }
+        .top-nav .sep { color: var(--faint); }
+
+        .nav-owl {
+            margin-left: auto;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            color: var(--faint);
+            text-decoration: none;
+            font-size: 10px;
+            letter-spacing: .5px;
+            transition: opacity .15s;
+            animation: owlFloat 5s ease-in-out 1s infinite;
+        }
+        .nav-owl:hover { opacity: .7; color: var(--amber); }
+        @keyframes owlFloat { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-4px)} }
+
+        /* ── COVER ── */
+        .resource-cover {
+            margin: 24px 0 0;
+            border-radius: 14px;
+            overflow: hidden;
+            width: 100%;
+            aspect-ratio: 16/7;
+            background: var(--rojo-d);
+            border: 1px solid rgba(220,38,38,0.15);
+        }
+        .resource-cover svg { width: 100%; height: 100%; display: block; }
+
+        /* ── HEADER ── */
+        .resource-header { padding: 28px 0 28px; border-bottom: 1px solid var(--border); margin-bottom: 28px; }
+
+        .tag {
+            display: inline-flex; align-items: center; gap: 5px;
+            font-size: 10px; font-weight: 600; padding: 3px 10px;
+            border-radius: 100px; margin-bottom: 14px;
+        }
+        .tag .dot { width: 5px; height: 5px; border-radius: 50%; flex-shrink: 0; }
+        .tag.rojo  { background: var(--rojo-d); color: var(--rojo); } .tag.rojo .dot  { background: var(--rojo); }
+        .tag.verde { background: var(--verde-d); color: var(--verde); } .tag.verde .dot { background: var(--verde); }
+
+        .resource-title {
+            font-family: 'Playfair Display', Georgia, serif;
+            font-size: clamp(24px, 4vw, 34px);
+            font-weight: 700;
+            line-height: 1.2;
+            letter-spacing: -.3px;
+            margin-bottom: 12px;
+        }
+
+        .resource-meta {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 11px;
+            color: var(--faint);
+            display: flex;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+        .resource-meta span { display: flex; align-items: center; gap: 5px; }
+        .meta-dot { width: 3px; height: 3px; border-radius: 50%; background: var(--faint); }
+
+        /* ── LO QUE VAS A APRENDER ── */
+        .learn-box {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 20px 22px;
+            margin-bottom: 20px;
+        }
+        .learn-label {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 9px;
+            font-weight: 600;
+            color: var(--amber);
+            letter-spacing: 1.4px;
+            text-transform: uppercase;
+            margin-bottom: 12px;
+        }
+        .learn-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        .learn-list li {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            font-size: 13.5px;
+            color: var(--text);
+            line-height: 1.5;
+        }
+        .learn-dot {
+            width: 6px; height: 6px;
+            border-radius: 50%;
+            background: var(--rojo);
+            flex-shrink: 0;
+            margin-top: 7px;
+        }
+
+        /* ── TABLE OF CONTENTS ── */
+        .toc {
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 14px 18px;
+            margin-bottom: 44px;
+        }
+        .toc-label {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 9px;
+            color: var(--faint);
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            margin-bottom: 10px;
+        }
+        .toc-links { display: flex; flex-wrap: wrap; gap: 6px; }
+        .toc-links a {
+            font-size: 12px;
+            color: var(--muted);
+            text-decoration: none;
+            padding: 4px 10px;
+            border-radius: 6px;
+            border: 1px solid var(--border);
+            transition: border-color .15s, color .15s, background .15s;
+            white-space: nowrap;
+        }
+        .toc-links a:hover { border-color: var(--amber); color: var(--amber); background: var(--amber-dim); }
+
+        /* ── CONTENT SECTIONS ── */
+        .section { margin-bottom: 48px; scroll-margin-top: 32px; }
+
+        .section-num {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 10px;
+            color: var(--amber);
+            font-weight: 600;
+            letter-spacing: 1px;
+            margin-bottom: 8px;
+        }
+
+        .section h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: 21px;
+            font-weight: 700;
+            line-height: 1.3;
+            margin-bottom: 14px;
+            color: var(--text);
+        }
+
+        .section p { color: var(--text); margin-bottom: 12px; font-size: 14.5px; }
+        .section p:last-child { margin-bottom: 0; }
+
+        /* ── CALLOUT ── */
+        .callout {
+            border-left: 3px solid var(--amber);
+            background: var(--amber-dim);
+            border-radius: 0 8px 8px 0;
+            padding: 13px 16px;
+            margin: 18px 0;
+        }
+        .callout.rojo  { border-left-color: var(--rojo);  background: var(--rojo-d); }
+        .callout.verde { border-left-color: var(--verde); background: var(--verde-d); }
+        .callout.azul  { border-left-color: var(--azul);  background: var(--azul-d); }
+
+        .callout-label {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 9px;
+            font-weight: 600;
+            color: var(--amber);
+            letter-spacing: 1.2px;
+            text-transform: uppercase;
+            margin-bottom: 5px;
+        }
+        .callout.rojo  .callout-label { color: var(--rojo); }
+        .callout.verde .callout-label { color: var(--verde); }
+        .callout.azul  .callout-label { color: var(--azul); }
+        .callout p { font-size: 13.5px; color: var(--text); margin: 0; line-height: 1.6; }
+
+        /* ── STAT ROW ── */
+        .stat-row {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            margin: 18px 0;
+        }
+        .stat-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 14px 12px;
+            text-align: center;
+        }
+        .stat-num {
+            font-family: 'Playfair Display', serif;
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--rojo);
+            line-height: 1;
+            margin-bottom: 4px;
+        }
+        .stat-label {
+            font-size: 11px;
+            color: var(--muted);
+            line-height: 1.4;
+        }
+
+        /* ── COMPARISON TABLE ── */
+        .table-wrap { overflow-x: auto; margin: 18px 0; }
+        table { width: 100%; border-collapse: collapse; font-size: 13px; }
+        thead th {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 10px;
+            font-weight: 600;
+            letter-spacing: .8px;
+            text-transform: uppercase;
+            padding: 10px 14px;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            color: var(--muted);
+            text-align: left;
+        }
+        thead th:first-child { color: var(--rojo); border-top-left-radius: 8px; }
+        thead th:last-child  { color: var(--verde); border-top-right-radius: 8px; }
+        tbody td {
+            padding: 10px 14px;
+            border: 1px solid var(--border);
+            vertical-align: top;
+            line-height: 1.5;
+            color: var(--text);
+        }
+        tbody tr:last-child td:first-child { border-bottom-left-radius: 8px; }
+        tbody tr:last-child td:last-child  { border-bottom-right-radius: 8px; }
+        tbody tr:nth-child(even) td { background: var(--surface); }
+
+        /* ── CODE BLOCK ── */
+        .code-wrap { position: relative; margin: 18px 0; }
+        .code-label {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 9px;
+            color: var(--faint);
+            letter-spacing: 1.2px;
+            text-transform: uppercase;
+            margin-bottom: 6px;
+        }
+        pre {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 16px 18px;
+            overflow-x: auto;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 12px;
+            line-height: 1.7;
+            color: var(--text);
+            white-space: pre;
+        }
+        .copy-btn {
+            position: absolute;
+            top: 26px;
+            right: 10px;
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: 4px 10px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 9px;
+            color: var(--faint);
+            cursor: pointer;
+            transition: border-color .15s, color .15s;
+        }
+        .copy-btn:hover { border-color: var(--amber); color: var(--amber); }
+        .copy-btn.copied { color: var(--verde); border-color: var(--verde); }
+
+        /* ── CHECKLIST ── */
+        .checklist-section {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 22px 24px;
+            margin-bottom: 48px;
+        }
+        .checklist-title {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 10px;
+            color: var(--amber);
+            font-weight: 600;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            margin-bottom: 14px;
+        }
+        .checklist-items { list-style: none; display: flex; flex-direction: column; gap: 10px; }
+        .checklist-items li {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            font-size: 13px;
+            color: var(--text);
+            line-height: 1.5;
+            cursor: pointer;
+        }
+        .check-box {
+            width: 17px; height: 17px;
+            border: 1.5px solid var(--border);
+            border-radius: 4px;
+            flex-shrink: 0;
+            margin-top: 1px;
+            transition: border-color .15s, background .15s;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 10px;
+            color: white;
+        }
+        .checklist-items li.done .check-box { background: var(--verde); border-color: var(--verde); }
+        .checklist-items li.done .check-text { text-decoration: line-through; color: var(--muted); }
+
+        /* ── FOOTER NAV ── */
+        .resource-footer {
+            border-top: 1px solid var(--border);
+            padding: 28px 0 52px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+        .footer-back {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 12px;
+            color: var(--muted);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: color .15s;
+        }
+        .footer-back:hover { color: var(--amber); }
+        .footer-next {
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--amber);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: gap .15s;
+        }
+        .footer-next:hover { gap: 10px; }
+
+        /* ── RESPONSIVE ── */
+        @media (max-width: 600px) {
+            .wrap { padding: 0 16px; }
+            .resource-title { font-size: 22px; }
+            .toc-links { gap: 4px; }
+            .stat-row { grid-template-columns: repeat(3, 1fr); gap: 8px; }
+            .stat-num { font-size: 22px; }
+        }
+    </style>
+</head>
+<body>
+<div class="wrap">
+
+    <!-- NAV BREADCRUMB -->
+    <nav class="top-nav">
+        <a href="../index.html">alex.decode</a>
+        <span class="sep">/</span>
+        <span>Biblioteca</span>
+        <span class="sep">/</span>
+        <span>Nivel 0</span>
+        <span class="sep">/</span>
+        <span>La IA no te va a quitar el trabajo</span>
+        <a href="../index.html" class="nav-owl" aria-label="Volver a la biblioteca">
+            <svg width="28" height="32" viewBox="0 0 140 160" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <polygon points="44,32 36,6 52,26" fill="#92400E"/>
+                <polygon points="96,32 104,6 88,26" fill="#92400E"/>
+                <circle cx="70" cy="56" r="38" fill="#B45309"/>
+                <ellipse cx="70" cy="58" rx="26" ry="24" fill="#D97706" opacity="0.28"/>
+                <circle cx="56" cy="52" r="13" fill="#FEF3C7"/>
+                <circle cx="84" cy="52" r="13" fill="#FEF3C7"/>
+                <circle cx="56" cy="52" r="6.5" fill="#1C1917"/>
+                <circle cx="84" cy="52" r="6.5" fill="#1C1917"/>
+                <circle cx="59" cy="49" r="2.2" fill="white"/>
+                <circle cx="87" cy="49" r="2.2" fill="white"/>
+                <polygon points="63,64 77,64 70,75" fill="#D97706"/>
+                <ellipse cx="70" cy="120" rx="34" ry="36" fill="#B45309"/>
+                <ellipse cx="70" cy="126" rx="20" ry="24" fill="#D97706" opacity="0.22"/>
+            </svg>
+        </a>
+    </nav>
+
+    <!-- PORTADA VISUAL -->
+    <div class="resource-cover">
+        <svg viewBox="0 0 800 350" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice">
+            <!-- fondo -->
+            <rect width="800" height="350" fill="#FEF2F2"/>
+
+            <!-- línea divisoria central -->
+            <line x1="400" y1="30" x2="400" y2="320" stroke="#FECACA" stroke-width="1.5" stroke-dasharray="6,4"/>
+
+            <!-- lado izquierdo — sin IA -->
+            <text x="200" y="68" font-family="JetBrains Mono, monospace" font-size="11" fill="#B0A89E" text-anchor="middle" letter-spacing="2">SIN IA</text>
+
+            <!-- reloj — tarea lenta -->
+            <circle cx="200" cy="155" r="48" fill="white" stroke="#FECACA" stroke-width="2"/>
+            <line x1="200" y1="155" x2="200" y2="122" stroke="#DC2626" stroke-width="2.5" stroke-linecap="round"/>
+            <line x1="200" y1="155" x2="226" y2="168" stroke="#DC2626" stroke-width="2" stroke-linecap="round"/>
+            <circle cx="200" cy="155" r="3" fill="#DC2626"/>
+            <!-- marcas reloj -->
+            <line x1="200" y1="111" x2="200" y2="117" stroke="#FECACA" stroke-width="2"/>
+            <line x1="200" y1="193" x2="200" y2="199" stroke="#FECACA" stroke-width="2"/>
+            <line x1="162" y1="155" x2="168" y2="155" stroke="#FECACA" stroke-width="2"/>
+            <line x1="232" y1="155" x2="238" y2="155" stroke="#FECACA" stroke-width="2"/>
+
+            <text x="200" y="232" font-family="Inter, sans-serif" font-size="13" fill="#78716C" text-anchor="middle">4 horas</text>
+            <text x="200" y="252" font-family="Inter, sans-serif" font-size="12" fill="#B0A89E" text-anchor="middle">para la misma tarea</text>
+
+            <!-- barra de progreso lenta -->
+            <rect x="130" y="272" width="140" height="6" rx="3" fill="#FEE2E2"/>
+            <rect x="130" y="272" width="42" height="6" rx="3" fill="#DC2626" opacity="0.5"/>
+
+            <!-- lado derecho — con IA -->
+            <text x="600" y="68" font-family="JetBrains Mono, monospace" font-size="11" fill="#B0A89E" text-anchor="middle" letter-spacing="2">CON IA</text>
+
+            <!-- rayo — velocidad -->
+            <polygon points="610,108 588,168 602,168 590,208 624,140 608,140 622,108" fill="#059669" opacity="0.15"/>
+            <polygon points="608,112 588,168 600,168 589,204 620,142 606,142 618,112" fill="#059669" opacity="0.8"/>
+
+            <text x="600" y="232" font-family="Inter, sans-serif" font-size="13" fill="#78716C" text-anchor="middle">45 min</text>
+            <text x="600" y="252" font-family="Inter, sans-serif" font-size="12" fill="#B0A89E" text-anchor="middle">para la misma tarea</text>
+
+            <!-- barra de progreso rápida -->
+            <rect x="530" y="272" width="140" height="6" rx="3" fill="#D1FAE5"/>
+            <rect x="530" y="272" width="133" height="6" rx="3" fill="#059669" opacity="0.7"/>
+
+            <!-- etiqueta central -->
+            <rect x="312" y="290" width="176" height="28" rx="6" fill="white" stroke="#E8E2D9" stroke-width="1"/>
+            <text x="400" y="309" font-family="JetBrains Mono, monospace" font-size="10" fill="#B45309" text-anchor="middle" letter-spacing="0.5">misma persona · misma tarea</text>
+        </svg>
+    </div>
+
+    <!-- HEADER -->
+    <header class="resource-header">
+        <div class="tag rojo"><span class="dot"></span>Mitos</div>
+        <h1 class="resource-title">La IA no te va a quitar el trabajo. Pero esta persona sí.</h1>
+        <div class="resource-meta">
+            <span>5 min de lectura</span>
+            <span class="meta-dot"></span>
+            <span>Nivel 0 — Punto de partida</span>
+            <span class="meta-dot"></span>
+            <span>Verano 2026</span>
+        </div>
+    </header>
+
+    <!-- LO QUE VAS A APRENDER -->
+    <div class="learn-box">
+        <div class="learn-label">Lo que vas a aprender</div>
+        <ul class="learn-list">
+            <li><span class="learn-dot"></span>Por qué el debate "IA vs empleos" está mal planteado desde el principio</li>
+            <li><span class="learn-dot"></span>Quién tiene ventaja real en el mercado de 2026, con números — no opinión</li>
+            <li><span class="learn-dot"></span>La secuencia que casi todo el mundo intenta al revés</li>
+            <li><span class="learn-dot"></span>Tu punto de entrada, sin curso previo ni espera</li>
+        </ul>
+    </div>
+
+    <!-- TABLE OF CONTENTS -->
+    <nav class="toc" aria-label="Contenido">
+        <div class="toc-label">En este recurso</div>
+        <div class="toc-links">
+            <a href="#s01">01 El mito</a>
+            <a href="#s02">02 Los números</a>
+            <a href="#s03">03 La ventana</a>
+            <a href="#s04">04 Qué hacer ahora</a>
+            <a href="#s05">05 La pregunta</a>
+            <a href="#checklist">Checklist</a>
+        </div>
+    </nav>
+
+    <!-- ── SECCIÓN 01 ── -->
+    <section class="section" id="s01">
+        <div class="section-num">01</div>
+        <h2>El mito que todos repiten (y por qué está mal planteado)</h2>
+
+        <p>Llevas meses preocupándote por lo que no tienes que preocuparte.</p>
+
+        <p>El miedo está apuntando al sitio equivocado. La IA no decide a quién reemplaza. Lo decide la persona que hay al otro lado del mercado — la que ya usa IA para hacer en 20 minutos lo que tú tardas 2 horas.</p>
+
+        <div class="callout">
+            <div class="callout-label">El reencuadre</div>
+            <p>La IA no te va a quitar el trabajo. Te lo va a quitar alguien que usa IA mejor que tú — y que cobra exactamente lo mismo que tú.</p>
+        </div>
+
+        <p>La pregunta correcta no es "¿me reemplazará la IA?" — es "¿hay alguien en mi sector que ya hace esto más rápido que yo?"</p>
+    </section>
+
+    <!-- ── SECCIÓN 02 ── -->
+    <section class="section" id="s02">
+        <div class="section-num">02</div>
+        <h2>Los números reales — qué cambia cuando alguien usa IA</h2>
+
+        <div class="stat-row">
+            <div class="stat-card">
+                <div class="stat-num">+40%</div>
+                <div class="stat-label">calidad de trabajo evaluada por terceros · BCG 2023</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-num">+25%</div>
+                <div class="stat-label">más tareas completadas en el mismo tiempo · BCG 2023</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-num">55%</div>
+                <div class="stat-label">más rápido en tareas de código · GitHub Copilot Study</div>
+            </div>
+        </div>
+
+        <p>No es un sondeo de opinión. Son mediciones con trabajadores reales, tareas reales, evaluadores externos que no sabían quién usaba IA y quién no.</p>
+
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr><th>Sin IA</th><th>Con IA</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td>Redactar un email importante: 20–30 min</td><td>Revisar y ajustar un borrador: 3–5 min</td></tr>
+                    <tr><td>Sintetizar un informe de 20 páginas: 2 h</td><td>Extraer puntos clave con contexto: 8 min</td></tr>
+                    <tr><td>Preparar una presentación desde cero: 4 h</td><td>Estructura + primer borrador: 45 min</td></tr>
+                    <tr><td>Aprender algo nuevo para un cliente: 3–4 h</td><td>Entender el contexto base: 20 min</td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- ANCLA DE RETENCIÓN — caso real cotidiano -->
+        <div class="callout verde">
+            <div class="callout-label">Caso real</div>
+            <p>Llevaba meses yendo al gimnasio y siempre pillaba las máquinas ocupadas. Usé Claude para construir un script sencillo que registraba mis observaciones de afluencia y me recomendaba el orden de ejercicios según disponibilidad. Me costó 40 minutos hacerlo — sin saber programar. Recuperé entre 15 y 20 minutos por sesión. En un mes de 4 días a la semana: más de 5 horas devueltas. Por resolver un problema del día a día, no del trabajo.</p>
+        </div>
+    </section>
+
+    <!-- ── SECCIÓN 03 ── -->
+    <section class="section" id="s03">
+        <div class="section-num">03</div>
+        <h2>La ventana — y por qué se está cerrando</h2>
+
+        <p>Solo el 8% de las empresas europeas usa IA de forma activa en alguna función (Eurostat, 2024). Entre personas individuales, el uso regular es aún menor. Eso significa que la ventana sigue abierta — pero no indefinidamente.</p>
+
+        <p>Cuando el uso sea estándar, la ventaja desaparece. Lo que queda es quien llegó con meses de práctica acumulada y quien llegó sin ella.</p>
+
+        <div class="code-wrap">
+            <div class="code-label">La secuencia que nadie te cuenta</div>
+            <pre id="code-01">❌  Lo que la mayoría intenta:
+    Monetizar → Aprender → Aplicar
+
+✅  Lo que funciona:
+    Aplicar → Dominar → Monetizar</pre>
+            <button class="copy-btn" onclick="copyCode('code-01', this)">copiar</button>
+        </div>
+
+        <div class="callout rojo">
+            <div class="callout-label">Por qué falla la secuencia incorrecta</div>
+            <p>Querer monetizar IA antes de usarla en problemas propios es construir sobre vacío. El criterio real viene de la práctica, no de los cursos. Sin haber resuelto nada con IA, no hay nada que enseñar ni vender.</p>
+        </div>
+    </section>
+
+    <!-- ── SECCIÓN 04 ── -->
+    <section class="section" id="s04">
+        <div class="section-num">04</div>
+        <h2>Qué hacer ahora mismo — antes de cerrar esta página</h2>
+
+        <p>Escribe una sola cosa: <strong>una tarea que repites más de 3 veces a la semana.</strong> Un tipo de email. Una búsqueda recurrente. Un resumen que produces siempre igual.</p>
+
+        <p>Esa tarea es tu punto de entrada. No existe la tarea perfecta para empezar — existe la que tienes delante.</p>
+
+        <div class="callout">
+            <div class="callout-label">Aviso</div>
+            <p>No hace falta ningún curso antes. El aprendizaje ocurre mientras usas, no en la preparación. Cada hora de "preparación" sin práctica es tiempo que no produce criterio real.</p>
+        </div>
+    </section>
+
+    <!-- ── SECCIÓN 05 ── -->
+    <section class="section" id="s05">
+        <div class="section-num">05</div>
+        <h2>La pregunta que tienes que hacerte</h2>
+
+        <p>¿Cuántas de las tareas que hiciste esta semana vas a seguir haciendo exactamente igual la semana que viene?</p>
+
+        <p>Si la respuesta es "la mayoría" — ahí está tu ventana. El miedo a la IA solo tiene sentido si decides no usarla. Si la usas, el miedo se convierte en ventaja acumulada frente a quien todavía está esperando el momento perfecto para empezar.</p>
+
+        <p>Ese momento no existe.</p>
+    </section>
+
+    <!-- ── CHECKLIST FINAL ── -->
+    <div class="checklist-section" id="checklist">
+        <div class="checklist-title">Ya lo sé — compruébalo</div>
+        <ul class="checklist-items" id="checklistItems">
+            <li onclick="toggleCheck(this)"><span class="check-box"></span><span class="check-text">Sé que el problema no es la IA — es la persona de mi sector que ya la usa mientras yo leo esto</span></li>
+            <li onclick="toggleCheck(this)"><span class="check-box"></span><span class="check-text">He visto los números y ya no puedo fingir que esto es teoría</span></li>
+            <li onclick="toggleCheck(this)"><span class="check-box"></span><span class="check-text">Entiendo la secuencia correcta: Aplicar → Dominar → Monetizar (no al revés como casi todos)</span></li>
+            <li onclick="toggleCheck(this)"><span class="check-box"></span><span class="check-text">Tengo una tarea escrita — o estoy mintiendo a una lista de HTML</span></li>
+            <li onclick="toggleCheck(this)"><span class="check-box"></span><span class="check-text">Me he hecho la pregunta del punto 05. Y la respuesta me ha incomodado un poco</span></li>
+        </ul>
+    </div>
+
+    <!-- FOOTER NAV -->
+    <footer class="resource-footer">
+        <a href="../index.html" class="footer-back">
+            <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+            Volver a la biblioteca
+        </a>
+        <a href="0-2.html" class="footer-next">
+            Siguiente recurso
+            <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </a>
+    </footer>
+
+</div>
+
+<script>
+function copyCode(id, btn) {
+    const text = document.getElementById(id).textContent;
+    navigator.clipboard.writeText(text).then(() => {
+        btn.textContent = 'copiado';
+        btn.classList.add('copied');
+        setTimeout(() => { btn.textContent = 'copiar'; btn.classList.remove('copied'); }, 2000);
+    });
+}
+
+function toggleCheck(li) {
+    li.classList.toggle('done');
+    li.querySelector('.check-box').textContent = li.classList.contains('done') ? '✓' : '';
+    const items = document.querySelectorAll('#checklistItems li');
+    if ([...items].every(i => i.classList.contains('done'))) launchConfetti();
+}
+
+function launchConfetti() {
+    const canvas = document.getElementById('confettiCanvas');
+    if (!canvas) return;
+    canvas.style.display = 'block';
+    const ctx = canvas.getContext('2d');
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+    const colors = ['#B45309','#D97706','#FDE68A','#059669','#7C3AED','#2563EB','#F59E0B','#10B981','#EF4444'];
+    const pieces = Array.from({length: 140}, () => ({
+        x: Math.random() * canvas.width,
+        y: -10 - Math.random() * canvas.height * 0.6,
+        w: Math.random() * 11 + 5,
+        h: Math.random() * 6 + 3,
+        color: colors[Math.floor(Math.random() * colors.length)],
+        vx: (Math.random() - 0.5) * 4,
+        vy: Math.random() * 3 + 1.5,
+        rot: Math.random() * 360,
+        vrot: (Math.random() - 0.5) * 10,
+        alpha: 1,
+        shape: Math.random() > 0.5 ? 'rect' : 'circle'
+    }));
+    let frame = 0;
+    (function animate() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        pieces.forEach(p => {
+            p.x += p.vx;
+            p.y += p.vy;
+            p.rot += p.vrot;
+            p.vy += 0.06;
+            if (frame > 90) p.alpha = Math.max(0, p.alpha - 0.012);
+            ctx.save();
+            ctx.globalAlpha = p.alpha;
+            ctx.translate(p.x + p.w / 2, p.y + p.h / 2);
+            ctx.rotate(p.rot * Math.PI / 180);
+            ctx.fillStyle = p.color;
+            if (p.shape === 'circle') {
+                ctx.beginPath();
+                ctx.arc(0, 0, p.w / 2, 0, Math.PI * 2);
+                ctx.fill();
+            } else {
+                ctx.fillRect(-p.w / 2, -p.h / 2, p.w, p.h);
+            }
+            ctx.restore();
+        });
+        frame++;
+        if (frame < 170) requestAnimationFrame(animate);
+        else canvas.style.display = 'none';
+    })();
+}
+</script>
+
+<canvas id="confettiCanvas" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:9999;"></canvas>
+</body>
+</html>

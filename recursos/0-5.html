@@ -1,0 +1,971 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>30 días construyendo con IA. Esto es lo que aprendí. — alex.decode</title>
+    <link rel="icon" type="image/svg+xml" href="../favicon.svg">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        :root {
+            --bg:        #FAFAF7;
+            --surface:   #FFFFFF;
+            --border:    #E8E2D9;
+            --text:      #1C1917;
+            --muted:     #78716C;
+            --faint:     #B0A89E;
+            --amber:     #B45309;
+            --amber-mid: #D97706;
+            --amber-dim: rgba(180,83,9,0.07);
+            --rojo:  #DC2626; --rojo-d:  rgba(220,38,38,0.07);
+            --amar:  #D97706; --amar-d:  rgba(217,119,6,0.07);
+            --azul:  #2563EB; --azul-d:  rgba(37,99,235,0.07);
+            --verde: #059669; --verde-d: rgba(5,150,105,0.07);
+            --morad: #7C3AED; --morad-d: rgba(124,58,237,0.07);
+        }
+
+        html { scroll-behavior: smooth; }
+        body {
+            background: var(--bg);
+            color: var(--text);
+            font-family: 'Inter', system-ui, sans-serif;
+            font-size: 15px;
+            line-height: 1.7;
+            min-height: 100vh;
+        }
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0; left: 0; right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, #D97706 0%, var(--amber) 50%, #D97706 100%);
+            z-index: 100;
+        }
+
+        .wrap { max-width: 720px; margin: 0 auto; padding: 0 24px; }
+
+        /* ── NAV ── */
+        .top-nav {
+            padding: 28px 0 0;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 11px;
+            color: var(--faint);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
+        .top-nav a { color: var(--amber); text-decoration: none; transition: opacity .15s; }
+        .top-nav a:hover { opacity: .7; }
+        .top-nav .sep { color: var(--faint); }
+        .nav-owl {
+            margin-left: auto;
+            display: flex;
+            align-items: center;
+            text-decoration: none;
+            transition: opacity .15s;
+            animation: owlFloat 5s ease-in-out 1s infinite;
+        }
+        .nav-owl:hover { opacity: .7; }
+        @keyframes owlFloat { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-4px)} }
+
+        /* ── COVER ── */
+        .resource-cover {
+            margin: 24px 0 0;
+            border-radius: 14px;
+            overflow: hidden;
+            width: 100%;
+            aspect-ratio: 16/7;
+            background: var(--morad-d);
+            border: 1px solid rgba(124,58,237,0.18);
+        }
+        .resource-cover svg { width: 100%; height: 100%; display: block; }
+
+        /* ── HEADER ── */
+        .resource-header { padding: 28px 0 28px; border-bottom: 1px solid var(--border); margin-bottom: 24px; }
+
+        .tag {
+            display: inline-flex; align-items: center; gap: 5px;
+            font-size: 10px; font-weight: 600; padding: 3px 10px;
+            border-radius: 100px; margin-bottom: 14px;
+        }
+        .tag .dot { width: 5px; height: 5px; border-radius: 50%; flex-shrink: 0; }
+        .tag.morad { background: var(--morad-d); color: var(--morad); }
+        .tag.morad .dot { background: var(--morad); }
+
+        .resource-title {
+            font-family: 'Playfair Display', Georgia, serif;
+            font-size: clamp(24px, 4vw, 34px);
+            font-weight: 700;
+            line-height: 1.2;
+            letter-spacing: -.3px;
+            margin-bottom: 12px;
+        }
+        .resource-meta {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 11px;
+            color: var(--faint);
+            display: flex;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+        .resource-meta span { display: flex; align-items: center; gap: 5px; }
+        .meta-dot { width: 3px; height: 3px; border-radius: 50%; background: var(--faint); }
+
+        /* ── LEARN BOX ── */
+        .learn-box {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 20px 22px;
+            margin-bottom: 16px;
+        }
+        .learn-label {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 9px;
+            font-weight: 600;
+            color: var(--morad);
+            letter-spacing: 1.4px;
+            text-transform: uppercase;
+            margin-bottom: 12px;
+        }
+        .learn-list { list-style: none; display: flex; flex-direction: column; gap: 8px; }
+        .learn-list li {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            font-size: 13.5px;
+            color: var(--text);
+            line-height: 1.5;
+        }
+        .learn-dot {
+            width: 6px; height: 6px;
+            border-radius: 50%;
+            background: var(--morad);
+            flex-shrink: 0;
+            margin-top: 7px;
+        }
+
+        /* ── PREREQ BOX ── */
+        .prereq-box {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            background: var(--azul-d);
+            border: 1px solid rgba(37,99,235,0.18);
+            border-radius: 10px;
+            padding: 14px 18px;
+            margin-bottom: 20px;
+        }
+        .prereq-icon { font-family: 'JetBrains Mono', monospace; font-size: 13px; color: var(--azul); flex-shrink: 0; margin-top: 1px; }
+        .prereq-text { font-size: 13px; color: var(--text); line-height: 1.55; }
+        .prereq-text a { color: var(--azul); text-decoration: underline; text-decoration-color: rgba(37,99,235,0.35); text-underline-offset: 2px; }
+        .prereq-text a:hover { text-decoration-color: var(--azul); }
+
+        /* ── TOC ── */
+        .toc {
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 14px 18px;
+            margin-bottom: 44px;
+        }
+        .toc-label {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 9px;
+            color: var(--faint);
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            margin-bottom: 10px;
+        }
+        .toc-links { display: flex; flex-wrap: wrap; gap: 6px; }
+        .toc-links a {
+            font-size: 12px;
+            color: var(--muted);
+            text-decoration: none;
+            padding: 4px 10px;
+            border-radius: 6px;
+            border: 1px solid var(--border);
+            transition: border-color .15s, color .15s, background .15s;
+            white-space: nowrap;
+        }
+        .toc-links a:hover { border-color: var(--morad); color: var(--morad); background: var(--morad-d); }
+
+        /* ── SECTIONS ── */
+        .section { margin-bottom: 48px; scroll-margin-top: 32px; }
+        .section-num {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 10px;
+            color: var(--amber);
+            font-weight: 600;
+            letter-spacing: 1px;
+            margin-bottom: 8px;
+        }
+        .section h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: 21px;
+            font-weight: 700;
+            line-height: 1.3;
+            margin-bottom: 14px;
+        }
+        .section p { color: var(--text); margin-bottom: 12px; font-size: 14.5px; }
+        .section p:last-child { margin-bottom: 0; }
+        .section a { color: var(--amber); text-underline-offset: 2px; }
+
+        /* ── CALLOUT ── */
+        .callout {
+            border-left: 3px solid var(--amber);
+            background: var(--amber-dim);
+            border-radius: 0 8px 8px 0;
+            padding: 13px 16px;
+            margin: 18px 0;
+        }
+        .callout.morad { border-left-color: var(--morad); background: var(--morad-d); }
+        .callout.verde { border-left-color: var(--verde); background: var(--verde-d); }
+        .callout-label {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 9px;
+            font-weight: 600;
+            color: var(--amber);
+            letter-spacing: 1.2px;
+            text-transform: uppercase;
+            margin-bottom: 5px;
+        }
+        .callout.morad .callout-label { color: var(--morad); }
+        .callout.verde .callout-label { color: var(--verde); }
+        .callout p { font-size: 13.5px; color: var(--text); margin: 0; line-height: 1.6; }
+
+        /* ── CASE STATS ── */
+        .case-stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            margin: 20px 0;
+        }
+        .case-stat {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 18px 14px;
+            text-align: center;
+        }
+        .stat-num {
+            font-family: 'Playfair Display', serif;
+            font-size: 30px;
+            font-weight: 700;
+            color: var(--morad);
+            line-height: 1;
+            margin-bottom: 8px;
+        }
+        .stat-label {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 9px;
+            color: var(--faint);
+            letter-spacing: .8px;
+            text-transform: uppercase;
+            line-height: 1.5;
+        }
+
+        /* ── INSIGHT BOX ── */
+        .insight-box {
+            background: var(--morad-d);
+            border: 1.5px solid rgba(124,58,237,0.25);
+            border-radius: 12px;
+            padding: 22px 24px;
+            margin: 24px 0;
+        }
+        .insight-label {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 9px;
+            font-weight: 600;
+            color: var(--morad);
+            letter-spacing: 1.4px;
+            text-transform: uppercase;
+            margin-bottom: 12px;
+        }
+        .insight-text {
+            font-family: 'Playfair Display', serif;
+            font-size: 19px;
+            font-weight: 700;
+            line-height: 1.35;
+            color: var(--text);
+            margin-bottom: 12px;
+        }
+        .insight-sub { font-size: 13.5px; color: var(--muted); line-height: 1.6; margin: 0; }
+
+        /* ── BEFORE/AFTER VISUAL ── */
+        .before-after-visual, .arc-visual, .kg-visual {
+            margin: 20px 0;
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid rgba(124,58,237,0.15);
+        }
+        .before-after-visual svg, .arc-visual svg, .kg-visual svg { width: 100%; display: block; }
+
+        /* ── AUTHORITY REF ── */
+        .authority-ref {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-left: 3px solid var(--morad);
+            border-radius: 0 10px 10px 0;
+            padding: 16px 20px;
+            margin: 16px 0;
+        }
+        .auth-meta {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 9px;
+            flex-wrap: wrap;
+        }
+        .auth-name {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--morad);
+        }
+        .auth-sep { color: var(--faint); font-size: 11px; }
+        .auth-role {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 10px;
+            color: var(--faint);
+        }
+        .auth-quote {
+            font-size: 13.5px;
+            color: var(--text);
+            line-height: 1.6;
+            font-style: italic;
+            margin-bottom: 10px;
+        }
+        .auth-link {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 10px;
+            color: var(--morad);
+            text-decoration: none;
+            letter-spacing: .3px;
+            transition: opacity .15s;
+        }
+        .auth-link:hover { opacity: .7; }
+
+        /* ── ACTION STEPS ── */
+        .action-steps {
+            background: var(--verde-d);
+            border: 1px solid rgba(5,150,105,0.2);
+            border-radius: 12px;
+            padding: 20px 22px;
+            margin: 18px 0;
+        }
+        .action-steps-label {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 9px;
+            font-weight: 600;
+            color: var(--verde);
+            letter-spacing: 1.4px;
+            text-transform: uppercase;
+            margin-bottom: 14px;
+        }
+        .action-step { display: flex; gap: 12px; margin-bottom: 10px; align-items: flex-start; }
+        .action-step:last-child { margin-bottom: 0; }
+        .step-num {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--verde);
+            flex-shrink: 0;
+            margin-top: 3px;
+        }
+        .step-text { font-size: 13.5px; color: var(--text); line-height: 1.55; }
+
+        /* ── CHECKLIST ── */
+        .checklist-section {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 24px;
+            margin: 44px 0 0;
+        }
+        .checklist-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 17px;
+            font-weight: 700;
+            margin-bottom: 16px;
+            color: var(--text);
+        }
+        .checklist-items { list-style: none; display: flex; flex-direction: column; gap: 10px; }
+        .checklist-items li {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            font-size: 13.5px;
+            color: var(--text);
+            cursor: pointer;
+            padding: 4px 0;
+            transition: color .15s;
+            line-height: 1.5;
+            user-select: none;
+        }
+        .checklist-items li.done { color: var(--muted); text-decoration: line-through; }
+        .check-box {
+            width: 16px; height: 16px;
+            border: 1.5px solid var(--border);
+            border-radius: 4px;
+            flex-shrink: 0;
+            margin-top: 2px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 10px; color: var(--amber);
+            transition: border-color .15s, background .15s;
+        }
+        .checklist-items li.done .check-box { background: var(--amber-dim); border-color: var(--amber); }
+
+        /* ── FOOTER ── */
+        .resource-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 28px 0 48px;
+            border-top: 1px solid var(--border);
+            margin-top: 32px;
+        }
+        .footer-back, .footer-next {
+            font-size: 12px;
+            font-family: 'JetBrains Mono', monospace;
+            color: var(--muted);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: color .15s;
+        }
+        .footer-back:hover, .footer-next:hover { color: var(--amber); }
+
+        @media (max-width: 600px) {
+            .wrap { padding: 0 16px; }
+            .case-stats { grid-template-columns: repeat(2, 1fr); }
+        }
+        @media (prefers-reduced-motion: reduce) {
+            * { transition-duration: 0.01ms !important; }
+            .nav-owl { animation: none; }
+        }
+    </style>
+</head>
+<body>
+<div class="wrap">
+
+    <!-- NAV -->
+    <nav class="top-nav">
+        <a href="../index.html">Biblioteca</a>
+        <span class="sep">/</span>
+        <span>Nivel 0</span>
+        <span class="sep">/</span>
+        <span>0.5</span>
+        <a href="../index.html" class="nav-owl" aria-label="Inicio">
+            <svg width="28" height="32" viewBox="0 0 140 160" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <polygon points="44,32 36,6 52,26" fill="#92400E"/>
+                <polygon points="96,32 104,6 88,26" fill="#92400E"/>
+                <circle cx="70" cy="56" r="38" fill="#B45309"/>
+                <ellipse cx="70" cy="58" rx="26" ry="24" fill="#D97706" opacity="0.28"/>
+                <circle cx="56" cy="52" r="13" fill="#FEF3C7"/>
+                <circle cx="84" cy="52" r="13" fill="#FEF3C7"/>
+                <circle cx="56" cy="52" r="6.5" fill="#1C1917"/>
+                <circle cx="84" cy="52" r="6.5" fill="#1C1917"/>
+                <circle cx="59" cy="49" r="2.2" fill="white"/>
+                <circle cx="87" cy="49" r="2.2" fill="white"/>
+                <polygon points="63,64 77,64 70,75" fill="#D97706"/>
+                <ellipse cx="70" cy="120" rx="34" ry="36" fill="#B45309"/>
+                <ellipse cx="70" cy="126" rx="20" ry="24" fill="#D97706" opacity="0.22"/>
+            </svg>
+        </a>
+    </nav>
+
+    <!-- COVER -->
+    <div class="resource-cover">
+        <svg viewBox="0 0 720 315" xmlns="http://www.w3.org/2000/svg">
+            <rect width="720" height="315" fill="#F5F3FF"/>
+
+            <!-- Label -->
+            <text x="36" y="44" font-family="JetBrains Mono, monospace" font-size="9" fill="#7C3AED" letter-spacing="2" opacity="0.7">CASO REAL — NIVEL 0</text>
+
+            <!-- Arc: 5 nodes -->
+            <!-- Node 0.1 -->
+            <circle cx="80" cy="158" r="24" fill="white" stroke="#DDD6FE" stroke-width="1.5"/>
+            <text x="80" y="153" font-family="JetBrains Mono, monospace" font-size="8.5" fill="#7C3AED" text-anchor="middle" font-weight="600">0.1</text>
+            <text x="80" y="166" font-family="Inter, sans-serif" font-size="7.5" fill="#A78BFA" text-anchor="middle">mito</text>
+
+            <line x1="105" y1="158" x2="141" y2="158" stroke="#DDD6FE" stroke-width="1.5" stroke-dasharray="3,2"/>
+
+            <!-- Node 0.2 -->
+            <circle cx="166" cy="158" r="24" fill="white" stroke="#DDD6FE" stroke-width="1.5"/>
+            <text x="166" y="153" font-family="JetBrains Mono, monospace" font-size="8.5" fill="#7C3AED" text-anchor="middle" font-weight="600">0.2</text>
+            <text x="166" y="166" font-family="Inter, sans-serif" font-size="7.5" fill="#A78BFA" text-anchor="middle">concepto</text>
+
+            <line x1="191" y1="158" x2="227" y2="158" stroke="#DDD6FE" stroke-width="1.5" stroke-dasharray="3,2"/>
+
+            <!-- Node 0.3 -->
+            <circle cx="252" cy="158" r="24" fill="white" stroke="#DDD6FE" stroke-width="1.5"/>
+            <text x="252" y="153" font-family="JetBrains Mono, monospace" font-size="8.5" fill="#7C3AED" text-anchor="middle" font-weight="600">0.3</text>
+            <text x="252" y="166" font-family="Inter, sans-serif" font-size="7.5" fill="#A78BFA" text-anchor="middle">herramienta</text>
+
+            <line x1="277" y1="158" x2="313" y2="158" stroke="#DDD6FE" stroke-width="1.5" stroke-dasharray="3,2"/>
+
+            <!-- Node 0.4 -->
+            <circle cx="338" cy="158" r="24" fill="white" stroke="#DDD6FE" stroke-width="1.5"/>
+            <text x="338" y="153" font-family="JetBrains Mono, monospace" font-size="8.5" fill="#7C3AED" text-anchor="middle" font-weight="600">0.4</text>
+            <text x="338" y="166" font-family="Inter, sans-serif" font-size="7.5" fill="#A78BFA" text-anchor="middle">acción</text>
+
+            <line x1="363" y1="158" x2="397" y2="158" stroke="#7C3AED" stroke-width="2"/>
+
+            <!-- Node 0.5 — highlighted -->
+            <circle cx="424" cy="158" r="28" fill="#7C3AED"/>
+            <text x="424" y="153" font-family="JetBrains Mono, monospace" font-size="8.5" fill="white" text-anchor="middle" font-weight="600">0.5</text>
+            <text x="424" y="166" font-family="Inter, sans-serif" font-size="7.5" fill="rgba(255,255,255,0.85)" text-anchor="middle">caso real</text>
+
+            <!-- Arrow -->
+            <defs>
+                <marker id="arr" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+                    <path d="M0,0 L0,6 L8,3 z" fill="#7C3AED"/>
+                </marker>
+            </defs>
+            <line x1="454" y1="158" x2="502" y2="158" stroke="#7C3AED" stroke-width="2" marker-end="url(#arr)"/>
+
+            <!-- Result box -->
+            <rect x="510" y="128" width="182" height="60" rx="10" fill="#7C3AED"/>
+            <text x="601" y="153" font-family="Playfair Display, serif" font-size="13" fill="white" text-anchor="middle" font-weight="700">la biblioteca</text>
+            <text x="601" y="171" font-family="Inter, sans-serif" font-size="10" fill="rgba(255,255,255,0.72)" text-anchor="middle">30 días · 2h/día · real</text>
+
+            <!-- Sub-labels -->
+            <text x="80" y="202" font-family="JetBrains Mono, monospace" font-size="7.5" fill="#C4B5FD" text-anchor="middle">paradigma</text>
+            <text x="166" y="202" font-family="JetBrains Mono, monospace" font-size="7.5" fill="#C4B5FD" text-anchor="middle">colaboración</text>
+            <text x="252" y="202" font-family="JetBrains Mono, monospace" font-size="7.5" fill="#C4B5FD" text-anchor="middle">herramienta</text>
+            <text x="338" y="202" font-family="JetBrains Mono, monospace" font-size="7.5" fill="#C4B5FD" text-anchor="middle">método</text>
+            <text x="424" y="207" font-family="JetBrains Mono, monospace" font-size="7.5" fill="#7C3AED" text-anchor="middle">ejecución</text>
+
+            <!-- Central quote -->
+            <text x="360" y="262" font-family="Playfair Display, serif" font-size="14" fill="#6D28D9" text-anchor="middle" font-style="italic">No se aprende para construir. Se construye para aprender.</text>
+
+            <!-- Decorative -->
+            <circle cx="56" cy="290" r="3" fill="#DDD6FE"/>
+            <circle cx="70" cy="290" r="3" fill="#DDD6FE" opacity="0.45"/>
+            <circle cx="84" cy="290" r="3" fill="#DDD6FE" opacity="0.2"/>
+            <circle cx="650" cy="290" r="3" fill="#DDD6FE" opacity="0.2"/>
+            <circle cx="664" cy="290" r="3" fill="#DDD6FE" opacity="0.45"/>
+            <circle cx="678" cy="290" r="3" fill="#DDD6FE"/>
+        </svg>
+    </div>
+
+    <!-- HEADER -->
+    <header class="resource-header">
+        <div class="tag morad"><span class="dot"></span>Casos reales</div>
+        <h1 class="resource-title">30 días construyendo con IA.<br>Esto es lo que aprendí.</h1>
+        <div class="resource-meta">
+            <span>Nivel 0</span>
+            <span class="meta-dot"></span>
+            <span>0.5</span>
+            <span class="meta-dot"></span>
+            <span>9 min</span>
+            <span class="meta-dot"></span>
+            <span>Verano 2026</span>
+        </div>
+    </header>
+
+    <!-- LEARN BOX -->
+    <div class="learn-box">
+        <div class="learn-label">Lo que vas a leer</div>
+        <ul class="learn-list">
+            <li><span class="learn-dot"></span>El caso real: 30 días, 2 horas al día, de cero a la Biblioteca</li>
+            <li><span class="learn-dot"></span>La conclusión inesperada sobre cómo funciona el aprendizaje real</li>
+            <li><span class="learn-dot"></span>Por qué aprender a aprender vale más que acumular cosas que aprender</li>
+        </ul>
+    </div>
+
+    <!-- PREREQ BOX -->
+    <div class="prereq-box">
+        <span class="prereq-icon">→</span>
+        <p class="prereq-text">Este recurso cierra el Nivel 0. Tiene más sentido si has leído <a href="0-2.html">0.2</a> y <a href="0-4.html">0.4</a> — pero puedes leerlo solo si quieres el caso real primero.</p>
+    </div>
+
+    <!-- TOC -->
+    <nav class="toc" aria-label="Contenido">
+        <div class="toc-label">En este recurso</div>
+        <div class="toc-links">
+            <a href="#s01">01 El antes</a>
+            <a href="#s02">02 El experimento</a>
+            <a href="#s03">03 La conclusión</a>
+            <a href="#s04">04 El resultado</a>
+            <a href="#s05">05 Tu dirección</a>
+            <a href="#checklist">Checklist</a>
+        </div>
+    </nav>
+
+    <!-- ── SECCIÓN 01 ── -->
+    <section class="section" id="s01">
+        <div class="section-num">01</div>
+        <h2>El antes — cuando la IA era un buscador muy caro</h2>
+
+        <p>Antes de todo esto, usaba la IA como la mayoría: le hacía preguntas, me daba respuestas, cerraba la conversación y seguía con lo mismo de antes. Útil a ratos. Olvidable casi siempre.</p>
+
+        <p>El problema no era la herramienta. Era que llegaba con preguntas y me iba con respuestas — pero sin saber qué hacer con ellas. Información sin dirección no se convierte en conocimiento. Solo en ruido almacenado.</p>
+
+        <div class="callout morad">
+            <div class="callout-label">La diferencia</div>
+            <p>Consultar es recibir información. Colaborar es construir con ella. La misma herramienta, dos relaciones completamente distintas — y resultados que no tienen nada que ver.</p>
+        </div>
+    </section>
+
+    <!-- ── SECCIÓN 02 ── -->
+    <section class="section" id="s02">
+        <div class="section-num">02</div>
+        <h2>El experimento — 30 días, 2 horas al día</h2>
+
+        <p>Decidí cambiar el enfoque. No más cursos pasivos. No más guardar artículos para leer luego. El plan fue simple: construir algo real, todos los días, con lo que ya sabía — y anotar lo que iba aprendiendo.</p>
+
+        <!-- CASE STATS -->
+        <div class="case-stats">
+            <div class="case-stat">
+                <div class="stat-num">30</div>
+                <div class="stat-label">días de ejecución constante</div>
+            </div>
+            <div class="case-stat">
+                <div class="stat-num">2h</div>
+                <div class="stat-label">al día, sin excepciones</div>
+            </div>
+            <div class="case-stat">
+                <div class="stat-num">1</div>
+                <div class="stat-label">dirección clara desde el día 1</div>
+            </div>
+        </div>
+
+        <p>La dirección era esta biblioteca. El método fue el del recurso <a href="0-4.html">0.4</a>: una entrada de 3 líneas por sesión — qué probé, qué pasó, qué cambiaría. Sin análisis largo, sin perfeccionismo.</p>
+
+        <p>Lo que añadí: esquemas en Miro para visualizar el flujo completo de lo que estaba construyendo. No como notas — como mapas. Ver las conexiones entre conceptos fue lo que hizo que la información dejara de ser suelta y empezara a tener estructura.</p>
+
+        <div class="callout morad">
+            <div class="callout-label">La clave no era la herramienta</div>
+            <p>Miro, Obsidian, Notion, papel — da igual. Lo que importaba era verlo todo junto: cómo un concepto conectaba con otro, dónde había huecos, qué había aprendido sin darme cuenta. El mapa forzaba a organizar. Organizar forzaba a entender.</p>
+        </div>
+
+        <!-- INFOGRAFÍA: RED DE CONOCIMIENTO -->
+        <div class="kg-visual">
+            <svg viewBox="0 0 720 215" xmlns="http://www.w3.org/2000/svg">
+                <rect width="720" height="215" fill="#F5F3FF"/>
+
+                <!-- Labels -->
+                <text x="160" y="20" font-family="JetBrains Mono, monospace" font-size="8.5" fill="#C4B5FD" text-anchor="middle" letter-spacing="1.5">INFORMACIÓN SUELTA</text>
+                <text x="548" y="20" font-family="JetBrains Mono, monospace" font-size="8.5" fill="#7C3AED" text-anchor="middle" letter-spacing="1.5">RED DE CONOCIMIENTO</text>
+
+                <!-- LEFT: scattered nodes (no connections) -->
+                <circle cx="65" cy="82" r="26" fill="white" stroke="#DDD6FE" stroke-width="1.2"/>
+                <text x="65" y="86" font-family="Inter, sans-serif" font-size="8.5" fill="#C4B5FD" text-anchor="middle">Paradigma</text>
+
+                <circle cx="200" cy="58" r="24" fill="white" stroke="#DDD6FE" stroke-width="1.2"/>
+                <text x="200" y="62" font-family="Inter, sans-serif" font-size="8.5" fill="#C4B5FD" text-anchor="middle">Prompt</text>
+
+                <circle cx="115" cy="150" r="24" fill="white" stroke="#DDD6FE" stroke-width="1.2"/>
+                <text x="115" y="154" font-family="Inter, sans-serif" font-size="8.5" fill="#C4B5FD" text-anchor="middle">Contexto</text>
+
+                <circle cx="255" cy="125" r="24" fill="white" stroke="#DDD6FE" stroke-width="1.2"/>
+                <text x="255" y="129" font-family="Inter, sans-serif" font-size="8.5" fill="#C4B5FD" text-anchor="middle">Manual</text>
+
+                <circle cx="218" cy="178" r="20" fill="white" stroke="#DDD6FE" stroke-width="1"/>
+                <text x="218" y="182" font-family="Inter, sans-serif" font-size="8" fill="#C4B5FD" text-anchor="middle">Iteración</text>
+
+                <!-- Noise dots -->
+                <circle cx="42" cy="166" r="5" fill="#EDE9FE" opacity="0.5"/>
+                <circle cx="286" cy="68" r="5" fill="#EDE9FE" opacity="0.5"/>
+                <circle cx="158" cy="192" r="4" fill="#EDE9FE" opacity="0.4"/>
+
+                <!-- CENTER divider + arrow -->
+                <line x1="334" y1="26" x2="334" y2="196" stroke="#DDD6FE" stroke-width="1" stroke-dasharray="4,3"/>
+                <defs>
+                    <marker id="kg-arr" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+                        <path d="M0,0 L0,6 L8,3 z" fill="#7C3AED"/>
+                    </marker>
+                </defs>
+                <line x1="322" y1="108" x2="362" y2="108" stroke="#7C3AED" stroke-width="1.8" marker-end="url(#kg-arr)"/>
+
+                <!-- RIGHT: connected graph — lines drawn first (behind nodes) -->
+                <!-- Paradigma(415,90) → Prompt(490,60) -->
+                <line x1="415" y1="90" x2="490" y2="60" stroke="#C4B5FD" stroke-width="1.5"/>
+                <!-- Paradigma(415,90) → Manual(475,140) -->
+                <line x1="415" y1="90" x2="475" y2="140" stroke="#C4B5FD" stroke-width="1.5"/>
+                <!-- Prompt(490,60) → Patrones(555,90) -->
+                <line x1="490" y1="60" x2="555" y2="90" stroke="#C4B5FD" stroke-width="1.5"/>
+                <!-- Manual(475,140) → Patrones(555,90) -->
+                <line x1="475" y1="140" x2="555" y2="90" stroke="#C4B5FD" stroke-width="1.5"/>
+                <!-- Patrones(555,90) → Iteración(548,152) -->
+                <line x1="555" y1="90" x2="548" y2="152" stroke="#C4B5FD" stroke-width="1.2" stroke-dasharray="3,2"/>
+                <!-- Patrones → Output center (658,113) -->
+                <line x1="555" y1="90" x2="610" y2="108" stroke="#7C3AED" stroke-width="2"/>
+                <!-- Iteración → Output center -->
+                <line x1="548" y1="152" x2="610" y2="118" stroke="#7C3AED" stroke-width="2"/>
+
+                <!-- Nodes (on top of lines) -->
+                <circle cx="415" cy="90" r="28" fill="white" stroke="#C4B5FD" stroke-width="1.5"/>
+                <text x="415" y="87" font-family="Inter, sans-serif" font-size="8.5" fill="#6D28D9" text-anchor="middle" font-weight="500">Paradigma</text>
+                <text x="415" y="99" font-family="Inter, sans-serif" font-size="7.5" fill="#A78BFA" text-anchor="middle">+ Contexto</text>
+
+                <circle cx="490" cy="60" r="24" fill="white" stroke="#C4B5FD" stroke-width="1.5"/>
+                <text x="490" y="64" font-family="Inter, sans-serif" font-size="8.5" fill="#6D28D9" text-anchor="middle" font-weight="500">Prompt</text>
+
+                <circle cx="475" cy="140" r="24" fill="white" stroke="#C4B5FD" stroke-width="1.5"/>
+                <text x="475" y="144" font-family="Inter, sans-serif" font-size="8.5" fill="#6D28D9" text-anchor="middle" font-weight="500">Manual</text>
+
+                <circle cx="555" cy="90" r="27" fill="#EDE9FE" stroke="#7C3AED" stroke-width="1.8"/>
+                <text x="555" y="87" font-family="Inter, sans-serif" font-size="8.5" fill="#4C1D95" text-anchor="middle" font-weight="600">Patrones</text>
+                <text x="555" y="99" font-family="Inter, sans-serif" font-size="7.5" fill="#7C3AED" text-anchor="middle">propios</text>
+
+                <circle cx="548" cy="152" r="22" fill="#EDE9FE" stroke="#7C3AED" stroke-width="1.5"/>
+                <text x="548" y="156" font-family="Inter, sans-serif" font-size="8.5" fill="#4C1D95" text-anchor="middle" font-weight="600">Iteración</text>
+
+                <!-- Output box -->
+                <rect x="610" y="90" width="96" height="50" rx="8" fill="#7C3AED"/>
+                <text x="658" y="113" font-family="Playfair Display, serif" font-size="12" fill="white" text-anchor="middle" font-weight="700">Output</text>
+                <text x="658" y="127" font-family="Inter, sans-serif" font-size="8" fill="rgba(255,255,255,0.72)" text-anchor="middle">tangible</text>
+
+                <!-- Bottom labels -->
+                <text x="160" y="203" font-family="JetBrains Mono, monospace" font-size="8" fill="#C4B5FD" text-anchor="middle">sin estructura · sin conexiones</text>
+                <text x="548" y="203" font-family="JetBrains Mono, monospace" font-size="8.5" fill="#7C3AED" text-anchor="middle">Miro · Obsidian · Notion</text>
+            </svg>
+        </div>
+
+        <p>Esto no es solo mi experiencia. En abril de 2026, Andrej Karpathy — ex-investigador principal de OpenAI y arquitecto del motor de IA de Tesla — publicó que la mayor parte de su tiempo con LLMs ya no va a generar código. Va a construir bases de conocimiento personales estructuradas. Su flujo exacto: ingestión de fuentes → wiki en Markdown → iteración en Obsidian.</p>
+
+        <!-- KARPATHY REFERENCE -->
+        <div class="authority-ref">
+            <div class="auth-meta">
+                <span class="auth-name">Andrej Karpathy</span>
+                <span class="auth-sep">·</span>
+                <span class="auth-role">ex-OpenAI · Tesla AI · 16M impresiones</span>
+            </div>
+            <p class="auth-quote">"Something I'm finding very useful recently: using LLMs to build personal knowledge bases for various topics of research interest. A large fraction of my token throughput is going less into manipulating code, and more into manipulating knowledge."</p>
+            <a href="https://x.com/karpathy/status/2039805659525644595" class="auth-link" target="_blank" rel="noopener">Ver tweet →</a>
+        </div>
+    </section>
+
+    <!-- ── SECCIÓN 03 ── -->
+    <section class="section" id="s03">
+        <div class="section-num">03</div>
+        <h2>La conclusión que no esperaba</h2>
+
+        <p>Pensé que el aprendizaje vendría antes de construir. Que tendría que estudiar suficiente para estar listo. Pero pasó exactamente lo contrario.</p>
+
+        <!-- INSIGHT BOX -->
+        <div class="insight-box">
+            <div class="insight-label">La conclusión inesperada</div>
+            <div class="insight-text">No se aprende para construir.<br>Se construye para aprender.</div>
+            <p class="insight-sub">Cada vez que me atascaba construyendo la biblioteca, tenía una pregunta real. Y una pregunta real genera un aprendizaje real. Los cursos me daban respuestas a preguntas que nadie me había hecho. La ejecución me generaba preguntas que nadie más podía responder por mí.</p>
+        </div>
+
+        <p>El manual de 3 líneas capturó esas preguntas. Las entradas más valiosas no fueron las que explicaban qué funcionó — fueron las de NEXT TIME: qué cambiaría, por qué me había equivocado, qué no volvería a hacer. Eso no está en ningún tutorial. Solo sale de hacerlo.</p>
+
+        <p>La segunda conclusión vino de Miro: cuando ves el flujo completo de lo que estás construyendo, el aprendizaje se consolida de una forma que leer no consigue. El cerebro necesita ver la estructura para hacer conexiones. Las notas lineales no lo hacen. Los mapas sí.</p>
+
+        <div class="callout verde">
+            <div class="callout-label">Lo que cambia</div>
+            <p>No se trata de aprender más cosas. Se trata de iterar lo que ya sabes en una dirección concreta hasta que se convierte en algo real. Después repites — con más conocimiento y mejor criterio.</p>
+        </div>
+    </section>
+
+    <!-- ── SECCIÓN 04 ── -->
+    <section class="section" id="s04">
+        <div class="section-num">04</div>
+        <h2>El resultado — algo que existe</h2>
+
+        <p>Esta biblioteca existe. No es perfecta. Tiene recursos que mejoraré, visuales que rehare, textos que cambiaré. Pero existe — y eso es lo que importa.</p>
+
+        <p>No la construí porque sabía cómo hacerlo. La construí para aprender a hacerlo. Cada recurso que escribí enseñó algo que el siguiente aprovechó. El 0.1 fue más torpe que el 0.5. El 0.5 será más torpe que el 1.3. Así funciona.</p>
+
+        <!-- BEFORE / AFTER VISUAL -->
+        <div class="before-after-visual">
+            <svg viewBox="0 0 720 160" xmlns="http://www.w3.org/2000/svg">
+                <rect width="720" height="160" fill="#F5F3FF"/>
+
+                <!-- Before -->
+                <text x="150" y="26" font-family="JetBrains Mono, monospace" font-size="9" fill="#A78BFA" text-anchor="middle" letter-spacing="1.5">ANTES</text>
+                <rect x="28" y="36" width="244" height="72" rx="8" fill="white" stroke="#DDD6FE" stroke-width="1.2"/>
+                <text x="150" y="62" font-family="Inter, sans-serif" font-size="12" fill="#9CA3AF" text-anchor="middle">Cursos. Artículos. Vídeos.</text>
+                <text x="150" y="80" font-family="Inter, sans-serif" font-size="12" fill="#9CA3AF" text-anchor="middle">Información sin dirección.</text>
+                <text x="150" y="126" font-family="JetBrains Mono, monospace" font-size="9" fill="#A78BFA" text-anchor="middle">mucho consumo · poco output</text>
+
+                <!-- Arrow -->
+                <text x="360" y="88" font-family="JetBrains Mono, monospace" font-size="14" fill="#7C3AED" text-anchor="middle">→</text>
+
+                <!-- After -->
+                <text x="570" y="26" font-family="JetBrains Mono, monospace" font-size="9" fill="#7C3AED" text-anchor="middle" letter-spacing="1.5">DESPUÉS</text>
+                <rect x="448" y="36" width="244" height="72" rx="8" fill="#EDE9FE" stroke="#7C3AED" stroke-width="1.5"/>
+                <text x="570" y="58" font-family="Inter, sans-serif" font-size="12" fill="#4C1D95" text-anchor="middle" font-weight="500">2h/día · manual · Miro</text>
+                <text x="570" y="74" font-family="Inter, sans-serif" font-size="12" fill="#4C1D95" text-anchor="middle" font-weight="500">Biblioteca: 5 recursos.</text>
+                <text x="570" y="90" font-family="Inter, sans-serif" font-size="12" fill="#4C1D95" text-anchor="middle" font-weight="500">Real. Publicada. Tuya.</text>
+                <text x="570" y="126" font-family="JetBrains Mono, monospace" font-size="9" fill="#7C3AED" text-anchor="middle">dirección clara · output tangible</text>
+            </svg>
+        </div>
+
+        <p>El recurso 0.5 es el manual de Alex después de 30 días. El tuyo puede ser más útil — está hecho para tu realidad, no para la mía.</p>
+    </section>
+
+    <!-- ── SECCIÓN 05 ── -->
+    <section class="section" id="s05">
+        <div class="section-num">05</div>
+        <h2>Tu dirección — el cierre del Nivel 0</h2>
+
+        <p>El Nivel 0 termina aquí. Cambiaste el paradigma, entendiste cómo colaborar con la IA, instalaste una herramienta real, creaste un sistema de captura — y ahora tienes el caso de alguien que ejecutó todo eso durante 30 días y construyó algo.</p>
+
+        <p>Cualquier cosa se puede aprender. No es motivación — es la conclusión de 30 días haciendo y anotando. La condición es siempre la misma: iterar en una dirección concreta con constancia suficiente para que el error te enseñe.</p>
+
+        <!-- ARC VISUAL -->
+        <div class="arc-visual">
+            <svg viewBox="0 0 720 118" xmlns="http://www.w3.org/2000/svg">
+                <rect width="720" height="118" fill="#F5F3FF"/>
+
+                <text x="360" y="20" font-family="JetBrains Mono, monospace" font-size="9" fill="#7C3AED" text-anchor="middle" letter-spacing="1.5">EL ARCO COMPLETO DEL NIVEL 0</text>
+
+                <!-- Step 1 -->
+                <rect x="14" y="30" width="118" height="44" rx="6" fill="white" stroke="#DDD6FE" stroke-width="1"/>
+                <text x="73" y="50" font-family="JetBrains Mono, monospace" font-size="8" fill="#A78BFA" text-anchor="middle">0.1–0.2</text>
+                <text x="73" y="63" font-family="Inter, sans-serif" font-size="8.5" fill="#6B7280" text-anchor="middle">Paradigma</text>
+
+                <text x="148" y="52" font-family="JetBrains Mono, monospace" font-size="11" fill="#C4B5FD" text-anchor="middle">›</text>
+
+                <!-- Step 2 -->
+                <rect x="160" y="30" width="118" height="44" rx="6" fill="white" stroke="#DDD6FE" stroke-width="1"/>
+                <text x="219" y="50" font-family="JetBrains Mono, monospace" font-size="8" fill="#A78BFA" text-anchor="middle">0.3</text>
+                <text x="219" y="63" font-family="Inter, sans-serif" font-size="8.5" fill="#6B7280" text-anchor="middle">Herramienta</text>
+
+                <text x="292" y="52" font-family="JetBrains Mono, monospace" font-size="11" fill="#C4B5FD" text-anchor="middle">›</text>
+
+                <!-- Step 3 -->
+                <rect x="304" y="30" width="118" height="44" rx="6" fill="white" stroke="#DDD6FE" stroke-width="1"/>
+                <text x="363" y="50" font-family="JetBrains Mono, monospace" font-size="8" fill="#A78BFA" text-anchor="middle">0.4</text>
+                <text x="363" y="63" font-family="Inter, sans-serif" font-size="8.5" fill="#6B7280" text-anchor="middle">Método</text>
+
+                <text x="436" y="52" font-family="JetBrains Mono, monospace" font-size="11" fill="#7C3AED" text-anchor="middle">›</text>
+
+                <!-- Step 4 — 0.5 highlighted -->
+                <rect x="448" y="24" width="118" height="56" rx="6" fill="#7C3AED"/>
+                <text x="507" y="47" font-family="JetBrains Mono, monospace" font-size="8" fill="rgba(255,255,255,0.8)" text-anchor="middle">0.5</text>
+                <text x="507" y="60" font-family="Inter, sans-serif" font-size="8.5" fill="white" text-anchor="middle" font-weight="600">Ejecuta 30 días</text>
+                <text x="507" y="72" font-family="Inter, sans-serif" font-size="8" fill="rgba(255,255,255,0.65)" text-anchor="middle">y mira lo que tienes</text>
+
+                <text x="580" y="52" font-family="JetBrains Mono, monospace" font-size="11" fill="#7C3AED" text-anchor="middle">›</text>
+
+                <!-- Nivel 1 — dashed -->
+                <rect x="592" y="24" width="118" height="56" rx="6" fill="white" stroke="#7C3AED" stroke-width="1.5" stroke-dasharray="4,2"/>
+                <text x="651" y="50" font-family="Inter, sans-serif" font-size="9" fill="#7C3AED" text-anchor="middle">Nivel 1</text>
+                <text x="651" y="63" font-family="JetBrains Mono, monospace" font-size="7.5" fill="#A78BFA" text-anchor="middle">próximamente</text>
+
+                <text x="360" y="108" font-family="JetBrains Mono, monospace" font-size="8" fill="#7C3AED" text-anchor="middle" letter-spacing="0.3">paradigma · colaboración · herramienta · método · ejecución</text>
+            </svg>
+        </div>
+
+        <div class="action-steps">
+            <div class="action-steps-label">Antes de cerrar esta página</div>
+            <div class="action-step">
+                <span class="step-num">1.</span>
+                <span class="step-text">Si ya tienes tu manual del 0.4, ábrelo. Si no lo tienes todavía, créalo ahora — tres líneas, hoy.</span>
+            </div>
+            <div class="action-step">
+                <span class="step-num">2.</span>
+                <span class="step-text">Elige una dirección concreta. No "aprender IA". Algo específico: automatizar una tarea, construir una herramienta, crear un sistema para tu trabajo real.</span>
+            </div>
+            <div class="action-step">
+                <span class="step-num">3.</span>
+                <span class="step-text">Comprométete con 2 horas al día durante 30 días — no de estudio, de ejecución. Construye algo con lo que ya sabes.</span>
+            </div>
+            <div class="action-step">
+                <span class="step-num">4.</span>
+                <span class="step-text">Escribe una entrada en el manual después de cada sesión. En 30 días tendrás tu caso real. No el mío — el tuyo.</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- CHECKLIST -->
+    <div class="checklist-section" id="checklist">
+        <div class="checklist-title">Ya lo tengo — compruébalo</div>
+        <ul class="checklist-items" id="checklistItems">
+            <li onclick="toggleCheck(this)"><span class="check-box"></span><span class="check-text">Entiendo que la diferencia entre el antes y el después no fue la herramienta — fue la dirección y la constancia</span></li>
+            <li onclick="toggleCheck(this)"><span class="check-box"></span><span class="check-text">He interiorizado que se construye para aprender, no al revés — aunque tarde en aceptarlo</span></li>
+            <li onclick="toggleCheck(this)"><span class="check-box"></span><span class="check-text">Tengo una dirección concreta. No "aprender IA" — algo específico que voy a construir</span></li>
+            <li onclick="toggleCheck(this)"><span class="check-box"></span><span class="check-text">He completado los 5 recursos del Nivel 0. Tengo el paradigma completo.</span></li>
+            <li onclick="toggleCheck(this)"><span class="check-box"></span><span class="check-text">Siento que falta algo por hacer — y sé que eso es exactamente la señal correcta para pasar al Nivel 1.</span></li>
+        </ul>
+    </div>
+
+    <!-- FOOTER -->
+    <footer class="resource-footer">
+        <a href="0-4.html" class="footer-back">
+            <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+            Recurso anterior
+        </a>
+        <a href="../index.html" class="footer-next">
+            Volver a la Biblioteca
+            <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </a>
+    </footer>
+
+</div>
+
+<canvas id="confettiCanvas" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:9999;"></canvas>
+
+<script>
+function toggleCheck(li) {
+    li.classList.toggle('done');
+    li.querySelector('.check-box').textContent = li.classList.contains('done') ? '\u2713' : '';
+    const items = document.querySelectorAll('#checklistItems li');
+    if ([...items].every(i => i.classList.contains('done'))) launchConfetti();
+}
+
+function launchConfetti() {
+    const canvas = document.getElementById('confettiCanvas');
+    if (!canvas) return;
+    canvas.style.display = 'block';
+    const ctx = canvas.getContext('2d');
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+    const colors = ['#B45309','#D97706','#FDE68A','#059669','#7C3AED','#2563EB','#F59E0B','#10B981','#EF4444'];
+    const pieces = Array.from({length: 140}, () => ({
+        x: Math.random() * canvas.width,
+        y: -10 - Math.random() * canvas.height * 0.6,
+        w: Math.random() * 11 + 5,
+        h: Math.random() * 6 + 3,
+        color: colors[Math.floor(Math.random() * colors.length)],
+        vx: (Math.random() - 0.5) * 4,
+        vy: Math.random() * 3 + 1.5,
+        rot: Math.random() * 360,
+        vrot: (Math.random() - 0.5) * 10,
+        alpha: 1,
+        shape: Math.random() > 0.5 ? 'rect' : 'circle'
+    }));
+    let frame = 0;
+    (function animate() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        pieces.forEach(p => {
+            p.x += p.vx;
+            p.y += p.vy;
+            p.rot += p.vrot;
+            p.vy += 0.06;
+            if (frame > 90) p.alpha = Math.max(0, p.alpha - 0.012);
+            ctx.save();
+            ctx.globalAlpha = p.alpha;
+            ctx.translate(p.x + p.w / 2, p.y + p.h / 2);
+            ctx.rotate(p.rot * Math.PI / 180);
+            ctx.fillStyle = p.color;
+            if (p.shape === 'circle') {
+                ctx.beginPath();
+                ctx.arc(0, 0, p.w / 2, 0, Math.PI * 2);
+                ctx.fill();
+            } else {
+                ctx.fillRect(-p.w / 2, -p.h / 2, p.w, p.h);
+            }
+            ctx.restore();
+        });
+        frame++;
+        if (frame < 170) requestAnimationFrame(animate);
+        else canvas.style.display = 'none';
+    })();
+}
+</script>
+</body>
+</html>

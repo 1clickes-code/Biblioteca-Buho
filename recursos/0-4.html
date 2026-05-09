@@ -1,0 +1,932 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tu manual de IA. Nadie más puede escribirlo. — alex.decode</title>
+    <link rel="icon" type="image/svg+xml" href="../favicon.svg">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        :root {
+            --bg:        #FAFAF7;
+            --surface:   #FFFFFF;
+            --border:    #E8E2D9;
+            --text:      #1C1917;
+            --muted:     #78716C;
+            --faint:     #B0A89E;
+            --amber:     #B45309;
+            --amber-mid: #D97706;
+            --amber-dim: rgba(180,83,9,0.07);
+            --rojo:  #DC2626; --rojo-d:  rgba(220,38,38,0.07);
+            --amar:  #D97706; --amar-d:  rgba(217,119,6,0.07);
+            --azul:  #2563EB; --azul-d:  rgba(37,99,235,0.07);
+            --verde: #059669; --verde-d: rgba(5,150,105,0.07);
+            --morad: #7C3AED; --morad-d: rgba(124,58,237,0.07);
+        }
+
+        html { scroll-behavior: smooth; }
+        body {
+            background: var(--bg);
+            color: var(--text);
+            font-family: 'Inter', system-ui, sans-serif;
+            font-size: 15px;
+            line-height: 1.7;
+            min-height: 100vh;
+        }
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0; left: 0; right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, #D97706 0%, var(--amber) 50%, #D97706 100%);
+            z-index: 100;
+        }
+
+        .wrap { max-width: 720px; margin: 0 auto; padding: 0 24px; }
+
+        /* ── NAV ── */
+        .top-nav {
+            padding: 28px 0 0;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 11px;
+            color: var(--faint);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
+        .top-nav a { color: var(--amber); text-decoration: none; transition: opacity .15s; }
+        .top-nav a:hover { opacity: .7; }
+        .top-nav .sep { color: var(--faint); }
+        .nav-owl {
+            margin-left: auto;
+            display: flex;
+            align-items: center;
+            text-decoration: none;
+            transition: opacity .15s;
+            animation: owlFloat 5s ease-in-out 1s infinite;
+        }
+        .nav-owl:hover { opacity: .7; }
+        @keyframes owlFloat { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-4px)} }
+
+        /* ── COVER ── */
+        .resource-cover {
+            margin: 24px 0 0;
+            border-radius: 14px;
+            overflow: hidden;
+            width: 100%;
+            aspect-ratio: 16/7;
+            background: var(--amar-d);
+            border: 1px solid rgba(217,119,6,0.18);
+        }
+        .resource-cover svg { width: 100%; height: 100%; display: block; }
+
+        /* ── HEADER ── */
+        .resource-header { padding: 28px 0 28px; border-bottom: 1px solid var(--border); margin-bottom: 24px; }
+
+        .tag {
+            display: inline-flex; align-items: center; gap: 5px;
+            font-size: 10px; font-weight: 600; padding: 3px 10px;
+            border-radius: 100px; margin-bottom: 14px;
+        }
+        .tag .dot { width: 5px; height: 5px; border-radius: 50%; flex-shrink: 0; }
+        .tag.amar { background: var(--amar-d); color: var(--amar); } .tag.amar .dot { background: var(--amar); }
+
+        .resource-title {
+            font-family: 'Playfair Display', Georgia, serif;
+            font-size: clamp(24px, 4vw, 34px);
+            font-weight: 700;
+            line-height: 1.2;
+            letter-spacing: -.3px;
+            margin-bottom: 12px;
+        }
+        .resource-meta {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 11px;
+            color: var(--faint);
+            display: flex;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+        .resource-meta span { display: flex; align-items: center; gap: 5px; }
+        .meta-dot { width: 3px; height: 3px; border-radius: 50%; background: var(--faint); }
+
+        /* ── LEARN BOX ── */
+        .learn-box {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 20px 22px;
+            margin-bottom: 16px;
+        }
+        .learn-label {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 9px;
+            font-weight: 600;
+            color: var(--amber);
+            letter-spacing: 1.4px;
+            text-transform: uppercase;
+            margin-bottom: 12px;
+        }
+        .learn-list { list-style: none; display: flex; flex-direction: column; gap: 8px; }
+        .learn-list li {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            font-size: 13.5px;
+            color: var(--text);
+            line-height: 1.5;
+        }
+        .learn-dot {
+            width: 6px; height: 6px;
+            border-radius: 50%;
+            background: var(--amar);
+            flex-shrink: 0;
+            margin-top: 7px;
+        }
+
+        /* ── PREREQ BOX ── */
+        .prereq-box {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            background: var(--azul-d);
+            border: 1px solid rgba(37,99,235,0.18);
+            border-radius: 10px;
+            padding: 14px 18px;
+            margin-bottom: 20px;
+        }
+        .prereq-icon { font-family: 'JetBrains Mono', monospace; font-size: 13px; color: var(--azul); flex-shrink: 0; margin-top: 1px; }
+        .prereq-text { font-size: 13px; color: var(--text); line-height: 1.55; }
+        .prereq-text a { color: var(--azul); text-decoration: underline; text-decoration-color: rgba(37,99,235,0.35); text-underline-offset: 2px; }
+        .prereq-text a:hover { text-decoration-color: var(--azul); }
+
+        /* ── TOC ── */
+        .toc {
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 14px 18px;
+            margin-bottom: 44px;
+        }
+        .toc-label {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 9px;
+            color: var(--faint);
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            margin-bottom: 10px;
+        }
+        .toc-links { display: flex; flex-wrap: wrap; gap: 6px; }
+        .toc-links a {
+            font-size: 12px;
+            color: var(--muted);
+            text-decoration: none;
+            padding: 4px 10px;
+            border-radius: 6px;
+            border: 1px solid var(--border);
+            transition: border-color .15s, color .15s, background .15s;
+            white-space: nowrap;
+        }
+        .toc-links a:hover { border-color: var(--amar); color: var(--amar); background: var(--amar-d); }
+
+        /* ── SECTIONS ── */
+        .section { margin-bottom: 48px; scroll-margin-top: 32px; }
+        .section-num {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 10px;
+            color: var(--amber);
+            font-weight: 600;
+            letter-spacing: 1px;
+            margin-bottom: 8px;
+        }
+        .section h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: 21px;
+            font-weight: 700;
+            line-height: 1.3;
+            margin-bottom: 14px;
+        }
+        .section p { color: var(--text); margin-bottom: 12px; font-size: 14.5px; }
+        .section p:last-child { margin-bottom: 0; }
+
+        /* ── CALLOUT ── */
+        .callout {
+            border-left: 3px solid var(--amber);
+            background: var(--amber-dim);
+            border-radius: 0 8px 8px 0;
+            padding: 13px 16px;
+            margin: 18px 0;
+        }
+        .callout.amar  { border-left-color: var(--amar);  background: var(--amar-d); }
+        .callout.verde { border-left-color: var(--verde); background: var(--verde-d); }
+        .callout-label {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 9px;
+            font-weight: 600;
+            color: var(--amber);
+            letter-spacing: 1.2px;
+            text-transform: uppercase;
+            margin-bottom: 5px;
+        }
+        .callout.amar  .callout-label { color: var(--amar); }
+        .callout.verde .callout-label { color: var(--verde); }
+        .callout p { font-size: 13.5px; color: var(--text); margin: 0; line-height: 1.6; }
+
+        /* ── METAPHOR VISUAL ── */
+        .metaphor-visual {
+            margin: 20px 0;
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid rgba(217,119,6,0.18);
+        }
+        .metaphor-visual svg { width: 100%; display: block; }
+
+        /* ── ENTRY CARD ── */
+        .entry-card {
+            background: var(--surface);
+            border: 1.5px solid var(--border);
+            border-radius: 12px;
+            overflow: hidden;
+            margin: 18px 0;
+        }
+        .entry-card.example { border-color: rgba(217,119,6,0.35); }
+        .entry-card.empty   { border-style: dashed; }
+        .entry-header {
+            background: var(--amar-d);
+            border-bottom: 1px solid rgba(217,119,6,0.2);
+            padding: 9px 18px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .entry-header-label {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 9px;
+            font-weight: 600;
+            color: var(--amar);
+            letter-spacing: 1.2px;
+            text-transform: uppercase;
+        }
+        .entry-header-date {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 9px;
+            color: var(--faint);
+        }
+        .entry-row {
+            display: flex;
+            gap: 18px;
+            padding: 12px 18px;
+            border-bottom: 1px solid var(--border);
+            align-items: flex-start;
+        }
+        .entry-row:last-child { border-bottom: none; }
+        .entry-label {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 9px;
+            font-weight: 600;
+            color: var(--amar);
+            letter-spacing: .8px;
+            min-width: 86px;
+            margin-top: 3px;
+            flex-shrink: 0;
+        }
+        .entry-value { font-size: 13.5px; color: var(--text); line-height: 1.5; }
+        .entry-value.empty { color: var(--faint); font-style: italic; }
+
+        /* ── ACTION STEPS ── */
+        .action-steps {
+            background: var(--verde-d);
+            border: 1px solid rgba(5,150,105,0.2);
+            border-radius: 12px;
+            padding: 20px 22px;
+            margin: 18px 0;
+        }
+        .action-steps-label {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 9px;
+            font-weight: 600;
+            color: var(--verde);
+            letter-spacing: 1.4px;
+            text-transform: uppercase;
+            margin-bottom: 14px;
+        }
+        .action-step { display: flex; gap: 12px; margin-bottom: 10px; align-items: flex-start; }
+        .action-step:last-child { margin-bottom: 0; }
+        .step-num {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 10px;
+            font-weight: 600;
+            color: var(--verde);
+            min-width: 18px;
+            margin-top: 3px;
+        }
+        .step-text { font-size: 13.5px; color: var(--text); line-height: 1.5; }
+        .step-text code {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 11.5px;
+            background: rgba(5,150,105,0.12);
+            color: var(--verde);
+            padding: 1px 6px;
+            border-radius: 4px;
+        }
+        .step-text strong { font-weight: 600; }
+
+        /* ── TOOL CHIPS ── */
+        .tool-chips {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin: 16px 0;
+        }
+        .tool-chip {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 11px;
+            color: var(--muted);
+            border: 1px solid var(--border);
+            border-radius: 100px;
+            padding: 5px 14px;
+            background: var(--surface);
+        }
+        .tool-chip.rec {
+            color: var(--amar);
+            border-color: rgba(217,119,6,0.4);
+            background: var(--amar-d);
+        }
+
+        /* ── COMPOUND VISUAL ── */
+        .compound-visual {
+            margin: 20px 0;
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid var(--border);
+        }
+        .compound-visual svg { width: 100%; display: block; }
+
+        /* ── NEXT HOOK ── */
+        .next-hook {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            margin: 0 0 32px;
+            padding: 16px 22px;
+            background: var(--amar-d);
+            border: 1px solid rgba(217,119,6,0.25);
+            border-radius: 10px;
+            text-decoration: none;
+            transition: border-color .15s, background .15s;
+        }
+        .next-hook:hover { border-color: var(--amar); background: rgba(217,119,6,0.12); }
+        .next-hook-arrow {
+            color: var(--amar);
+            flex-shrink: 0;
+            transition: transform .2s;
+        }
+        .next-hook:hover .next-hook-arrow { transform: translateX(4px); }
+        .next-hook-text {
+            font-size: 13.5px;
+            color: var(--text);
+            line-height: 1.5;
+        }
+        .next-hook-text strong { color: var(--amar); font-weight: 600; }
+
+        /* ── CHECKLIST ── */
+        .checklist-section {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 22px 24px;
+            margin-bottom: 48px;
+        }
+        .checklist-title {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 10px;
+            color: var(--amber);
+            font-weight: 600;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            margin-bottom: 14px;
+        }
+        .checklist-items { list-style: none; display: flex; flex-direction: column; gap: 10px; }
+        .checklist-items li {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            font-size: 13px;
+            color: var(--text);
+            line-height: 1.5;
+            cursor: pointer;
+        }
+        .check-box {
+            width: 17px; height: 17px;
+            border: 1.5px solid var(--border);
+            border-radius: 4px;
+            flex-shrink: 0;
+            margin-top: 1px;
+            transition: border-color .15s, background .15s;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 10px;
+            color: white;
+        }
+        .checklist-items li.done .check-box { background: var(--verde); border-color: var(--verde); }
+        .checklist-items li.done .check-text { text-decoration: line-through; color: var(--muted); }
+
+        /* ── FOOTER ── */
+        .resource-footer {
+            border-top: 1px solid var(--border);
+            padding: 28px 0 52px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+        .footer-back {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 12px;
+            color: var(--muted);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: color .15s;
+        }
+        .footer-back:hover { color: var(--amber); }
+        .footer-next {
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--amber);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: gap .15s;
+        }
+        .footer-next:hover { gap: 10px; }
+
+        @media (max-width: 600px) {
+            .wrap { padding: 0 16px; }
+            .resource-title { font-size: 22px; }
+            .entry-label { min-width: 72px; }
+        }
+    </style>
+</head>
+<body>
+<div class="wrap">
+
+    <!-- NAV -->
+    <nav class="top-nav">
+        <a href="../index.html">alex.decode</a>
+        <span class="sep">/</span>
+        <span>Biblioteca</span>
+        <span class="sep">/</span>
+        <span>Nivel 0</span>
+        <span class="sep">/</span>
+        <span>Tu manual</span>
+        <a href="../index.html" class="nav-owl" aria-label="Volver a la biblioteca">
+            <svg width="28" height="32" viewBox="0 0 140 160" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <polygon points="44,32 36,6 52,26" fill="#92400E"/>
+                <polygon points="96,32 104,6 88,26" fill="#92400E"/>
+                <circle cx="70" cy="56" r="38" fill="#B45309"/>
+                <ellipse cx="70" cy="58" rx="26" ry="24" fill="#D97706" opacity="0.28"/>
+                <circle cx="56" cy="52" r="13" fill="#FEF3C7"/>
+                <circle cx="84" cy="52" r="13" fill="#FEF3C7"/>
+                <circle cx="56" cy="52" r="6.5" fill="#1C1917"/>
+                <circle cx="84" cy="52" r="6.5" fill="#1C1917"/>
+                <circle cx="59" cy="49" r="2.2" fill="white"/>
+                <circle cx="87" cy="49" r="2.2" fill="white"/>
+                <polygon points="63,64 77,64 70,75" fill="#D97706"/>
+                <ellipse cx="70" cy="120" rx="34" ry="36" fill="#B45309"/>
+                <ellipse cx="70" cy="126" rx="20" ry="24" fill="#D97706" opacity="0.22"/>
+            </svg>
+        </a>
+    </nav>
+
+    <!-- COVER -->
+    <div class="resource-cover">
+        <svg viewBox="0 0 800 350" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice">
+            <rect width="800" height="350" fill="#FFFBEB"/>
+
+            <!-- Etiquetas -->
+            <text x="200" y="52" font-family="JetBrains Mono, monospace" font-size="10" fill="#FCD34D" text-anchor="middle" letter-spacing="2">LO QUE TODOS TIENEN</text>
+            <text x="600" y="52" font-family="JetBrains Mono, monospace" font-size="10" fill="#F59E0B" text-anchor="middle" letter-spacing="2">LO QUE SOLO TÚ PUEDES TENER</text>
+
+            <!-- Grid izquierda — copias idénticas -->
+            <rect x="60"  y="72" width="88" height="54" rx="7" fill="white" stroke="#FDE68A" stroke-width="1.2"/>
+            <rect x="64"  y="78" width="48" height="5" rx="2" fill="#FDE68A"/>
+            <rect x="64"  y="88" width="72" height="4" rx="2" fill="#FEF3C7"/>
+            <rect x="64"  y="97" width="60" height="4" rx="2" fill="#FEF3C7"/>
+            <rect x="64" y="106" width="66" height="4" rx="2" fill="#FEF3C7"/>
+
+            <rect x="162" y="72" width="88" height="54" rx="7" fill="white" stroke="#FDE68A" stroke-width="1.2"/>
+            <rect x="166" y="78" width="48" height="5" rx="2" fill="#FDE68A"/>
+            <rect x="166" y="88" width="72" height="4" rx="2" fill="#FEF3C7"/>
+            <rect x="166" y="97" width="60" height="4" rx="2" fill="#FEF3C7"/>
+            <rect x="166" y="106" width="66" height="4" rx="2" fill="#FEF3C7"/>
+
+            <rect x="60"  y="140" width="88" height="54" rx="7" fill="white" stroke="#FDE68A" stroke-width="1.2"/>
+            <rect x="64"  y="146" width="48" height="5" rx="2" fill="#FDE68A"/>
+            <rect x="64"  y="156" width="72" height="4" rx="2" fill="#FEF3C7"/>
+            <rect x="64"  y="165" width="60" height="4" rx="2" fill="#FEF3C7"/>
+            <rect x="64"  y="174" width="66" height="4" rx="2" fill="#FEF3C7"/>
+
+            <rect x="162" y="140" width="88" height="54" rx="7" fill="white" stroke="#FDE68A" stroke-width="1.2"/>
+            <rect x="166" y="146" width="48" height="5" rx="2" fill="#FDE68A"/>
+            <rect x="166" y="156" width="72" height="4" rx="2" fill="#FEF3C7"/>
+            <rect x="166" y="165" width="60" height="4" rx="2" fill="#FEF3C7"/>
+            <rect x="166" y="174" width="66" height="4" rx="2" fill="#FEF3C7"/>
+
+            <text x="200" y="228" font-family="Inter, sans-serif" font-size="11" fill="#D97706" text-anchor="middle" opacity="0.7">mismos prompts · mismas tools · mismo resultado</text>
+
+            <!-- Centro — síntesis -->
+            <defs>
+                <marker id="ay" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+                    <path d="M0,0 L0,6 L8,3 z" fill="#D97706"/>
+                </marker>
+            </defs>
+            <line x1="304" y1="175" x2="352" y2="175" stroke="#D97706" stroke-width="1.8" marker-end="url(#ay)"/>
+
+            <!-- Rombo síntesis -->
+            <polygon points="400,140 430,175 400,210 370,175" fill="#FEF3C7" stroke="#D97706" stroke-width="1.8"/>
+            <text x="400" y="172" font-family="JetBrains Mono, monospace" font-size="9" fill="#B45309" text-anchor="middle" font-weight="600">TU</text>
+            <text x="400" y="184" font-family="JetBrains Mono, monospace" font-size="9" fill="#B45309" text-anchor="middle" font-weight="600">VISIÓN</text>
+
+            <line x1="430" y1="175" x2="478" y2="175" stroke="#D97706" stroke-width="1.8" marker-end="url(#ay)"/>
+
+            <!-- Derecha — manual único -->
+            <rect x="490" y="96" width="220" height="158" rx="12" fill="white" stroke="#D97706" stroke-width="1.8"/>
+
+            <!-- Cabecera del manual -->
+            <rect x="490" y="96" width="220" height="32" rx="12" fill="#FEF3C7"/>
+            <rect x="490" y="114" width="220" height="14" fill="#FEF3C7"/>
+            <text x="600" y="117" font-family="JetBrains Mono, monospace" font-size="9" fill="#B45309" text-anchor="middle" letter-spacing="1" font-weight="600">TU MANUAL DE IA</text>
+
+            <!-- Líneas de contenido único -->
+            <rect x="506" y="140" width="36" height="5" rx="2" fill="#FDE68A"/>
+            <rect x="548" y="140" width="120" height="5" rx="2" fill="#E5E7EB"/>
+            <rect x="506" y="153" width="36" height="5" rx="2" fill="#FDE68A"/>
+            <rect x="548" y="153" width="100" height="5" rx="2" fill="#E5E7EB"/>
+            <rect x="506" y="166" width="36" height="5" rx="2" fill="#FDE68A"/>
+            <rect x="548" y="166" width="110" height="5" rx="2" fill="#E5E7EB"/>
+
+            <line x1="506" y1="182" x2="694" y2="182" stroke="#E8E2D9" stroke-width="1"/>
+
+            <rect x="506" y="192" width="36" height="5" rx="2" fill="#FDE68A"/>
+            <rect x="548" y="192" width="90" height="5" rx="2" fill="#E5E7EB"/>
+            <rect x="506" y="205" width="36" height="5" rx="2" fill="#FDE68A"/>
+            <rect x="548" y="205" width="115" height="5" rx="2" fill="#E5E7EB"/>
+            <rect x="506" y="218" width="36" height="5" rx="2" fill="#FDE68A"/>
+            <rect x="548" y="218" width="95" height="5" rx="2" fill="#E5E7EB"/>
+
+            <text x="600" y="270" font-family="Inter, sans-serif" font-size="11" fill="#D97706" text-anchor="middle" font-weight="500">único · irrepetible · tuyo</text>
+
+            <!-- Label inferior -->
+            <rect x="272" y="304" width="256" height="26" rx="6" fill="white" stroke="#FDE68A" stroke-width="1"/>
+            <text x="400" y="322" font-family="JetBrains Mono, monospace" font-size="9.5" fill="#B45309" text-anchor="middle" letter-spacing="0.5">conocimiento + visión = algo que no existe en otro lugar</text>
+        </svg>
+    </div>
+
+    <!-- HEADER -->
+    <header class="resource-header">
+        <div class="tag amar"><span class="dot"></span>Acción</div>
+        <h1 class="resource-title">Tu manual de IA. Nadie más puede escribirlo.</h1>
+        <div class="resource-meta">
+            <span>7 min de lectura</span>
+            <span class="meta-dot"></span>
+            <span>Nivel 0 — Entender</span>
+            <span class="meta-dot"></span>
+            <span>Verano 2026</span>
+        </div>
+    </header>
+
+    <!-- LEARN BOX -->
+    <div class="learn-box">
+        <div class="learn-label">Lo que vas a hacer</div>
+        <ul class="learn-list">
+            <li><span class="learn-dot"></span>Entender por qué lo que construyes vale más que lo que copias</li>
+            <li><span class="learn-dot"></span>Conocer el sistema de 3 líneas que convierte práctica en conocimiento real</li>
+            <li><span class="learn-dot"></span>Escribir tu primera entrada antes de cerrar esta página</li>
+        </ul>
+    </div>
+
+    <!-- PREREQ BOX -->
+    <div class="prereq-box">
+        <span class="prereq-icon">→</span>
+        <p class="prereq-text">Este recurso aplica lo que aprendiste en <a href="0-2.html">0.2</a> y la herramienta que instalaste en <a href="0-3.html">0.3</a>. Si no los has leído, empieza por ahí.</p>
+    </div>
+
+    <!-- TOC -->
+    <nav class="toc" aria-label="Contenido">
+        <div class="toc-label">En este recurso</div>
+        <div class="toc-links">
+            <a href="#s01">01 La metáfora</a>
+            <a href="#s02">02 El sistema</a>
+            <a href="#s03">03 Tu entrada #1</a>
+            <a href="#s04">04 Dónde guardarlo</a>
+            <a href="#s05">05 En 30 días</a>
+            <a href="#checklist">Checklist</a>
+        </div>
+    </nav>
+
+    <!-- ── SECCIÓN 01 ── -->
+    <section class="section" id="s01">
+        <div class="section-num">01</div>
+        <h2>Por qué lo tuyo vale más</h2>
+
+        <p>Dos personas leen el mismo libro. Una lo cierra y sigue. La otra escribe en los márgenes. Un año después, solo una tiene algo que no puede perder.</p>
+
+        <p>Con la IA pasa lo mismo. Todos tienen acceso a las mismas herramientas, los mismos modelos, los mismos tutoriales. La diferencia no está en lo que usas — está en lo que construyes con ello.</p>
+
+        <!-- INFOGRÁFICO METÁFORA -->
+        <div class="metaphor-visual">
+            <svg viewBox="0 0 720 160" xmlns="http://www.w3.org/2000/svg">
+                <rect width="720" height="160" fill="#FFFBEB"/>
+
+                <!-- Lado A: copiar -->
+                <text x="130" y="28" font-family="JetBrains Mono, monospace" font-size="9" fill="#D97706" text-anchor="middle" letter-spacing="1.5">COPIAR PROMPTS</text>
+                <rect x="30" y="40" width="200" height="52" rx="8" fill="white" stroke="#FDE68A" stroke-width="1.2"/>
+                <text x="130" y="62" font-family="Inter, sans-serif" font-size="12" fill="#9CA3AF" text-anchor="middle">Mismas entradas.</text>
+                <text x="130" y="80" font-family="Inter, sans-serif" font-size="12" fill="#9CA3AF" text-anchor="middle">Mismos resultados.</text>
+                <text x="130" y="116" font-family="Inter, sans-serif" font-size="11" fill="#D97706" text-anchor="middle">funciona hoy · no te pertenece</text>
+
+                <!-- Divisor -->
+                <line x1="280" y1="20" x2="280" y2="140" stroke="#FDE68A" stroke-width="1" stroke-dasharray="4,3"/>
+                <text x="360" y="88" font-family="JetBrains Mono, monospace" font-size="10" fill="#D97706" text-anchor="middle">VS</text>
+
+                <!-- Lado B: construir -->
+                <text x="570" y="28" font-family="JetBrains Mono, monospace" font-size="9" fill="#B45309" text-anchor="middle" letter-spacing="1.5">CONSTRUIR TU MANUAL</text>
+                <rect x="440" y="40" width="240" height="52" rx="8" fill="#FEF3C7" stroke="#D97706" stroke-width="1.5"/>
+                <text x="560" y="62" font-family="Inter, sans-serif" font-size="12" fill="#92400E" text-anchor="middle" font-weight="500">Tu contexto. Tu trabajo.</text>
+                <text x="560" y="80" font-family="Inter, sans-serif" font-size="12" fill="#92400E" text-anchor="middle" font-weight="500">Tus patrones.</text>
+                <text x="560" y="116" font-family="Inter, sans-serif" font-size="11" fill="#B45309" text-anchor="middle">mejora con el tiempo · no existe en otro lugar</text>
+            </svg>
+        </div>
+
+        <div class="callout amar">
+            <div class="callout-label">La idea central</div>
+            <p>La creatividad es un talento — pero no el de inventar de la nada. Es el talento de saber qué conocimiento aplicar y en qué momento. Lo que has aprendido en los recursos anteriores es la materia prima. Tu visión es lo que decide cómo se combina. El resultado es algo que ningún tutorial puede darte porque ningún tutorial te conoce a ti.</p>
+        </div>
+    </section>
+
+    <!-- ── SECCIÓN 02 ── -->
+    <section class="section" id="s02">
+        <div class="section-num">02</div>
+        <h2>El sistema — 3 líneas, nada más</h2>
+
+        <p>Una entrada por sesión. Tres líneas. Sin formato complejo, sin apps especiales, sin disciplina de monje.</p>
+
+        <!-- ENTRY CARD — EJEMPLO -->
+        <div class="entry-card example">
+            <div class="entry-header">
+                <span class="entry-header-label">Ejemplo de entrada</span>
+                <span class="entry-header-date">08 Mayo 2026</span>
+            </div>
+            <div class="entry-row">
+                <span class="entry-label">QUÉ PROBÉ</span>
+                <span class="entry-value">Usé Prompt Master para redactar un email de seguimiento a un cliente que no respondía</span>
+            </div>
+            <div class="entry-row">
+                <span class="entry-label">QUÉ PASÓ</span>
+                <span class="entry-value">Primer intento útil. Me ahorré 2 rondas de re-prompt. El tono quedó más directo de lo que esperaba</span>
+            </div>
+            <div class="entry-row">
+                <span class="entry-label">NEXT TIME</span>
+                <span class="entry-value">Dar más contexto sobre el destinatario desde el principio — quién es, no solo qué quiero</span>
+            </div>
+        </div>
+
+        <!-- ENTRY CARD — PLANTILLA VACÍA -->
+        <div class="entry-card empty">
+            <div class="entry-header">
+                <span class="entry-header-label">Tu plantilla</span>
+                <span class="entry-header-date">cópiala tal cual</span>
+            </div>
+            <div class="entry-row">
+                <span class="entry-label">QUÉ PROBÉ</span>
+                <span class="entry-value empty">La acción concreta que hiciste con la IA</span>
+            </div>
+            <div class="entry-row">
+                <span class="entry-label">QUÉ PASÓ</span>
+                <span class="entry-value empty">El resultado real — sin editar</span>
+            </div>
+            <div class="entry-row">
+                <span class="entry-label">NEXT TIME</span>
+                <span class="entry-value empty">Una sola cosa que harías diferente</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- ── SECCIÓN 03 ── -->
+    <section class="section" id="s03">
+        <div class="section-num">03</div>
+        <h2>Tu entrada #1 — ahora mismo</h2>
+
+        <div class="action-steps">
+            <div class="action-steps-label">Hazlo antes de cerrar</div>
+            <div class="action-step">
+                <span class="step-num">1.</span>
+                <span class="step-text">Abre el sitio o app donde vas a guardar tu manual — Notion, Notes, cualquier archivo de texto.</span>
+            </div>
+            <div class="action-step">
+                <span class="step-num">2.</span>
+                <span class="step-text">Crea un documento. Tituló: <code>Manual de IA — [tu nombre]</code></span>
+            </div>
+            <div class="action-step">
+                <span class="step-num">3.</span>
+                <span class="step-text">Copia la plantilla de arriba: <strong>QUÉ PROBÉ / QUÉ PASÓ / NEXT TIME</strong></span>
+            </div>
+            <div class="action-step">
+                <span class="step-num">4.</span>
+                <span class="step-text">Piensa en la última vez que usaste una IA — Prompt Master, Claude, lo que sea. Rellena las 3 líneas con eso. Si no recuerdas, abre una conversación ahora y hazlo.</span>
+            </div>
+            <div class="action-step">
+                <span class="step-num">5.</span>
+                <span class="step-text">Guarda. Ya tienes un manual. El documento existe. Es tuyo.</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- ── SECCIÓN 04 ── -->
+    <section class="section" id="s04">
+        <div class="section-num">04</div>
+        <h2>Dónde guardarlo — la regla de los 3 clics</h2>
+
+        <p>La herramienta no importa. La regla sí: debe abrirse en menos de 3 clics desde donde estás trabajando. Si tarda más, no lo harás.</p>
+
+        <div class="tool-chips">
+            <span class="tool-chip rec">Notion</span>
+            <span class="tool-chip rec">Obsidian</span>
+            <span class="tool-chip">Apple Notes</span>
+            <span class="tool-chip">Google Docs</span>
+            <span class="tool-chip">archivo .md</span>
+            <span class="tool-chip">papel</span>
+        </div>
+
+        <div class="callout verde">
+            <div class="callout-label">Lo que funciona</div>
+            <p>Un archivo de texto plano en el escritorio late a una app perfecta que abres una vez. La fricción cero de apertura es más importante que las funcionalidades.</p>
+        </div>
+    </section>
+
+    <!-- ── SECCIÓN 05 ── -->
+    <section class="section" id="s05">
+        <div class="section-num">05</div>
+        <h2>En 30 días — qué tiene tu manual</h2>
+
+        <p>Tres líneas por sesión. En un mes tienes un mapa de cómo usas la IA que no existe en ningún otro lugar del mundo.</p>
+
+        <!-- INFOGRÁFICO ACUMULACIÓN -->
+        <div class="compound-visual">
+            <svg viewBox="0 0 720 200" xmlns="http://www.w3.org/2000/svg">
+                <rect width="720" height="200" fill="#FAFAF7"/>
+
+                <!-- Día 1 -->
+                <text x="90" y="24" font-family="JetBrains Mono, monospace" font-size="9" fill="#B0A89E" text-anchor="middle" letter-spacing="1">DÍA 1</text>
+                <rect x="30" y="34" width="120" height="48" rx="8" fill="white" stroke="#E8E2D9" stroke-width="1.2"/>
+                <rect x="40" y="44" width="28" height="4" rx="2" fill="#FDE68A"/>
+                <rect x="40" y="53" width="90" height="3" rx="1.5" fill="#F3F4F6"/>
+                <rect x="40" y="61" width="28" height="4" rx="2" fill="#FDE68A"/>
+                <rect x="40" y="70" width="75" height="3" rx="1.5" fill="#F3F4F6"/>
+                <text x="90" y="104" font-family="Inter, sans-serif" font-size="11" fill="#B0A89E" text-anchor="middle">1 entrada</text>
+
+                <!-- Flecha -->
+                <defs>
+                    <marker id="ac" markerWidth="7" markerHeight="7" refX="5" refY="3" orient="auto">
+                        <path d="M0,0 L0,6 L7,3 z" fill="#D97706" opacity="0.5"/>
+                    </marker>
+                </defs>
+                <line x1="162" y1="58" x2="198" y2="58" stroke="#D97706" stroke-width="1.5" stroke-dasharray="3,2" marker-end="url(#ac)" opacity="0.5"/>
+
+                <!-- Semana 1 -->
+                <text x="290" y="24" font-family="JetBrains Mono, monospace" font-size="9" fill="#D97706" text-anchor="middle" letter-spacing="1">SEMANA 1</text>
+                <rect x="210" y="34" width="160" height="48" rx="8" fill="white" stroke="#FDE68A" stroke-width="1.2"/>
+                <rect x="222" y="44" width="28" height="4" rx="2" fill="#FDE68A"/>
+                <rect x="222" y="53" width="130" height="3" rx="1.5" fill="#F3F4F6"/>
+                <rect x="222" y="61" width="28" height="4" rx="2" fill="#FDE68A"/>
+                <rect x="222" y="70" width="110" height="3" rx="1.5" fill="#F3F4F6"/>
+                <rect x="222" y="79" width="28" height="4" rx="2" fill="#FDE68A" opacity="0.6"/>
+                <rect x="358" y="34" width="6" height="48" rx="3" fill="#FEF3C7" stroke="#FDE68A" stroke-width="1"/>
+                <text x="290" y="104" font-family="Inter, sans-serif" font-size="11" fill="#D97706" text-anchor="middle">7 entradas</text>
+
+                <!-- Flecha -->
+                <line x1="376" y1="58" x2="412" y2="58" stroke="#D97706" stroke-width="1.5" stroke-dasharray="3,2" marker-end="url(#ac)" opacity="0.7"/>
+
+                <!-- Mes 1 -->
+                <text x="556" y="24" font-family="JetBrains Mono, monospace" font-size="9" fill="#B45309" text-anchor="middle" letter-spacing="1">30 DÍAS</text>
+                <rect x="430" y="28" width="252" height="84" rx="10" fill="#FEF3C7" stroke="#D97706" stroke-width="1.8"/>
+                <rect x="444" y="40" width="28" height="4" rx="2" fill="#D97706"/>
+                <rect x="444" y="49" width="224" height="3" rx="1.5" fill="#FDE68A"/>
+                <rect x="444" y="57" width="28" height="4" rx="2" fill="#D97706"/>
+                <rect x="444" y="66" width="200" height="3" rx="1.5" fill="#FDE68A"/>
+                <line x1="444" y1="76" x2="666" y2="76" stroke="rgba(217,119,6,0.25)" stroke-width="1"/>
+                <rect x="444" y="82" width="28" height="4" rx="2" fill="#D97706"/>
+                <rect x="444" y="91" width="180" height="3" rx="1.5" fill="#FDE68A"/>
+                <rect x="666" y="28" width="10" height="84" rx="5" fill="#FDE68A" stroke="#D97706" stroke-width="1"/>
+                <text x="556" y="135" font-family="Inter, sans-serif" font-size="11" fill="#B45309" text-anchor="middle" font-weight="500">30 entradas · tus patrones visibles</text>
+
+                <!-- Nota inferior -->
+                <text x="360" y="175" font-family="JetBrains Mono, monospace" font-size="9.5" fill="#B45309" text-anchor="middle" letter-spacing="0.5">El recurso 0.5 es esto, ejecutado. El tuyo puede ser más útil — es sobre tu trabajo, no el mío.</text>
+            </svg>
+        </div>
+
+        <p>En el recurso 0.5 cuento qué aprendí de hacer exactamente esto durante 30 días. No solo qué funcionó con la IA — sino qué me enseñó el acto de escribirlo. Hay una conclusión que no esperaba, y que cambió cómo entiendo la relación entre practicar y aprender. No te la cuento aquí.</p>
+    </section>
+
+    <!-- NEXT HOOK -->
+    <a href="0-5.html" class="next-hook">
+        <svg class="next-hook-arrow" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        <span class="next-hook-text">En el siguiente recurso cuento qué pasó cuando hice esto durante 30 días. <strong>Hay algo que no esperaba encontrar.</strong></span>
+    </a>
+
+    <!-- CHECKLIST -->
+    <div class="checklist-section" id="checklist">
+        <div class="checklist-title">Ya lo tengo — compruébalo</div>
+        <ul class="checklist-items" id="checklistItems">
+            <li onclick="toggleCheck(this)"><span class="check-box"></span><span class="check-text">Entiendo por qué mis anotaciones valen más que el mejor prompt copiado de internet</span></li>
+            <li onclick="toggleCheck(this)"><span class="check-box"></span><span class="check-text">Tengo el documento abierto. Se llama "Manual de IA — [mi nombre]". Existe.</span></li>
+            <li onclick="toggleCheck(this)"><span class="check-box"></span><span class="check-text">He escrito mi primera entrada. 3 líneas. Sin perfeccionismo.</span></li>
+            <li onclick="toggleCheck(this)"><span class="check-box"></span><span class="check-text">Abro ese documento en menos de 3 clics desde donde trabajo</span></li>
+            <li onclick="toggleCheck(this)"><span class="check-box"></span><span class="check-text">Sé que en 30 días tendré algo que nadie más tiene. Por primera vez eso no me parece exagerado.</span></li>
+        </ul>
+    </div>
+
+    <!-- FOOTER -->
+    <footer class="resource-footer">
+        <a href="0-3.html" class="footer-back">
+            <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+            Recurso anterior
+        </a>
+        <a href="0-5.html" class="footer-next">
+            Siguiente recurso
+            <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </a>
+    </footer>
+
+</div>
+
+<canvas id="confettiCanvas" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:9999;"></canvas>
+
+<script>
+function toggleCheck(li) {
+    li.classList.toggle('done');
+    li.querySelector('.check-box').textContent = li.classList.contains('done') ? '\u2713' : '';
+    const items = document.querySelectorAll('#checklistItems li');
+    if ([...items].every(i => i.classList.contains('done'))) launchConfetti();
+}
+
+function launchConfetti() {
+    const canvas = document.getElementById('confettiCanvas');
+    if (!canvas) return;
+    canvas.style.display = 'block';
+    const ctx = canvas.getContext('2d');
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+    const colors = ['#B45309','#D97706','#FDE68A','#059669','#7C3AED','#2563EB','#F59E0B','#10B981','#EF4444'];
+    const pieces = Array.from({length: 140}, () => ({
+        x: Math.random() * canvas.width,
+        y: -10 - Math.random() * canvas.height * 0.6,
+        w: Math.random() * 11 + 5,
+        h: Math.random() * 6 + 3,
+        color: colors[Math.floor(Math.random() * colors.length)],
+        vx: (Math.random() - 0.5) * 4,
+        vy: Math.random() * 3 + 1.5,
+        rot: Math.random() * 360,
+        vrot: (Math.random() - 0.5) * 10,
+        alpha: 1,
+        shape: Math.random() > 0.5 ? 'rect' : 'circle'
+    }));
+    let frame = 0;
+    (function animate() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        pieces.forEach(p => {
+            p.x += p.vx;
+            p.y += p.vy;
+            p.rot += p.vrot;
+            p.vy += 0.06;
+            if (frame > 90) p.alpha = Math.max(0, p.alpha - 0.012);
+            ctx.save();
+            ctx.globalAlpha = p.alpha;
+            ctx.translate(p.x + p.w / 2, p.y + p.h / 2);
+            ctx.rotate(p.rot * Math.PI / 180);
+            ctx.fillStyle = p.color;
+            if (p.shape === 'circle') {
+                ctx.beginPath();
+                ctx.arc(0, 0, p.w / 2, 0, Math.PI * 2);
+                ctx.fill();
+            } else {
+                ctx.fillRect(-p.w / 2, -p.h / 2, p.w, p.h);
+            }
+            ctx.restore();
+        });
+        frame++;
+        if (frame < 170) requestAnimationFrame(animate);
+        else canvas.style.display = 'none';
+    })();
+}
+</script>
+</body>
+</html>
