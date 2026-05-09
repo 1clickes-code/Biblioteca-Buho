@@ -1,0 +1,907 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lo que puedes hacer gratis con IA — alex.decode</title>
+    <link rel="icon" type="image/svg+xml" href="../favicon.svg">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        :root {
+            --bg:        #FAFAF7;
+            --surface:   #FFFFFF;
+            --border:    #E8E2D9;
+            --text:      #1C1917;
+            --muted:     #78716C;
+            --faint:     #B0A89E;
+            --amber:     #B45309;
+            --amber-mid: #D97706;
+            --amber-dim: rgba(180,83,9,0.07);
+            --rojo:  #DC2626; --rojo-d:  rgba(220,38,38,0.07);
+            --amar:  #D97706; --amar-d:  rgba(217,119,6,0.07);
+            --azul:  #2563EB; --azul-d:  rgba(37,99,235,0.07);
+            --verde: #059669; --verde-d: rgba(5,150,105,0.07);
+            --morad: #7C3AED; --morad-d: rgba(124,58,237,0.07);
+        }
+
+        html { scroll-behavior: smooth; }
+        body {
+            background: var(--bg);
+            color: var(--text);
+            font-family: 'Inter', system-ui, sans-serif;
+            font-size: 15px;
+            line-height: 1.7;
+            min-height: 100vh;
+        }
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0; left: 0; right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, #D97706 0%, var(--amber) 50%, #D97706 100%);
+            z-index: 100;
+        }
+
+        .wrap { max-width: 720px; margin: 0 auto; padding: 0 24px; }
+
+        /* NAV */
+        .top-nav {
+            padding: 28px 0 0;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 11px;
+            color: var(--faint);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
+        .top-nav a { color: var(--amber); text-decoration: none; transition: opacity .15s; }
+        .top-nav a:hover { opacity: .7; }
+        .top-nav .sep { color: var(--faint); }
+        .nav-owl {
+            margin-left: auto;
+            display: flex; align-items: center; gap: 5px;
+            color: var(--faint); text-decoration: none;
+            font-size: 10px; letter-spacing: .5px;
+            transition: opacity .15s;
+            animation: owlFloat 5s ease-in-out 1s infinite;
+        }
+        .nav-owl:hover { opacity: .7; color: var(--amber); }
+        @keyframes owlFloat { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-4px)} }
+
+        /* HEADER */
+        .resource-header { padding: 36px 0 32px; border-bottom: 1px solid var(--border); margin-bottom: 32px; }
+        .tag {
+            display: inline-flex; align-items: center; gap: 5px;
+            font-size: 10px; font-weight: 600; padding: 3px 10px;
+            border-radius: 100px; margin-bottom: 16px;
+        }
+        .tag .dot { width: 5px; height: 5px; border-radius: 50%; flex-shrink: 0; }
+        .tag.rojo { background: var(--rojo-d); color: var(--rojo); } .tag.rojo .dot { background: var(--rojo); }
+        .resource-title {
+            font-family: 'Playfair Display', Georgia, serif;
+            font-size: clamp(26px, 4vw, 36px);
+            font-weight: 700; line-height: 1.18;
+            letter-spacing: -.3px; margin-bottom: 14px;
+        }
+        .resource-meta {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 11px; color: var(--faint);
+            display: flex; gap: 16px; flex-wrap: wrap;
+        }
+        .resource-meta span { display: flex; align-items: center; gap: 5px; }
+        .meta-dot { width: 3px; height: 3px; border-radius: 50%; background: var(--faint); }
+
+        /* COVER SVG */
+        .cover-wrap {
+            margin-bottom: 36px;
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid var(--border);
+        }
+        .cover-wrap svg { display: block; width: 100%; height: auto; }
+
+        /* LEARN BOX */
+        .learn-box {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 20px 24px;
+            margin-bottom: 40px;
+        }
+        .learn-box-label {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 9px; font-weight: 600;
+            color: var(--rojo); letter-spacing: 1.4px;
+            text-transform: uppercase; margin-bottom: 12px;
+        }
+        .learn-box ul { list-style: none; display: flex; flex-direction: column; gap: 8px; }
+        .learn-box li {
+            display: flex; align-items: flex-start; gap: 10px;
+            font-size: 13.5px; color: var(--text); line-height: 1.5;
+        }
+        .learn-box li::before {
+            content: '→';
+            color: var(--rojo);
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 11px; flex-shrink: 0; margin-top: 2px;
+        }
+
+        /* TOC */
+        .toc {
+            background: var(--surface); border: 1px solid var(--border);
+            border-radius: 10px; padding: 16px 20px; margin-bottom: 48px;
+        }
+        .toc-label {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 9px; color: var(--faint);
+            letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 10px;
+        }
+        .toc-links { display: flex; flex-wrap: wrap; gap: 6px; }
+        .toc-links a {
+            font-size: 12px; color: var(--muted); text-decoration: none;
+            padding: 4px 10px; border-radius: 6px; border: 1px solid var(--border);
+            transition: border-color .15s, color .15s, background .15s;
+            white-space: nowrap;
+        }
+        .toc-links a:hover { border-color: var(--rojo); color: var(--rojo); background: var(--rojo-d); }
+
+        /* SECTIONS */
+        .section { margin-bottom: 52px; scroll-margin-top: 32px; }
+        .section-num {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 10px; color: var(--amber);
+            font-weight: 600; letter-spacing: 1px; margin-bottom: 8px;
+        }
+        .section h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: 22px; font-weight: 700;
+            line-height: 1.3; margin-bottom: 16px; color: var(--text);
+        }
+        .section p { color: var(--text); margin-bottom: 14px; }
+        .section p:last-child { margin-bottom: 0; }
+
+        /* CALLOUT */
+        .callout {
+            border-left: 3px solid var(--amber);
+            background: var(--amber-dim);
+            border-radius: 0 8px 8px 0;
+            padding: 14px 18px; margin: 20px 0;
+        }
+        .callout-label {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 9px; font-weight: 600;
+            color: var(--amber); letter-spacing: 1.2px;
+            text-transform: uppercase; margin-bottom: 6px;
+        }
+        .callout p { font-size: 14px; color: var(--text); margin: 0; }
+
+        .callout.rojo { border-left-color: var(--rojo); background: var(--rojo-d); }
+        .callout.rojo .callout-label { color: var(--rojo); }
+
+        /* STAT CARDS */
+        .stat-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+            gap: 12px; margin: 20px 0;
+        }
+        .stat-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 16px;
+            text-align: center;
+        }
+        .stat-num {
+            font-family: 'Playfair Display', serif;
+            font-size: 28px; font-weight: 700;
+            color: var(--text); line-height: 1;
+            margin-bottom: 4px;
+        }
+        .stat-label {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 9px; color: var(--muted);
+            letter-spacing: .8px;
+        }
+
+        /* TOKEN VISUAL */
+        .token-visual {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 20px 24px;
+            margin: 20px 0;
+        }
+        .token-visual-label {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 9px; color: var(--faint);
+            letter-spacing: 1.2px; text-transform: uppercase;
+            margin-bottom: 14px;
+        }
+        .token-blocks {
+            display: flex; flex-wrap: wrap; gap: 4px;
+            margin-bottom: 14px;
+        }
+        .token-block {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 11px; padding: 3px 7px;
+            border-radius: 4px; border: 1px solid;
+        }
+        .token-block.t1 { background: rgba(37,99,235,.1); border-color: rgba(37,99,235,.25); color: var(--azul); }
+        .token-block.t2 { background: rgba(124,58,237,.1); border-color: rgba(124,58,237,.25); color: var(--morad); }
+        .token-block.t3 { background: rgba(5,150,105,.1); border-color: rgba(5,150,105,.25); color: var(--verde); }
+        .token-block.t4 { background: rgba(217,119,6,.1); border-color: rgba(217,119,6,.25); color: var(--amar); }
+        .token-block.t5 { background: rgba(220,38,38,.1); border-color: rgba(220,38,38,.25); color: var(--rojo); }
+
+        .context-bar-wrap { margin-top: 6px; }
+        .context-bar-label {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 10px; color: var(--muted);
+            display: flex; justify-content: space-between;
+            margin-bottom: 6px;
+        }
+        .context-bar {
+            height: 8px; background: var(--border);
+            border-radius: 100px; overflow: hidden;
+        }
+        .context-bar-fill {
+            height: 100%; border-radius: 100px;
+            background: linear-gradient(90deg, var(--verde), var(--amar), var(--rojo));
+            transition: width .4s ease;
+        }
+        .context-bar-sub {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 9px; color: var(--faint);
+            margin-top: 5px;
+        }
+
+        /* TIER GRID */
+        .tier-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px; margin: 24px 0;
+        }
+        @media (max-width: 580px) {
+            .tier-grid { grid-template-columns: 1fr; }
+        }
+        .tier-card {
+            border-radius: 10px;
+            border: 1px solid;
+            overflow: hidden;
+        }
+        .tier-header {
+            padding: 12px 14px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 10px; font-weight: 600;
+            letter-spacing: .8px; text-transform: uppercase;
+            display: flex; align-items: center; gap: 6px;
+        }
+        .tier-icon { font-size: 14px; }
+        .tier-body { padding: 12px 14px; background: var(--surface); }
+        .tier-item {
+            font-size: 12.5px; padding: 5px 0;
+            border-bottom: 1px solid var(--border);
+            color: var(--text); line-height: 1.4;
+        }
+        .tier-item:last-child { border-bottom: none; padding-bottom: 0; }
+        .tier-item strong {
+            display: block; font-weight: 600; font-size: 12px;
+        }
+        .tier-item span {
+            display: block; font-family: 'JetBrains Mono', monospace;
+            font-size: 10px; color: var(--muted); margin-top: 1px;
+        }
+
+        .tier-card.verde { border-color: rgba(5,150,105,.3); }
+        .tier-card.verde .tier-header { background: var(--verde-d); color: var(--verde); }
+        .tier-card.amar  { border-color: rgba(217,119,6,.3); }
+        .tier-card.amar  .tier-header { background: var(--amar-d);  color: var(--amar); }
+        .tier-card.rojo  { border-color: rgba(220,38,38,.3); }
+        .tier-card.rojo  .tier-header { background: var(--rojo-d);  color: var(--rojo); }
+
+        /* FREE LIST */
+        .free-list {
+            display: flex; flex-direction: column; gap: 10px;
+            margin: 16px 0;
+        }
+        .free-item {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 14px 16px;
+            display: flex; align-items: flex-start; gap: 12px;
+        }
+        .free-badge {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 9px; font-weight: 600;
+            padding: 2px 7px; border-radius: 4px;
+            flex-shrink: 0; margin-top: 2px;
+            background: var(--verde-d); color: var(--verde);
+            letter-spacing: .5px;
+        }
+        .free-item-text { font-size: 13.5px; line-height: 1.5; }
+        .free-item-text strong { font-weight: 600; display: block; margin-bottom: 1px; }
+        .free-item-text small {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 10px; color: var(--muted);
+        }
+
+        /* DECISION CARDS */
+        .decision-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px; margin: 20px 0;
+        }
+        @media (max-width: 480px) {
+            .decision-grid { grid-template-columns: 1fr; }
+        }
+        .decision-card {
+            border-radius: 10px; padding: 16px 18px;
+            border: 1px solid;
+        }
+        .decision-card.si { background: var(--verde-d); border-color: rgba(5,150,105,.25); }
+        .decision-card.no { background: var(--rojo-d);  border-color: rgba(220,38,38,.25); }
+        .decision-label {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 10px; font-weight: 600;
+            letter-spacing: 1px; text-transform: uppercase;
+            margin-bottom: 10px;
+        }
+        .decision-card.si .decision-label { color: var(--verde); }
+        .decision-card.no .decision-label { color: var(--rojo); }
+        .decision-list { list-style: none; display: flex; flex-direction: column; gap: 7px; }
+        .decision-list li { font-size: 13px; line-height: 1.45; color: var(--text); }
+
+        /* CHECKLIST */
+        .checklist-section {
+            background: var(--surface); border: 1px solid var(--border);
+            border-radius: 12px; padding: 24px 26px; margin-bottom: 52px;
+        }
+        .checklist-title {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 10px; color: var(--amber);
+            font-weight: 600; letter-spacing: 1px;
+            text-transform: uppercase; margin-bottom: 16px;
+        }
+        .checklist-items { list-style: none; display: flex; flex-direction: column; gap: 10px; }
+        .checklist-items li {
+            display: flex; align-items: flex-start; gap: 10px;
+            font-size: 13.5px; color: var(--text); line-height: 1.5; cursor: pointer;
+        }
+        .check-box {
+            width: 17px; height: 17px;
+            border: 1.5px solid var(--border); border-radius: 4px;
+            flex-shrink: 0; margin-top: 1px;
+            transition: border-color .15s, background .15s;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 10px; color: white;
+        }
+        .checklist-items li.done .check-box { background: var(--verde); border-color: var(--verde); }
+        .checklist-items li.done .check-text { text-decoration: line-through; color: var(--muted); }
+
+        /* FOOTER */
+        .resource-footer {
+            border-top: 1px solid var(--border);
+            padding: 32px 0 56px;
+            display: flex; align-items: center;
+            justify-content: space-between; gap: 16px; flex-wrap: wrap;
+        }
+        .footer-back {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 12px; color: var(--muted); text-decoration: none;
+            display: flex; align-items: center; gap: 6px; transition: color .15s;
+        }
+        .footer-back:hover { color: var(--amber); }
+        .footer-next {
+            font-size: 13px; font-weight: 500;
+            color: var(--amber); text-decoration: none;
+            display: flex; align-items: center; gap: 6px; transition: gap .15s;
+        }
+        .footer-next:hover { gap: 10px; }
+
+        /* RESPONSIVE */
+        @media (max-width: 600px) {
+            .wrap { padding: 0 16px; }
+            .resource-title { font-size: 24px; }
+            .toc-links { gap: 4px; }
+        }
+    </style>
+</head>
+<body>
+<div class="wrap">
+
+    <!-- NAV -->
+    <nav class="top-nav">
+        <a href="../index.html">alex.decode</a>
+        <span class="sep">/</span>
+        <span>Biblioteca</span>
+        <span class="sep">/</span>
+        <span>Nivel 1</span>
+        <span class="sep">/</span>
+        <span>Gratis vs. pago</span>
+        <a href="../index.html" class="nav-owl" aria-label="Volver a la biblioteca">
+            <svg width="28" height="32" viewBox="0 0 140 160" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <polygon points="44,32 36,6 52,26" fill="#92400E"/>
+                <polygon points="96,32 104,6 88,26" fill="#92400E"/>
+                <circle cx="70" cy="56" r="38" fill="#B45309"/>
+                <ellipse cx="70" cy="58" rx="26" ry="24" fill="#D97706" opacity="0.28"/>
+                <circle cx="56" cy="52" r="13" fill="#FEF3C7"/>
+                <circle cx="84" cy="52" r="13" fill="#FEF3C7"/>
+                <circle cx="56" cy="52" r="6.5" fill="#1C1917"/>
+                <circle cx="84" cy="52" r="6.5" fill="#1C1917"/>
+                <circle cx="59" cy="49" r="2.2" fill="white"/>
+                <circle cx="87" cy="49" r="2.2" fill="white"/>
+                <polygon points="63,64 77,64 70,75" fill="#D97706"/>
+                <ellipse cx="70" cy="120" rx="34" ry="36" fill="#B45309"/>
+                <ellipse cx="70" cy="126" rx="20" ry="24" fill="#D97706" opacity="0.22"/>
+            </svg>
+        </a>
+    </nav>
+
+    <!-- HEADER -->
+    <header class="resource-header">
+        <div class="tag rojo"><span class="dot"></span>Mitos</div>
+        <h1 class="resource-title">Lo que puedes hacer gratis con IA (y lo que te están vendiendo que no existe)</h1>
+        <div class="resource-meta">
+            <span>6 min de lectura</span>
+            <span class="meta-dot"></span>
+            <span>Nivel 1</span>
+            <span class="meta-dot"></span>
+            <span>Mayo 2026</span>
+        </div>
+    </header>
+
+    <!-- COVER SVG — Nevera con ingredientes etiquetados -->
+    <div class="cover-wrap">
+        <svg viewBox="0 0 720 315" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <!-- Fondo -->
+            <rect width="720" height="315" fill="#FDF8F2"/>
+
+            <!-- Textura de superficie -->
+            <rect x="0" y="270" width="720" height="45" fill="#F0EAE0"/>
+
+            <!-- Nevera principal -->
+            <rect x="200" y="30" width="320" height="260" rx="14" fill="#E8E2D9" stroke="#D4CCBF" stroke-width="2"/>
+            <!-- Sombra nevera -->
+            <rect x="204" y="34" width="316" height="256" rx="12" fill="none" stroke="#C8BFB0" stroke-width="1" opacity="0.5"/>
+
+            <!-- Puerta nevera (línea separadora) -->
+            <line x1="360" y1="30" x2="360" y2="290" stroke="#C8BFB0" stroke-width="1.5"/>
+
+            <!-- Asa izquierda -->
+            <rect x="342" y="130" width="8" height="50" rx="4" fill="#B0A89E"/>
+            <!-- Asa derecha -->
+            <rect x="370" y="130" width="8" height="50" rx="4" fill="#B0A89E"/>
+
+            <!-- Interior nevera izquierda - estantes -->
+            <rect x="218" y="75" width="130" height="1.5" fill="#C8BFB0"/>
+            <rect x="218" y="150" width="130" height="1.5" fill="#C8BFB0"/>
+            <rect x="218" y="220" width="130" height="1.5" fill="#C8BFB0"/>
+
+            <!-- Interior nevera derecha - estantes -->
+            <rect x="372" y="75" width="130" height="1.5" fill="#C8BFB0"/>
+            <rect x="372" y="150" width="130" height="1.5" fill="#C8BFB0"/>
+            <rect x="372" y="220" width="130" height="1.5" fill="#C8BFB0"/>
+
+            <!-- INGREDIENTES IZQUIERDA (Gratis real — verde) -->
+            <!-- Claude.ai -->
+            <rect x="224" y="82" width="115" height="58" rx="8" fill="#FFFFFF" stroke="#D1FAE5" stroke-width="1.5"/>
+            <rect x="224" y="82" width="115" height="18" rx="8" fill="#D1FAE5"/>
+            <rect x="224" y="91" width="115" height="9" fill="#D1FAE5"/>
+            <text x="281" y="93" font-family="JetBrains Mono, monospace" font-size="8" fill="#059669" font-weight="600" text-anchor="middle" letter-spacing="0.5">GRATIS ✓</text>
+            <text x="281" y="113" font-family="Inter, sans-serif" font-size="11" fill="#1C1917" font-weight="600" text-anchor="middle">Claude.ai</text>
+            <text x="281" y="128" font-family="JetBrains Mono, monospace" font-size="8" fill="#78716C" text-anchor="middle">~10 msg/día</text>
+
+            <!-- Antigravity -->
+            <rect x="224" y="157" width="115" height="55" rx="8" fill="#FFFFFF" stroke="#D1FAE5" stroke-width="1.5"/>
+            <rect x="224" y="157" width="115" height="18" rx="8" fill="#D1FAE5"/>
+            <rect x="224" y="166" width="115" height="9" fill="#D1FAE5"/>
+            <text x="281" y="168" font-family="JetBrains Mono, monospace" font-size="8" fill="#059669" font-weight="600" text-anchor="middle" letter-spacing="0.5">GRATIS ✓</text>
+            <text x="281" y="188" font-family="Inter, sans-serif" font-size="11" fill="#1C1917" font-weight="600" text-anchor="middle">Antigravity</text>
+            <text x="281" y="202" font-family="JetBrains Mono, monospace" font-size="8" fill="#78716C" text-anchor="middle">Google · beta</text>
+
+            <!-- GitHub Pages -->
+            <rect x="224" y="227" width="115" height="46" rx="8" fill="#FFFFFF" stroke="#D1FAE5" stroke-width="1.5"/>
+            <rect x="224" y="227" width="115" height="18" rx="8" fill="#D1FAE5"/>
+            <rect x="224" y="236" width="115" height="9" fill="#D1FAE5"/>
+            <text x="281" y="238" font-family="JetBrains Mono, monospace" font-size="8" fill="#059669" font-weight="600" text-anchor="middle" letter-spacing="0.5">GRATIS ✓</text>
+            <text x="281" y="258" font-family="Inter, sans-serif" font-size="11" fill="#1C1917" font-weight="600" text-anchor="middle">GitHub Pages</text>
+            <text x="281" y="265" font-family="JetBrains Mono, monospace" font-size="8" fill="#78716C" text-anchor="middle">deploy gratis</text>
+
+            <!-- INGREDIENTES DERECHA (mezcla trampa/pago) -->
+            <!-- Zapier free -->
+            <rect x="378" y="82" width="115" height="58" rx="8" fill="#FFFFFF" stroke="#FEF3C7" stroke-width="1.5"/>
+            <rect x="378" y="82" width="115" height="18" rx="8" fill="#FEF3C7"/>
+            <rect x="378" y="91" width="115" height="9" fill="#FEF3C7"/>
+            <text x="435" y="93" font-family="JetBrains Mono, monospace" font-size="8" fill="#D97706" font-weight="600" text-anchor="middle" letter-spacing="0.5">TRAMPA ⚠</text>
+            <text x="435" y="113" font-family="Inter, sans-serif" font-size="11" fill="#1C1917" font-weight="600" text-anchor="middle">Zapier free</text>
+            <text x="435" y="128" font-family="JetBrains Mono, monospace" font-size="8" fill="#78716C" text-anchor="middle">100 tareas/mes</text>
+
+            <!-- Midjourney -->
+            <rect x="378" y="157" width="115" height="55" rx="8" fill="#FFFFFF" stroke="#FEE2E2" stroke-width="1.5"/>
+            <rect x="378" y="157" width="115" height="18" rx="8" fill="#FEE2E2"/>
+            <rect x="378" y="166" width="115" height="9" fill="#FEE2E2"/>
+            <text x="435" y="168" font-family="JetBrains Mono, monospace" font-size="8" fill="#DC2626" font-weight="600" text-anchor="middle" letter-spacing="0.5">PAGO €</text>
+            <text x="435" y="188" font-family="Inter, sans-serif" font-size="11" fill="#1C1917" font-weight="600" text-anchor="middle">Midjourney</text>
+            <text x="435" y="202" font-family="JetBrains Mono, monospace" font-size="8" fill="#78716C" text-anchor="middle">desde 10€/mes</text>
+
+            <!-- Claude Pro -->
+            <rect x="378" y="227" width="115" height="46" rx="8" fill="#FFFFFF" stroke="#FEE2E2" stroke-width="1.5"/>
+            <rect x="378" y="227" width="115" height="18" rx="8" fill="#FEE2E2"/>
+            <rect x="378" y="236" width="115" height="9" fill="#FEE2E2"/>
+            <text x="435" y="238" font-family="JetBrains Mono, monospace" font-size="8" fill="#DC2626" font-weight="600" text-anchor="middle" letter-spacing="0.5">PAGO €</text>
+            <text x="435" y="258" font-family="Inter, sans-serif" font-size="11" fill="#1C1917" font-weight="600" text-anchor="middle">Claude Pro</text>
+            <text x="435" y="265" font-family="JetBrains Mono, monospace" font-size="8" fill="#78716C" text-anchor="middle">20€/mes</text>
+
+            <!-- Texto lateral izquierdo -->
+            <text x="110" y="155" font-family="Playfair Display, serif" font-size="15" fill="#B45309" font-weight="700" text-anchor="middle">La</text>
+            <text x="110" y="174" font-family="Playfair Display, serif" font-size="15" fill="#B45309" font-weight="700" text-anchor="middle">nevera</text>
+            <text x="110" y="196" font-family="JetBrains Mono, monospace" font-size="9" fill="#B0A89E" text-anchor="middle">antes de</text>
+            <text x="110" y="209" font-family="JetBrains Mono, monospace" font-size="9" fill="#B0A89E" text-anchor="middle">cocinar</text>
+
+            <!-- Texto lateral derecho -->
+            <text x="612" y="148" font-family="JetBrains Mono, monospace" font-size="9" fill="#059669" text-anchor="middle">✓ gratis real</text>
+            <text x="612" y="165" font-family="JetBrains Mono, monospace" font-size="9" fill="#D97706" text-anchor="middle">⚠ trampa</text>
+            <text x="612" y="182" font-family="JetBrains Mono, monospace" font-size="9" fill="#DC2626" text-anchor="middle">€ pago</text>
+        </svg>
+    </div>
+
+    <!-- LEARN BOX -->
+    <div class="learn-box">
+        <div class="learn-box-label">Lo que vas a aprender</div>
+        <ul>
+            <li>Qué herramientas son gratis de verdad — sin letra pequeña</li>
+            <li>Qué son los tokens y por qué los límites gratuitos existen</li>
+            <li>Qué puedes construir hoy sin pagar nada</li>
+            <li>Cuándo tiene sentido pagar — y cuándo no</li>
+        </ul>
+    </div>
+
+    <!-- TOC -->
+    <nav class="toc" aria-label="Contenido">
+        <div class="toc-label">En este recurso</div>
+        <div class="toc-links">
+            <a href="#s01">01 El humo</a>
+            <a href="#s02">02 Qué son los tokens</a>
+            <a href="#s03">03 Gratis / Trampa / Pago</a>
+            <a href="#s04">04 Qué puedes hacer hoy</a>
+            <a href="#s05">05 Cuándo pagar</a>
+            <a href="#checklist">Checklist</a>
+        </div>
+    </nav>
+
+    <!-- S01 -->
+    <section class="section" id="s01">
+        <div class="section-num">01</div>
+        <h2>El humo que hay que limpiar antes de empezar</h2>
+        <p>Llevas tiempo viendo lo mismo: "automatiza tu trabajo gratis", "construye apps sin código y sin pagar", "reemplaza a 3 empleados con IA gratuita". Algunos de esos posts tienen miles de likes. Algunos los hacen personas que sí saben de lo que hablan. Pero la mayoría omiten algo importante: los detalles que convierten "gratis" en "gratis hasta que necesitas que funcione de verdad".</p>
+        <p>Antes de tocar ninguna herramienta, necesitas saber qué tienes realmente disponible. Como antes de cocinar necesitas saber qué tienes en la nevera — no lo que crees que tienes. Este recurso es ese inventario.</p>
+
+        <div class="callout rojo">
+            <div class="callout-label">El mito más extendido</div>
+            <p>"Con IA puedes automatizar todo tu trabajo sin pagar nada." Verdad parcial. Puedes hacer cosas reales sin pagar. Pero hay un techo — y saber dónde está ese techo cambia completamente cómo empiezas.</p>
+        </div>
+    </section>
+
+    <!-- S02 -->
+    <section class="section" id="s02">
+        <div class="section-num">02</div>
+        <h2>Qué son los tokens (y por qué hay límites)</h2>
+        <p>Los modelos de IA no procesan texto como tú lo lees. Lo descomponen en bloques llamados <strong>tokens</strong>. Aproximadamente 1 token equivale a 3-4 caracteres en español. No es una unidad exacta — es más como una "porción" de texto.</p>
+
+        <div class="token-visual">
+            <div class="token-visual-label">Así ve la IA esta frase</div>
+            <div class="token-blocks">
+                <span class="token-block t1">Quiero</span>
+                <span class="token-block t2"> auto</span>
+                <span class="token-block t3">mat</span>
+                <span class="token-block t4">izar</span>
+                <span class="token-block t5"> mi</span>
+                <span class="token-block t1"> trabajo</span>
+                <span class="token-block t2"> con</span>
+                <span class="token-block t3"> IA</span>
+            </div>
+            <div class="context-bar-wrap">
+                <div class="context-bar-label">
+                    <span>Ventana de contexto</span>
+                    <span style="color:var(--rojo)">límite gratuito</span>
+                </div>
+                <div class="context-bar">
+                    <div class="context-bar-fill" style="width: 68%"></div>
+                </div>
+                <div class="context-bar-sub">Cuando se llena, la IA "olvida" lo que dijiste al principio de la conversación</div>
+            </div>
+        </div>
+
+        <p>Cada conversación consume tokens. Cuando llegas al límite diario del plan gratuito, la herramienta para. Cuando llenas la ventana de contexto dentro de una conversación, el modelo empieza a perder el hilo de lo que se habló al principio.</p>
+
+        <div class="stat-grid">
+            <div class="stat-card">
+                <div class="stat-num" style="color:var(--verde)">~10</div>
+                <div class="stat-label">mensajes/día<br>Claude gratis</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-num" style="color:var(--amar)">100</div>
+                <div class="stat-label">tareas/mes<br>Zapier gratis</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-num" style="color:var(--azul)">1K</div>
+                <div class="stat-label">ops/mes<br>Make gratis</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-num" style="color:var(--rojo)">0</div>
+                <div class="stat-label">plan gratis<br>Midjourney</div>
+            </div>
+        </div>
+
+        <p>Estos números no son malos. Son la realidad. Y conocerlos desde el principio te ahorra la frustración de llegar a ese muro sin esperarlo.</p>
+    </section>
+
+    <!-- S03 -->
+    <section class="section" id="s03">
+        <div class="section-num">03</div>
+        <h2>La tabla que nadie te hace: gratis / trampa / pago</h2>
+        <p>Sin humo. Sin marketing. Tres columnas y lo que hay en cada una.</p>
+
+        <div class="tier-grid">
+            <!-- Gratis real -->
+            <div class="tier-card verde">
+                <div class="tier-header">
+                    <span class="tier-icon">✓</span>
+                    Gratis real
+                </div>
+                <div class="tier-body">
+                    <div class="tier-item">
+                        <strong>Claude.ai</strong>
+                        <span>~10 msg/día. Suficiente para empezar.</span>
+                    </div>
+                    <div class="tier-item">
+                        <strong>ChatGPT</strong>
+                        <span>GPT-4o mini. Con límites diarios.</span>
+                    </div>
+                    <div class="tier-item">
+                        <strong>Gemini</strong>
+                        <span>Con cuenta Google. Sin coste.</span>
+                    </div>
+                    <div class="tier-item">
+                        <strong>Antigravity</strong>
+                        <span>Google. Crear apps con IA.</span>
+                    </div>
+                    <div class="tier-item">
+                        <strong>Stitch</strong>
+                        <span>Google. Diseño de interfaces.</span>
+                    </div>
+                    <div class="tier-item">
+                        <strong>GitHub Pages</strong>
+                        <span>Publicar tu app. Sin coste.</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Trampa -->
+            <div class="tier-card amar">
+                <div class="tier-header">
+                    <span class="tier-icon">⚠</span>
+                    Gratis con trampa
+                </div>
+                <div class="tier-body">
+                    <div class="tier-item">
+                        <strong>Zapier free</strong>
+                        <span>100 tareas/mes. Se acaban en un día de trabajo real.</span>
+                    </div>
+                    <div class="tier-item">
+                        <strong>Make free</strong>
+                        <span>1.000 ops/mes. Mejor, pero también tiene techo.</span>
+                    </div>
+                    <div class="tier-item">
+                        <strong>Claude gratis</strong>
+                        <span>Si trabajas en serio, el límite llega pronto.</span>
+                    </div>
+                    <div class="tier-item">
+                        <strong>ChatGPT gratis</strong>
+                        <span>Sin o1, sin Canvas avanzado, sin análisis pesado.</span>
+                    </div>
+                    <div class="tier-item">
+                        <strong>"Sin código gratis"</strong>
+                        <span>Sirve para prototipos. No para producción.</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Pago -->
+            <div class="tier-card rojo">
+                <div class="tier-header">
+                    <span class="tier-icon">€</span>
+                    Necesita pago
+                </div>
+                <div class="tier-body">
+                    <div class="tier-item">
+                        <strong>Midjourney</strong>
+                        <span>No existe versión gratis. Desde 10€/mes.</span>
+                    </div>
+                    <div class="tier-item">
+                        <strong>Claude Pro</strong>
+                        <span>Para trabajar sin límites diarios. 20€/mes.</span>
+                    </div>
+                    <div class="tier-item">
+                        <strong>ChatGPT Plus</strong>
+                        <span>Para o1, o3 y análisis avanzado. 20$/mes.</span>
+                    </div>
+                    <div class="tier-item">
+                        <strong>Make / Zapier</strong>
+                        <span>Para flujos reales de trabajo continuado.</span>
+                    </div>
+                    <div class="tier-item">
+                        <strong>Claude Code</strong>
+                        <span>Consumo de tokens en tiempo real. Controlable.</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="callout">
+            <div class="callout-label">La regla del techo</div>
+            <p>El plan gratuito es para aprender y probar. El plan de pago es para trabajar. No tiene sentido pagar antes de haber probado. Tiene todo el sentido pagar cuando el límite gratuito aparece antes de terminar tu tarea.</p>
+        </div>
+    </section>
+
+    <!-- S04 -->
+    <section class="section" id="s04">
+        <div class="section-num">04</div>
+        <h2>Qué puedes construir hoy sin pagar nada</h2>
+        <p>Más de lo que crees. Aquí está la lista real — las mismas cosas que vamos a construir en este nivel:</p>
+
+        <div class="free-list">
+            <div class="free-item">
+                <span class="free-badge">GRATIS</span>
+                <div class="free-item-text">
+                    <strong>Chatear con IA y generar textos</strong>
+                    <small>Claude.ai o ChatGPT gratis. Límite diario, pero suficiente para aprender.</small>
+                </div>
+            </div>
+            <div class="free-item">
+                <span class="free-badge">GRATIS</span>
+                <div class="free-item-text">
+                    <strong>Crear una app simple con Antigravity + Stitch</strong>
+                    <small>Las dos herramientas que vamos a usar en este nivel. Gratuitas en versión beta.</small>
+                </div>
+            </div>
+            <div class="free-item">
+                <span class="free-badge">GRATIS</span>
+                <div class="free-item-text">
+                    <strong>Publicarla en tu móvil como una app real</strong>
+                    <small>GitHub Pages. Sin dominio, sin hosting de pago. Solo el enlace del navegador.</small>
+                </div>
+            </div>
+            <div class="free-item">
+                <span class="free-badge">GRATIS</span>
+                <div class="free-item-text">
+                    <strong>Automatizar 1-2 flujos simples</strong>
+                    <small>Make.com free. 1.000 operaciones/mes — suficiente para aprender cómo funciona.</small>
+                </div>
+            </div>
+        </div>
+
+        <p>El caso real del final de este nivel — la app de gestión de gastos de viaje que construí yo — se hizo con estas herramientas. Sin pagar nada en el proceso de aprendizaje.</p>
+    </section>
+
+    <!-- S05 -->
+    <section class="section" id="s05">
+        <div class="section-num">05</div>
+        <h2>Cuándo tiene sentido pagar — y cuándo no</h2>
+        <p>Esta decisión no tiene que ver con el precio. Tiene que ver con si el tiempo que te ahorra la herramienta vale más que lo que cuesta. Y eso solo lo puedes saber después de haberla usado.</p>
+
+        <div class="decision-grid">
+            <div class="decision-card si">
+                <div class="decision-label">Tiene sentido pagar cuando...</div>
+                <ul class="decision-list">
+                    <li>La usas cada día para trabajo real</li>
+                    <li>Llegas al límite antes de terminar tus tareas</li>
+                    <li>1 hora ahorrada > coste mensual de la herramienta</li>
+                    <li>Necesitas más contexto para proyectos largos</li>
+                </ul>
+            </div>
+            <div class="decision-card no">
+                <div class="decision-label">No tiene sentido pagar cuando...</div>
+                <ul class="decision-list">
+                    <li>Estás empezando y no has probado todavía</li>
+                    <li>La usas una vez a la semana o menos</li>
+                    <li>No has llegado al límite gratuito ni una vez</li>
+                    <li>El FOMO es la única razón para pagar</li>
+                </ul>
+            </div>
+        </div>
+
+        <p>Yo uso Claude.ai gratis para tareas de texto corto del día a día. Para proyectos más largos — como construir esta biblioteca — uso Claude Pro porque llego al límite antes de terminar. La diferencia no es la herramienta: es el uso.</p>
+
+        <div class="callout">
+            <div class="callout-label">Antes de cerrar esta página</div>
+            <p>Abre una de las herramientas gratuitas de la tabla — Claude.ai, Antigravity o Stitch — y explórala durante 5 minutos. Sin objetivo. Solo para saber a qué sabe ese ingrediente.</p>
+        </div>
+    </section>
+
+    <!-- CHECKLIST -->
+    <div class="checklist-section" id="checklist">
+        <div class="checklist-title">Lista de comprobación</div>
+        <ul class="checklist-items" id="checklistItems">
+            <li onclick="toggleCheck(this)"><span class="check-box"></span><span class="check-text">Sé qué herramientas son gratis de verdad y cuáles tienen trampa</span></li>
+            <li onclick="toggleCheck(this)"><span class="check-box"></span><span class="check-text">Entiendo qué es un token y por qué los límites gratuitos existen</span></li>
+            <li onclick="toggleCheck(this)"><span class="check-box"></span><span class="check-text">He abierto al menos una herramienta gratuita y la he explorado</span></li>
+            <li onclick="toggleCheck(this)"><span class="check-box"></span><span class="check-text">Sé cuándo tiene sentido pagar — y cuándo no</span></li>
+            <li onclick="toggleCheck(this)"><span class="check-box"></span><span class="check-text">Tengo claro qué puedo hacer sin pagar en este nivel</span></li>
+        </ul>
+    </div>
+
+    <!-- FOOTER -->
+    <footer class="resource-footer">
+        <a href="../index.html" class="footer-back">
+            <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+            Volver a la biblioteca
+        </a>
+        <a href="1-2.html" class="footer-next">
+            Los conceptos que necesitas
+            <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </a>
+    </footer>
+
+</div>
+
+<script>
+function toggleCheck(li) {
+    li.classList.toggle('done');
+    li.querySelector('.check-box').textContent = li.classList.contains('done') ? '✓' : '';
+    const items = document.querySelectorAll('#checklistItems li');
+    if ([...items].every(i => i.classList.contains('done'))) launchConfetti();
+}
+
+function launchConfetti() {
+    const canvas = document.getElementById('confettiCanvas');
+    if (!canvas) return;
+    canvas.style.display = 'block';
+    const ctx = canvas.getContext('2d');
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+    const colors = ['#B45309','#D97706','#FDE68A','#059669','#7C3AED','#2563EB','#F59E0B','#10B981','#EF4444'];
+    const pieces = Array.from({length: 140}, () => ({
+        x: Math.random() * canvas.width,
+        y: -10 - Math.random() * canvas.height * 0.6,
+        w: Math.random() * 11 + 5,
+        h: Math.random() * 6 + 3,
+        color: colors[Math.floor(Math.random() * colors.length)],
+        vx: (Math.random() - 0.5) * 4,
+        vy: Math.random() * 3 + 1.5,
+        rot: Math.random() * 360,
+        vrot: (Math.random() - 0.5) * 10,
+        alpha: 1,
+        shape: Math.random() > 0.5 ? 'rect' : 'circle'
+    }));
+    let frame = 0;
+    (function animate() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        pieces.forEach(p => {
+            p.x += p.vx; p.y += p.vy; p.rot += p.vrot; p.vy += 0.06;
+            if (frame > 90) p.alpha = Math.max(0, p.alpha - 0.012);
+            ctx.save();
+            ctx.globalAlpha = p.alpha;
+            ctx.translate(p.x + p.w / 2, p.y + p.h / 2);
+            ctx.rotate(p.rot * Math.PI / 180);
+            ctx.fillStyle = p.color;
+            if (p.shape === 'circle') {
+                ctx.beginPath(); ctx.arc(0, 0, p.w / 2, 0, Math.PI * 2); ctx.fill();
+            } else { ctx.fillRect(-p.w / 2, -p.h / 2, p.w, p.h); }
+            ctx.restore();
+        });
+        frame++;
+        if (frame < 170) requestAnimationFrame(animate);
+        else canvas.style.display = 'none';
+    })();
+}
+</script>
+
+<canvas id="confettiCanvas" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:9999;"></canvas>
+</body>
+</html>
