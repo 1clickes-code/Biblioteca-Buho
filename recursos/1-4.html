@@ -1,0 +1,1022 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Construye antes de saber cómo — alex.decode</title>
+    <link rel="icon" type="image/svg+xml" href="../favicon.svg">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        :root {
+            --bg:        #FAFAF7;
+            --surface:   #FFFFFF;
+            --border:    #E8E2D9;
+            --text:      #1C1917;
+            --muted:     #78716C;
+            --faint:     #B0A89E;
+            --amber:     #B45309;
+            --amber-mid: #D97706;
+            --amber-dim: rgba(180,83,9,0.07);
+            --rojo:  #DC2626; --rojo-d:  rgba(220,38,38,0.07);
+            --amar:  #D97706; --amar-d:  rgba(217,119,6,0.07);
+            --azul:  #2563EB; --azul-d:  rgba(37,99,235,0.07);
+            --verde: #059669; --verde-d: rgba(5,150,105,0.07);
+            --morad: #7C3AED; --morad-d: rgba(124,58,237,0.07);
+        }
+
+        html { scroll-behavior: smooth; }
+        body {
+            background: var(--bg);
+            color: var(--text);
+            font-family: 'Inter', system-ui, sans-serif;
+            font-size: 15px;
+            line-height: 1.7;
+            min-height: 100vh;
+        }
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0; left: 0; right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, #D97706 0%, var(--amber) 50%, #D97706 100%);
+            z-index: 100;
+        }
+
+        .wrap { max-width: 720px; margin: 0 auto; padding: 0 24px; }
+
+        /* ── NAV ── */
+        .top-nav {
+            padding: 28px 0 0;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 11px;
+            color: var(--faint);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
+        .top-nav a { color: var(--amber); text-decoration: none; transition: opacity .15s; }
+        .top-nav a:hover { opacity: .7; }
+        .top-nav .sep { color: var(--faint); }
+        .nav-owl {
+            margin-left: auto;
+            display: flex;
+            align-items: center;
+            text-decoration: none;
+            transition: opacity .15s;
+            animation: owlFloat 5s ease-in-out 1s infinite;
+        }
+        .nav-owl:hover { opacity: .7; }
+        @keyframes owlFloat { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-4px)} }
+
+        /* ── COVER ── */
+        .resource-cover {
+            margin: 24px 0 0;
+            border-radius: 14px;
+            overflow: hidden;
+            width: 100%;
+            aspect-ratio: 16/7;
+            background: var(--amar-d);
+            border: 1px solid rgba(217,119,6,0.18);
+        }
+        .resource-cover svg { width: 100%; height: 100%; display: block; }
+
+        /* ── HEADER ── */
+        .resource-header { padding: 28px 0 28px; border-bottom: 1px solid var(--border); margin-bottom: 24px; }
+
+        .tag {
+            display: inline-flex; align-items: center; gap: 5px;
+            font-size: 10px; font-weight: 600; padding: 3px 10px;
+            border-radius: 100px; margin-bottom: 14px;
+        }
+        .tag .dot { width: 5px; height: 5px; border-radius: 50%; flex-shrink: 0; }
+        .tag.amar { background: var(--amar-d); color: var(--amar); } .tag.amar .dot { background: var(--amar); }
+
+        .resource-title {
+            font-family: 'Playfair Display', Georgia, serif;
+            font-size: clamp(24px, 4vw, 34px);
+            font-weight: 700;
+            line-height: 1.2;
+            letter-spacing: -.3px;
+            margin-bottom: 12px;
+        }
+        .resource-meta {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 11px;
+            color: var(--faint);
+            display: flex;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+        .resource-meta span { display: flex; align-items: center; gap: 5px; }
+        .meta-dot { width: 3px; height: 3px; border-radius: 50%; background: var(--faint); }
+
+        /* ── LEARN BOX ── */
+        .learn-box {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 20px 22px;
+            margin-bottom: 16px;
+        }
+        .learn-label {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 9px;
+            font-weight: 600;
+            color: var(--amber);
+            letter-spacing: 1.4px;
+            text-transform: uppercase;
+            margin-bottom: 12px;
+        }
+        .learn-list { list-style: none; display: flex; flex-direction: column; gap: 8px; }
+        .learn-list li {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            font-size: 13.5px;
+            color: var(--text);
+            line-height: 1.5;
+        }
+        .learn-dot {
+            width: 6px; height: 6px;
+            border-radius: 50%;
+            background: var(--amar);
+            flex-shrink: 0;
+            margin-top: 7px;
+        }
+
+        /* ── PREREQ BOX ── */
+        .prereq-box {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            background: var(--azul-d);
+            border: 1px solid rgba(37,99,235,0.18);
+            border-radius: 10px;
+            padding: 14px 18px;
+            margin-bottom: 20px;
+        }
+        .prereq-icon { font-family: 'JetBrains Mono', monospace; font-size: 13px; color: var(--azul); flex-shrink: 0; margin-top: 1px; }
+        .prereq-text { font-size: 13px; color: var(--text); line-height: 1.55; }
+        .prereq-text a { color: var(--azul); text-decoration: underline; text-decoration-color: rgba(37,99,235,0.35); text-underline-offset: 2px; }
+        .prereq-text a:hover { text-decoration-color: var(--azul); }
+
+        /* ── TOC ── */
+        .toc {
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 14px 18px;
+            margin-bottom: 44px;
+        }
+        .toc-label {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 9px;
+            color: var(--faint);
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            margin-bottom: 10px;
+        }
+        .toc-links { display: flex; flex-wrap: wrap; gap: 6px; }
+        .toc-links a {
+            font-size: 12px;
+            color: var(--muted);
+            text-decoration: none;
+            padding: 4px 10px;
+            border-radius: 6px;
+            border: 1px solid var(--border);
+            transition: border-color .15s, color .15s, background .15s;
+            white-space: nowrap;
+        }
+        .toc-links a:hover { border-color: var(--amar); color: var(--amar); background: var(--amar-d); }
+
+        /* ── SECTIONS ── */
+        .section { margin-bottom: 48px; scroll-margin-top: 32px; }
+        .section-num {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 10px;
+            color: var(--amber);
+            font-weight: 600;
+            letter-spacing: 1px;
+            margin-bottom: 8px;
+        }
+        .section h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: 21px;
+            font-weight: 700;
+            line-height: 1.3;
+            margin-bottom: 14px;
+        }
+        .section p { color: var(--text); margin-bottom: 12px; font-size: 14.5px; }
+        .section p:last-child { margin-bottom: 0; }
+
+        /* ── CALLOUT ── */
+        .callout {
+            border-left: 3px solid var(--amber);
+            background: var(--amber-dim);
+            border-radius: 0 8px 8px 0;
+            padding: 13px 16px;
+            margin: 18px 0;
+        }
+        .callout.amar  { border-left-color: var(--amar);  background: var(--amar-d); }
+        .callout.azul  { border-left-color: var(--azul);  background: var(--azul-d); }
+        .callout.verde { border-left-color: var(--verde); background: var(--verde-d); }
+        .callout-label {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 9px;
+            font-weight: 600;
+            color: var(--amber);
+            letter-spacing: 1.2px;
+            text-transform: uppercase;
+            margin-bottom: 5px;
+        }
+        .callout.amar  .callout-label { color: var(--amar); }
+        .callout.azul  .callout-label { color: var(--azul); }
+        .callout.verde .callout-label { color: var(--verde); }
+        .callout p { font-size: 13.5px; color: var(--text); margin: 0; line-height: 1.6; }
+
+        /* ── STATE SPLIT ── */
+        .state-split {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin: 18px 0;
+        }
+        .state-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 14px 16px;
+        }
+        .state-card.end {
+            border-color: rgba(5,150,105,0.3);
+            background: var(--verde-d);
+        }
+        .state-label {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 9px;
+            font-weight: 600;
+            color: var(--faint);
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            margin-bottom: 10px;
+        }
+        .state-card.end .state-label { color: var(--verde); }
+        .state-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 8px;
+            font-size: 13px;
+            color: var(--text);
+            line-height: 1.5;
+            margin-bottom: 7px;
+        }
+        .state-item:last-child { margin-bottom: 0; }
+        .state-dot {
+            width: 5px; height: 5px;
+            border-radius: 50%;
+            background: var(--border);
+            flex-shrink: 0;
+            margin-top: 7px;
+        }
+        .state-card.end .state-dot { background: var(--verde); }
+
+        /* ── ACTION STEPS ── */
+        .action-steps {
+            background: var(--verde-d);
+            border: 1px solid rgba(5,150,105,0.2);
+            border-radius: 12px;
+            padding: 20px 22px;
+            margin: 18px 0;
+        }
+        .action-steps-label {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 9px;
+            font-weight: 600;
+            color: var(--verde);
+            letter-spacing: 1.4px;
+            text-transform: uppercase;
+            margin-bottom: 14px;
+        }
+        .action-step { display: flex; gap: 12px; margin-bottom: 10px; align-items: flex-start; }
+        .action-step:last-child { margin-bottom: 0; }
+        .step-num {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 10px;
+            font-weight: 600;
+            color: var(--verde);
+            min-width: 18px;
+            margin-top: 3px;
+        }
+        .step-text { font-size: 13.5px; color: var(--text); line-height: 1.5; }
+        .step-text strong { font-weight: 600; }
+        .step-text em { font-style: italic; color: var(--muted); }
+
+        /* ── REVIEW CARD ── */
+        .review-card {
+            background: var(--surface);
+            border: 1.5px solid rgba(217,119,6,0.3);
+            border-radius: 12px;
+            overflow: hidden;
+            margin: 18px 0;
+        }
+        .review-card-header {
+            background: var(--amar-d);
+            border-bottom: 1px solid rgba(217,119,6,0.2);
+            padding: 10px 18px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 9px;
+            font-weight: 600;
+            color: var(--amar);
+            letter-spacing: 1.2px;
+            text-transform: uppercase;
+        }
+        .review-q {
+            display: flex;
+            align-items: flex-start;
+            gap: 16px;
+            padding: 14px 18px;
+            border-bottom: 1px solid var(--border);
+        }
+        .review-q:last-child { border-bottom: none; }
+        .review-num {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--amar);
+            opacity: 0.3;
+            min-width: 22px;
+            line-height: 1;
+            margin-top: 1px;
+            flex-shrink: 0;
+        }
+        .review-q-body {}
+        .review-q-text {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text);
+            line-height: 1.4;
+            margin-bottom: 4px;
+        }
+        .review-q-sub {
+            font-size: 12.5px;
+            color: var(--muted);
+            line-height: 1.55;
+        }
+
+        /* ── BUILD FLOW ── */
+        .build-flow { margin: 18px 0; }
+        .bflow-step {
+            display: flex;
+            gap: 14px;
+        }
+        .bflow-left {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            flex-shrink: 0;
+            width: 32px;
+        }
+        .bflow-num {
+            width: 30px; height: 30px;
+            border-radius: 50%;
+            background: var(--amar-d);
+            border: 1.5px solid rgba(217,119,6,0.3);
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--amar);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+        .bflow-line {
+            width: 1.5px;
+            flex: 1;
+            background: var(--border);
+            margin: 4px 0;
+            min-height: 16px;
+        }
+        .bflow-step.last .bflow-line { display: none; }
+        .bflow-content {
+            flex: 1;
+            padding-bottom: 20px;
+        }
+        .bflow-step.last .bflow-content { padding-bottom: 0; }
+        .bflow-tool {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 9px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            margin-bottom: 4px;
+        }
+        .bflow-tool.stitch { color: var(--azul); }
+        .bflow-tool.antigravity { color: var(--verde); }
+        .bflow-tool.tu { color: var(--amar); }
+        .bflow-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text);
+            margin-bottom: 5px;
+            line-height: 1.4;
+        }
+        .bflow-desc {
+            font-size: 13px;
+            color: var(--muted);
+            line-height: 1.55;
+        }
+        .bflow-review {
+            display: flex;
+            align-items: flex-start;
+            gap: 9px;
+            padding: 9px 13px;
+            background: var(--amar-d);
+            border: 1px solid rgba(217,119,6,0.2);
+            border-radius: 8px;
+            margin-top: 10px;
+        }
+        .bflow-review-icon {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 9px;
+            font-weight: 600;
+            color: var(--amar);
+            letter-spacing: 0.6px;
+            text-transform: uppercase;
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
+        .bflow-review-text {
+            font-size: 12.5px;
+            color: var(--text);
+            line-height: 1.5;
+        }
+
+        /* ── NEXT HOOK ── */
+        .next-hook {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            margin: 0 0 32px;
+            padding: 16px 22px;
+            background: var(--amar-d);
+            border: 1px solid rgba(217,119,6,0.25);
+            border-radius: 10px;
+            text-decoration: none;
+            transition: border-color .15s, background .15s;
+        }
+        .next-hook:hover { border-color: var(--amar); background: rgba(217,119,6,0.12); }
+        .next-hook-arrow {
+            color: var(--amar);
+            flex-shrink: 0;
+            transition: transform .2s;
+        }
+        .next-hook:hover .next-hook-arrow { transform: translateX(4px); }
+        .next-hook-text { font-size: 13.5px; color: var(--text); line-height: 1.5; }
+        .next-hook-text strong { color: var(--amar); font-weight: 600; }
+
+        /* ── CHECKLIST ── */
+        .checklist-section {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 22px 24px;
+            margin-bottom: 48px;
+        }
+        .checklist-title {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 10px;
+            color: var(--amber);
+            font-weight: 600;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            margin-bottom: 14px;
+        }
+        .checklist-items { list-style: none; display: flex; flex-direction: column; gap: 10px; }
+        .checklist-items li {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            font-size: 13px;
+            color: var(--text);
+            line-height: 1.5;
+            cursor: pointer;
+        }
+        .check-box {
+            width: 17px; height: 17px;
+            border: 1.5px solid var(--border);
+            border-radius: 4px;
+            flex-shrink: 0;
+            margin-top: 1px;
+            transition: border-color .15s, background .15s;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 10px;
+            color: white;
+        }
+        .checklist-items li.done .check-box { background: var(--verde); border-color: var(--verde); }
+        .checklist-items li.done .check-text { text-decoration: line-through; color: var(--muted); }
+
+        /* ── FOOTER ── */
+        .resource-footer {
+            border-top: 1px solid var(--border);
+            padding: 28px 0 52px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+        .footer-back {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 12px;
+            color: var(--muted);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: color .15s;
+        }
+        .footer-back:hover { color: var(--amber); }
+        .footer-next {
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--amber);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: gap .15s;
+        }
+        .footer-next:hover { gap: 10px; }
+
+        @media (max-width: 600px) {
+            .wrap { padding: 0 16px; }
+            .resource-title { font-size: 22px; }
+            .state-split { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+<div class="wrap">
+
+    <!-- NAV -->
+    <nav class="top-nav">
+        <a href="../index.html">alex.decode</a>
+        <span class="sep">/</span>
+        <span>Biblioteca</span>
+        <span class="sep">/</span>
+        <span>Nivel 1</span>
+        <span class="sep">/</span>
+        <span>Construye antes de saber cómo</span>
+        <a href="../index.html" class="nav-owl" aria-label="Volver a la biblioteca">
+            <svg width="28" height="32" viewBox="0 0 140 160" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <polygon points="44,32 36,6 52,26" fill="#92400E"/>
+                <polygon points="96,32 104,6 88,26" fill="#92400E"/>
+                <circle cx="70" cy="56" r="38" fill="#B45309"/>
+                <ellipse cx="70" cy="58" rx="26" ry="24" fill="#D97706" opacity="0.28"/>
+                <circle cx="56" cy="52" r="13" fill="#FEF3C7"/>
+                <circle cx="84" cy="52" r="13" fill="#FEF3C7"/>
+                <circle cx="56" cy="52" r="6.5" fill="#1C1917"/>
+                <circle cx="84" cy="52" r="6.5" fill="#1C1917"/>
+                <circle cx="59" cy="49" r="2.2" fill="white"/>
+                <circle cx="87" cy="49" r="2.2" fill="white"/>
+                <polygon points="63,64 77,64 70,75" fill="#D97706"/>
+                <ellipse cx="70" cy="120" rx="34" ry="36" fill="#B45309"/>
+                <ellipse cx="70" cy="126" rx="20" ry="24" fill="#D97706" opacity="0.22"/>
+            </svg>
+        </a>
+    </nav>
+
+    <!-- COVER -->
+    <div class="resource-cover">
+        <svg viewBox="0 0 800 350" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice">
+            <rect width="800" height="350" fill="#FFFBEB"/>
+
+            <!-- Labels superiores -->
+            <text x="185" y="38" font-family="JetBrains Mono, monospace" font-size="10" fill="#FCA5A5" text-anchor="middle" letter-spacing="2" font-weight="600">SIN REVISIÓN</text>
+            <text x="603" y="38" font-family="JetBrains Mono, monospace" font-size="10" fill="#D97706" text-anchor="middle" letter-spacing="2" font-weight="600">CON REVISIÓN</text>
+
+            <!-- Divisor central -->
+            <line x1="393" y1="26" x2="393" y2="310" stroke="#E8E2D9" stroke-width="1" stroke-dasharray="5,4"/>
+            <rect x="372" y="162" width="42" height="22" rx="4" fill="#FAFAF7"/>
+            <text x="393" y="178" font-family="JetBrains Mono, monospace" font-size="11" fill="#B0A89E" text-anchor="middle" font-weight="600">VS</text>
+
+            <!-- RUTA IZQUIERDA: sin revisión -->
+            <!-- Flecha defs -->
+            <defs>
+                <marker id="arr-red" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+                    <path d="M0,0 L0,6 L8,3 z" fill="#FCA5A5"/>
+                </marker>
+                <marker id="arr-amb" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+                    <path d="M0,0 L0,6 L8,3 z" fill="#D97706"/>
+                </marker>
+                <marker id="arr-grn" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+                    <path d="M0,0 L0,6 L8,3 z" fill="#059669"/>
+                </marker>
+            </defs>
+
+            <!-- Círculo inicio izquierda -->
+            <circle cx="64" cy="150" r="22" fill="white" stroke="#FDE68A" stroke-width="1.5"/>
+            <text x="64" y="147" font-family="JetBrains Mono, monospace" font-size="8" fill="#B45309" text-anchor="middle" font-weight="600">INI</text>
+            <text x="64" y="158" font-family="JetBrains Mono, monospace" font-size="8" fill="#B45309" text-anchor="middle" font-weight="600">CIO</text>
+
+            <!-- Flecha recta roja -->
+            <line x1="86" y1="150" x2="298" y2="150" stroke="#FCA5A5" stroke-width="2.5" marker-end="url(#arr-red)"/>
+
+            <!-- Círculo resultado incorrecto -->
+            <circle cx="323" cy="150" r="22" fill="#FEE2E2" stroke="#FCA5A5" stroke-width="1.8"/>
+            <text x="323" y="157" font-family="Inter, sans-serif" font-size="16" fill="#DC2626" text-anchor="middle" font-weight="700">✗</text>
+
+            <!-- Anotación izquierda -->
+            <text x="185" y="196" font-family="Inter, sans-serif" font-size="11" fill="#FCA5A5" text-anchor="middle">contexto enviado → resultado incorrecto</text>
+            <text x="185" y="212" font-family="Inter, sans-serif" font-size="11" fill="#FCA5A5" text-anchor="middle">rehaces desde el principio</text>
+
+            <!-- Caja coste -->
+            <rect x="100" y="234" width="170" height="24" rx="6" fill="white" stroke="#FEE2E2" stroke-width="1"/>
+            <text x="185" y="251" font-family="JetBrains Mono, monospace" font-size="9.5" fill="#DC2626" text-anchor="middle">cambiar el resultado: horas</text>
+
+            <!-- RUTA DERECHA: con revisión -->
+            <!-- Inicio -->
+            <circle cx="430" cy="150" r="22" fill="white" stroke="#FDE68A" stroke-width="1.5"/>
+            <text x="430" y="147" font-family="JetBrains Mono, monospace" font-size="8" fill="#B45309" text-anchor="middle" font-weight="600">INI</text>
+            <text x="430" y="158" font-family="JetBrains Mono, monospace" font-size="8" fill="#B45309" text-anchor="middle" font-weight="600">CIO</text>
+
+            <!-- Segmento 1 -->
+            <line x1="452" y1="150" x2="495" y2="150" stroke="#D97706" stroke-width="2" marker-end="url(#arr-amb)"/>
+            <!-- Diamond 1 -->
+            <polygon points="510,137 524,150 510,163 496,150" fill="#FEF3C7" stroke="#D97706" stroke-width="1.8"/>
+            <text x="510" y="154" font-family="JetBrains Mono, monospace" font-size="10" fill="#B45309" text-anchor="middle" font-weight="700">?</text>
+
+            <!-- Segmento 2 -->
+            <line x1="524" y1="150" x2="566" y2="150" stroke="#D97706" stroke-width="2" marker-end="url(#arr-amb)"/>
+            <!-- Diamond 2 -->
+            <polygon points="581,137 595,150 581,163 567,150" fill="#FEF3C7" stroke="#D97706" stroke-width="1.8"/>
+            <text x="581" y="154" font-family="JetBrains Mono, monospace" font-size="10" fill="#B45309" text-anchor="middle" font-weight="700">?</text>
+
+            <!-- Segmento 3 -->
+            <line x1="595" y1="150" x2="637" y2="150" stroke="#D97706" stroke-width="2" marker-end="url(#arr-amb)"/>
+            <!-- Diamond 3 -->
+            <polygon points="652,137 666,150 652,163 638,150" fill="#FEF3C7" stroke="#D97706" stroke-width="1.8"/>
+            <text x="652" y="154" font-family="JetBrains Mono, monospace" font-size="10" fill="#B45309" text-anchor="middle" font-weight="700">?</text>
+
+            <!-- Segmento final -->
+            <line x1="666" y1="150" x2="706" y2="150" stroke="#059669" stroke-width="2" marker-end="url(#arr-grn)"/>
+            <!-- Resultado correcto -->
+            <circle cx="730" cy="150" r="22" fill="#D1FAE5" stroke="#059669" stroke-width="1.8"/>
+            <text x="730" y="157" font-family="Inter, sans-serif" font-size="16" fill="#059669" text-anchor="middle" font-weight="700">✓</text>
+
+            <!-- Labels bajo los diamonds -->
+            <text x="510" y="184" font-family="JetBrains Mono, monospace" font-size="8.5" fill="#D97706" text-anchor="middle">¿pediste esto?</text>
+            <text x="581" y="184" font-family="JetBrains Mono, monospace" font-size="8.5" fill="#D97706" text-anchor="middle">¿lo entiendes?</text>
+            <text x="652" y="184" font-family="JetBrains Mono, monospace" font-size="8.5" fill="#D97706" text-anchor="middle">¿qué cambias?</text>
+
+            <!-- Caja coste correcto -->
+            <rect x="525" y="210" width="200" height="24" rx="6" fill="white" stroke="#D1FAE5" stroke-width="1"/>
+            <text x="625" y="227" font-family="JetBrains Mono, monospace" font-size="9.5" fill="#059669" text-anchor="middle">cambiar en cada paso: segundos</text>
+
+            <!-- Caption global inferior -->
+            <rect x="160" y="282" width="480" height="28" rx="7" fill="white" stroke="#FDE68A" stroke-width="1"/>
+            <text x="400" y="300" font-family="JetBrains Mono, monospace" font-size="9.5" fill="#B45309" text-anchor="middle" letter-spacing="0.3">El GPS recalcula en cada cruce. Tú también.</text>
+        </svg>
+    </div>
+
+    <!-- HEADER -->
+    <header class="resource-header">
+        <div class="tag amar"><span class="dot"></span>Acción</div>
+        <h1 class="resource-title">Construye antes de saber cómo — así se aprende de verdad</h1>
+        <div class="resource-meta">
+            <span>15 min de lectura</span>
+            <span class="meta-dot"></span>
+            <span>Nivel 1 — Probar</span>
+            <span class="meta-dot"></span>
+            <span>Verano 2026</span>
+        </div>
+    </header>
+
+    <!-- LEARN BOX -->
+    <div class="learn-box">
+        <div class="learn-label">Lo que vas a hacer</div>
+        <ul class="learn-list">
+            <li><span class="learn-dot"></span>Elegir qué construir — una frase, sin más</li>
+            <li><span class="learn-dot"></span>Aprender las 3 preguntas que evitan que pierdas horas rehaciendo</li>
+            <li><span class="learn-dot"></span>Tener una primera versión de algo tuyo antes de cerrar esta página</li>
+        </ul>
+    </div>
+
+    <!-- PREREQ -->
+    <div class="prereq-box">
+        <span class="prereq-icon">→</span>
+        <p class="prereq-text">Este recurso aplica lo que viste en <a href="1-3.html">1.3</a>: Stitch y Antigravity presentados. Si no lo has leído, empieza por ahí — aquí los vas a usar, no explicar.</p>
+    </div>
+
+    <!-- TOC -->
+    <nav class="toc" aria-label="Contenido">
+        <div class="toc-label">En este recurso</div>
+        <div class="toc-links">
+            <a href="#s01">01 Dónde estás</a>
+            <a href="#s02">02 Qué construir</a>
+            <a href="#s03">03 Las 3 preguntas</a>
+            <a href="#s04">04 El flujo completo</a>
+            <a href="#s05">05 Dónde terminas</a>
+            <a href="#checklist">Checklist</a>
+        </div>
+    </nav>
+
+    <!-- ── SECCIÓN 01 ── -->
+    <section class="section" id="s01">
+        <div class="section-num">01</div>
+        <h2>Dónde estás ahora</h2>
+
+        <p>Tienes el GPS instalado. Lo que aún no has hecho es encenderlo y empezar a conducir.</p>
+
+        <div class="state-split">
+            <div class="state-card">
+                <div class="state-label">Ahora mismo</div>
+                <div class="state-item"><span class="state-dot"></span>Sabes qué son Stitch y Antigravity</div>
+                <div class="state-item"><span class="state-dot"></span>Nunca las has abierto para algo tuyo</div>
+                <div class="state-item"><span class="state-dot"></span>No tienes claro por dónde empezar</div>
+            </div>
+            <div class="state-card end">
+                <div class="state-label">Al terminar este recurso</div>
+                <div class="state-item"><span class="state-dot"></span>Una primera versión funcionando</div>
+                <div class="state-item"><span class="state-dot"></span>Proceso de revisión aplicado en cada paso</div>
+                <div class="state-item"><span class="state-dot"></span>Sabes exactamente qué mejorar después</div>
+            </div>
+        </div>
+
+        <div class="callout azul">
+            <div class="callout-label">Hilo con 1.2</div>
+            <p>El loop iterativo que viste en 1.2 no es solo un concepto — es exactamente lo que vas a ejecutar aquí. La diferencia es que esta vez hay herramientas reales, un objetivo real y un proceso de revisión entre cada paso.</p>
+        </div>
+    </section>
+
+    <!-- ── SECCIÓN 02 ── -->
+    <section class="section" id="s02">
+        <div class="section-num">02</div>
+        <h2>Qué vas a construir</h2>
+
+        <p>Pequeño. Real. Tuyo. Estas son las únicas reglas.</p>
+
+        <div class="action-steps">
+            <div class="action-steps-label">Define tu objetivo en 3 pasos</div>
+            <div class="action-step">
+                <span class="step-num">1.</span>
+                <span class="step-text">Piensa en algo que haces a mano más de una vez por semana. Un registro, un cálculo, una lista. Nada complejo.</span>
+            </div>
+            <div class="action-step">
+                <span class="step-num">2.</span>
+                <span class="step-text">Acótalo a <strong>una pantalla</strong>. No una app completa. No un sistema. Una pantalla que resuelve un problema.</span>
+            </div>
+            <div class="action-step">
+                <span class="step-num">3.</span>
+                <span class="step-text">Escríbelo en una frase: <strong>"Una app que [acción] para [resultado]."</strong> Si no puedes escribirlo en una frase, reduce más.</span>
+            </div>
+        </div>
+
+        <div class="callout amar">
+            <div class="callout-label">Sin ideas — usa esta</div>
+            <p>Una app que registra mis gastos de viaje y me da el total al cerrar el día. Es lo que yo construí. En el recurso 1.5 cuento cómo quedó, cuánto tardé y qué cambiaría. Si partes de esta idea, tendrás una referencia real con la que comparar tu proceso.</p>
+        </div>
+    </section>
+
+    <!-- ── SECCIÓN 03 ── -->
+    <section class="section" id="s03">
+        <div class="section-num">03</div>
+        <h2>Las 3 preguntas — el núcleo del proceso</h2>
+
+        <p>El problema no es construir. El problema es construir sin revisar, llegar al final y descubrir que la ventana estaba donde no tenía que estar desde el primer plano.</p>
+
+        <div class="review-card">
+            <div class="review-card-header">Hazlas antes de cada siguiente paso — sin excepción</div>
+            <div class="review-q">
+                <span class="review-num">1</span>
+                <div class="review-q-body">
+                    <div class="review-q-text">¿Es esto exactamente lo que pedí?</div>
+                    <div class="review-q-sub">Compara el output con tu instrucción. Si no coincide, ajusta la instrucción — no el resultado. Cambiar el resultado es más caro que cambiar la pregunta.</div>
+                </div>
+            </div>
+            <div class="review-q">
+                <span class="review-num">2</span>
+                <div class="review-q-body">
+                    <div class="review-q-text">¿Entiendo lo que está haciendo?</div>
+                    <div class="review-q-sub">Si no puedes explicarlo en una frase, no avances. Pregunta a la IA hasta que puedas. Avanzar sin entender es construir encima de algo que no sabes si es sólido.</div>
+                </div>
+            </div>
+            <div class="review-q">
+                <span class="review-num">3</span>
+                <div class="review-q-body">
+                    <div class="review-q-text">¿Qué cambiaría ahora?</div>
+                    <div class="review-q-sub">Anótalo. No cuando termines — ahora. Si tienes manual de IA (0.4), esto va directo ahí. Este momento de claridad no dura.</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="callout">
+            <div class="callout-label">La regla</div>
+            <p>Las 3 preguntas no son opcionales cuando algo "parece que funciona". Son especialmente necesarias cuando parece que funciona — porque ese es el momento en que avanzas sin verificar.</p>
+        </div>
+    </section>
+
+    <!-- ── SECCIÓN 04 ── -->
+    <section class="section" id="s04">
+        <div class="section-num">04</div>
+        <h2>El flujo completo — paso a paso</h2>
+
+        <p>Primero Stitch, después Antigravity. El mockup define qué construyes. El código lo hace real.</p>
+
+        <div class="build-flow">
+
+            <div class="bflow-step">
+                <div class="bflow-left">
+                    <div class="bflow-num">1</div>
+                    <div class="bflow-line"></div>
+                </div>
+                <div class="bflow-content">
+                    <div class="bflow-tool tu">Tú</div>
+                    <div class="bflow-title">Define el objetivo en una frase</div>
+                    <div class="bflow-desc">Escríbela ahora. No sigas hasta tenerla. Esta frase es lo que le vas a dar a Stitch.</div>
+                </div>
+            </div>
+
+            <div class="bflow-step">
+                <div class="bflow-left">
+                    <div class="bflow-num">2</div>
+                    <div class="bflow-line"></div>
+                </div>
+                <div class="bflow-content">
+                    <div class="bflow-tool stitch">Stitch</div>
+                    <div class="bflow-title">Describe el mockup que quieres</div>
+                    <div class="bflow-desc">Abre Stitch y describe tu pantalla. Qué elementos tiene, cómo están organizados, qué hace el usuario. No pidas código — pide el diseño visual.</div>
+                    <div class="bflow-review">
+                        <span class="bflow-review-icon">Revisas</span>
+                        <span class="bflow-review-text">¿El mockup refleja tu frase del paso 1? ¿Entiendes cada elemento que aparece? ¿Qué moverías o quitarías?</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bflow-step">
+                <div class="bflow-left">
+                    <div class="bflow-num">3</div>
+                    <div class="bflow-line"></div>
+                </div>
+                <div class="bflow-content">
+                    <div class="bflow-tool stitch">Stitch</div>
+                    <div class="bflow-title">Itera el mockup hasta que sea correcto</div>
+                    <div class="bflow-desc">Ajusta hasta que el diseño visual represente exactamente lo que quieres construir. Cada cambio aquí cuesta segundos. El mismo cambio en código cuesta minutos.</div>
+                    <div class="bflow-review">
+                        <span class="bflow-review-icon">Revisas</span>
+                        <span class="bflow-review-text">¿Puedes describir este mockup en voz alta sin dudar? Si alguien lo viera sin contexto, ¿entendería para qué sirve?</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bflow-step">
+                <div class="bflow-left">
+                    <div class="bflow-num">4</div>
+                    <div class="bflow-line"></div>
+                </div>
+                <div class="bflow-content">
+                    <div class="bflow-tool antigravity">Antigravity</div>
+                    <div class="bflow-title">Pide el código basado en el mockup</div>
+                    <div class="bflow-desc">Abre Antigravity, adjunta o describe el mockup aprobado y pide la versión funcional. Da contexto: qué hace la app, quién la usa, qué tiene que ocurrir al pulsar cada botón.</div>
+                    <div class="bflow-review">
+                        <span class="bflow-review-icon">Revisas</span>
+                        <span class="bflow-review-text">¿El código generado hace lo que pediste? Prueba cada función antes de pedir cambios. Si algo falla, descríbelo con exactitud — no digas "no funciona", di qué esperabas y qué ocurrió.</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bflow-step last">
+                <div class="bflow-left">
+                    <div class="bflow-num">5</div>
+                    <div class="bflow-line"></div>
+                </div>
+                <div class="bflow-content">
+                    <div class="bflow-tool antigravity">Antigravity</div>
+                    <div class="bflow-title">Ajusta hasta tener una versión que funcione</div>
+                    <div class="bflow-desc">No tiene que ser perfecta. Tiene que hacer lo que dijiste en el paso 1. Cuando lo hace — aunque sea imperfecto — tienes tu primera versión.</div>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="callout verde">
+            <div class="callout-label">Lo más importante</div>
+            <p>El proceso de revisión no ralentiza la construcción — la hace más eficiente. Cada pregunta que te haces en el paso 2 evita tener que rehacer el paso 4.</p>
+        </div>
+    </section>
+
+    <!-- ── SECCIÓN 05 ── -->
+    <section class="section" id="s05">
+        <div class="section-num">05</div>
+        <h2>Dónde terminas</h2>
+
+        <p>Tienes algo que no tenías antes: una primera versión real, construida con tus propias instrucciones. Imperfecta. Tuya.</p>
+
+        <p>Esto es lo que Alex hizo antes de tener la app de gastos de viaje que usa cada vez que viaja. No salió bien a la primera — salió bien después de aplicar exactamente este proceso. En 1.5 está el resultado completo: decisiones, errores, iteraciones y el enlace a la app funcionando.</p>
+
+        <div class="callout amar">
+            <div class="callout-label">Qué llevas al manual (0.4)</div>
+            <p>Una entrada: qué construiste, qué funcionó, qué cambiarías en la siguiente versión. Tres líneas. Si no tienes manual todavía, empieza con esta entrada — es la mejor primera.</p>
+        </div>
+    </section>
+
+    <!-- NEXT HOOK -->
+    <a href="1-5.html" class="next-hook">
+        <svg class="next-hook-arrow" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        <span class="next-hook-text">En 1.5 cuento cómo construí la app de gastos de viaje desde cero — con errores incluidos. <strong>La tengo en el móvil. La uso de verdad.</strong></span>
+    </a>
+
+    <!-- CHECKLIST -->
+    <div class="checklist-section" id="checklist">
+        <div class="checklist-title">Lo que hice — compruébalo</div>
+        <ul class="checklist-items" id="checklistItems">
+            <li onclick="toggleCheck(this)"><span class="check-box"></span><span class="check-text">Tengo escrita mi frase: "Una app que [acción] para [resultado]." En una línea. Sin ambigüedad.</span></li>
+            <li onclick="toggleCheck(this)"><span class="check-box"></span><span class="check-text">Usé Stitch para hacer el mockup y revisé antes de pasar a Antigravity.</span></li>
+            <li onclick="toggleCheck(this)"><span class="check-box"></span><span class="check-text">Usé Antigravity para generar el código y revisé antes de pedir más cambios.</span></li>
+            <li onclick="toggleCheck(this)"><span class="check-box"></span><span class="check-text">Tengo una primera versión funcionando — aunque sea imperfecta.</span></li>
+            <li onclick="toggleCheck(this)"><span class="check-box"></span><span class="check-text">Sé qué cambiaría en la siguiente iteración. Lo tengo anotado.</span></li>
+        </ul>
+    </div>
+
+    <!-- FOOTER -->
+    <footer class="resource-footer">
+        <a href="1-3.html" class="footer-back">
+            <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+            Recurso anterior
+        </a>
+        <a href="1-5.html" class="footer-next">
+            Siguiente recurso
+            <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </a>
+    </footer>
+
+</div>
+
+<canvas id="confettiCanvas" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:9999;"></canvas>
+
+<script>
+function toggleCheck(li) {
+    li.classList.toggle('done');
+    li.querySelector('.check-box').textContent = li.classList.contains('done') ? '✓' : '';
+    const items = document.querySelectorAll('#checklistItems li');
+    if ([...items].every(i => i.classList.contains('done'))) launchConfetti();
+}
+
+function launchConfetti() {
+    const canvas = document.getElementById('confettiCanvas');
+    if (!canvas) return;
+    canvas.style.display = 'block';
+    const ctx = canvas.getContext('2d');
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+    const colors = ['#B45309','#D97706','#FDE68A','#059669','#7C3AED','#2563EB','#F59E0B','#10B981','#EF4444'];
+    const pieces = Array.from({length: 140}, () => ({
+        x: Math.random() * canvas.width,
+        y: -10 - Math.random() * canvas.height * 0.6,
+        w: Math.random() * 11 + 5,
+        h: Math.random() * 6 + 3,
+        color: colors[Math.floor(Math.random() * colors.length)],
+        vx: (Math.random() - 0.5) * 4,
+        vy: Math.random() * 3 + 1.5,
+        rot: Math.random() * 360,
+        vrot: (Math.random() - 0.5) * 10,
+        alpha: 1,
+        shape: Math.random() > 0.5 ? 'rect' : 'circle'
+    }));
+    let frame = 0;
+    (function animate() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        pieces.forEach(p => {
+            p.x += p.vx;
+            p.y += p.vy;
+            p.rot += p.vrot;
+            p.vy += 0.06;
+            if (frame > 90) p.alpha = Math.max(0, p.alpha - 0.012);
+            ctx.save();
+            ctx.globalAlpha = p.alpha;
+            ctx.translate(p.x + p.w / 2, p.y + p.h / 2);
+            ctx.rotate(p.rot * Math.PI / 180);
+            ctx.fillStyle = p.color;
+            if (p.shape === 'circle') {
+                ctx.beginPath();
+                ctx.arc(0, 0, p.w / 2, 0, Math.PI * 2);
+                ctx.fill();
+            } else {
+                ctx.fillRect(-p.w / 2, -p.h / 2, p.w, p.h);
+            }
+            ctx.restore();
+        });
+        frame++;
+        if (frame < 170) requestAnimationFrame(animate);
+        else canvas.style.display = 'none';
+    })();
+}
+</script>
+</body>
+</html>
