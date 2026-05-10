@@ -1,0 +1,660 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Los conceptos que necesitas antes de tocar nada — alex.decode</title>
+    <meta name="description" content="MCP, agentes de IA, skills y la diferencia entre Claude Code, Cursor y GitHub Copilot. Los conceptos mínimos para entender lo que estás a punto de construir.">
+    <meta name="author" content="alex.decode">
+    <meta property="og:title" content="Los conceptos que necesitas antes de tocar nada — alex.decode">
+    <meta property="og:description" content="MCP, agentes de IA, skills y entornos de trabajo. Sin FOMO, sin tecnicismos. Solo lo que vas a usar.">
+    <meta property="og:type" content="article">
+    <meta property="article:published_time" content="2026-05-09">
+    <meta property="article:author" content="alex.decode">
+    <meta property="article:tag" content="MCP, agentes IA, Claude Code, Cursor, skills, conceptos inteligencia artificial">
+    <link rel="icon" type="image/svg+xml" href="../favicon.svg">
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Article",
+      "headline": "Los conceptos que necesitas antes de tocar nada",
+      "description": "MCP, agentes de IA, skills y la diferencia entre Claude Code, Cursor y GitHub Copilot explicados sin tecnicismos.",
+      "author": { "@type": "Person", "name": "alex.decode" },
+      "datePublished": "2026-05-09",
+      "dateModified": "2026-05-09",
+      "inLanguage": "es",
+      "keywords": "MCP inteligencia artificial, agente de IA qué es, Claude Code vs Cursor, skills Claude, entornos trabajo IA"
+    }
+    </script>
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "¿Qué es MCP en inteligencia artificial?",
+          "acceptedAnswer": { "@type": "Answer", "text": "MCP (Model Context Protocol) es un estándar abierto creado por Anthropic en noviembre de 2024 y adoptado por OpenAI, Google y Microsoft. Permite que los modelos de IA se conecten con herramientas externas (archivos, calendarios, bases de datos, APIs) de forma segura y estandarizada. Sin MCP, la IA solo ve texto. Con MCP, puede actuar sobre tu entorno." }
+        },
+        {
+          "@type": "Question",
+          "name": "¿Qué es un agente de IA?",
+          "acceptedAnswer": { "@type": "Answer", "text": "Un agente de IA es un sistema que persigue un objetivo de forma autónoma: planifica, actúa, evalúa el resultado y corrige hasta conseguirlo. A diferencia de un chatbot que responde preguntas, un agente encadena acciones y se autocorrige en un loop iterativo hasta alcanzar el objetivo definido." }
+        },
+        {
+          "@type": "Question",
+          "name": "¿Cuál es la diferencia entre Claude Code, Cursor y GitHub Copilot?",
+          "acceptedAnswer": { "@type": "Answer", "text": "Son entornos de trabajo, no modelos. Claude Code es el CLI de Anthropic que opera desde la terminal usando exclusivamente Claude. Cursor es un editor de código (fork de VS Code) que integra múltiples modelos (Claude, GPT, Gemini). GitHub Copilot es un asistente integrado en editores como VS Code o JetBrains, principalmente con modelos de OpenAI. El modelo es el cerebro; el entorno es la interfaz." }
+        },
+        {
+          "@type": "Question",
+          "name": "¿Qué es una skill en Claude Code?",
+          "acceptedAnswer": { "@type": "Answer", "text": "Una skill es una extensión modular que le enseña a Claude Code a realizar una tarea específica. Se almacena en el directorio ~/.claude/skills/ y se activa con un comando. Un kit de skills es una colección de varias skills empaquetadas juntas." }
+        }
+      ]
+    }
+    </script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        :root {
+            --bg: #FAFAF7; --surface: #FFFFFF; --border: #E8E2D9;
+            --text: #1C1917; --muted: #78716C; --faint: #B0A89E;
+            --amber: #B45309; --amber-mid: #D97706; --amber-dim: rgba(180,83,9,0.07);
+            --rojo: #DC2626; --rojo-d: rgba(220,38,38,0.07);
+            --amar: #D97706; --amar-d: rgba(217,119,6,0.07);
+            --azul: #2563EB; --azul-d: rgba(37,99,235,0.07);
+            --verde: #059669; --verde-d: rgba(5,150,105,0.07);
+            --morad: #7C3AED; --morad-d: rgba(124,58,237,0.07);
+        }
+        html { scroll-behavior: smooth; }
+        body { background: var(--bg); color: var(--text); font-family: 'Inter', system-ui, sans-serif; font-size: 15px; line-height: 1.7; min-height: 100vh; }
+        body::before { content: ''; position: fixed; top: 0; left: 0; right: 0; height: 3px; background: linear-gradient(90deg, #D97706 0%, var(--amber) 50%, #D97706 100%); z-index: 100; }
+        .wrap { max-width: 720px; margin: 0 auto; padding: 0 24px; }
+
+        /* NAV */
+        .top-nav { padding: 28px 0 0; font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--faint); display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+        .top-nav a { color: var(--amber); text-decoration: none; transition: opacity .15s; }
+        .top-nav a:hover { opacity: .7; }
+        .top-nav .sep { color: var(--faint); }
+        .nav-owl { margin-left: auto; display: flex; align-items: center; gap: 5px; color: var(--faint); text-decoration: none; font-size: 10px; letter-spacing: .5px; transition: opacity .15s; animation: owlFloat 5s ease-in-out 1s infinite; }
+        .nav-owl:hover { opacity: .7; color: var(--amber); }
+        @keyframes owlFloat { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-4px)} }
+
+        /* HEADER */
+        .resource-header { padding: 36px 0 32px; border-bottom: 1px solid var(--border); margin-bottom: 32px; }
+        .tag { display: inline-flex; align-items: center; gap: 5px; font-size: 10px; font-weight: 600; padding: 3px 10px; border-radius: 100px; margin-bottom: 16px; }
+        .tag .dot { width: 5px; height: 5px; border-radius: 50%; flex-shrink: 0; }
+        .tag.azul { background: var(--azul-d); color: var(--azul); } .tag.azul .dot { background: var(--azul); }
+        .resource-title { font-family: 'Playfair Display', Georgia, serif; font-size: clamp(26px, 4vw, 36px); font-weight: 700; line-height: 1.18; letter-spacing: -.3px; margin-bottom: 14px; }
+        .resource-meta { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--faint); display: flex; gap: 16px; flex-wrap: wrap; }
+        .resource-meta span { display: flex; align-items: center; gap: 5px; }
+        .meta-dot { width: 3px; height: 3px; border-radius: 50%; background: var(--faint); }
+
+        /* COVER */
+        .cover-wrap { margin-bottom: 36px; border-radius: 12px; overflow: hidden; border: 1px solid var(--border); }
+        .cover-wrap svg { display: block; width: 100%; height: auto; }
+
+        /* PREREQ */
+        .prereq-box { background: var(--azul-d); border: 1px solid rgba(37,99,235,.2); border-radius: 10px; padding: 14px 18px; margin-bottom: 28px; display: flex; align-items: flex-start; gap: 10px; }
+        .prereq-box svg { flex-shrink: 0; margin-top: 2px; }
+        .prereq-box p { font-size: 13px; color: var(--text); margin: 0; }
+        .prereq-box a { color: var(--azul); text-decoration: none; font-weight: 500; }
+        .prereq-box a:hover { text-decoration: underline; }
+
+        /* LEARN BOX */
+        .learn-box { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 20px 24px; margin-bottom: 40px; }
+        .learn-box-label { font-family: 'JetBrains Mono', monospace; font-size: 9px; font-weight: 600; color: var(--azul); letter-spacing: 1.4px; text-transform: uppercase; margin-bottom: 12px; }
+        .learn-box ul { list-style: none; display: flex; flex-direction: column; gap: 8px; }
+        .learn-box li { display: flex; align-items: flex-start; gap: 10px; font-size: 13.5px; color: var(--text); line-height: 1.5; }
+        .learn-box li::before { content: '→'; color: var(--azul); font-family: 'JetBrains Mono', monospace; font-size: 11px; flex-shrink: 0; margin-top: 2px; }
+
+        /* TOC */
+        .toc { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 16px 20px; margin-bottom: 48px; }
+        .toc-label { font-family: 'JetBrains Mono', monospace; font-size: 9px; color: var(--faint); letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 10px; }
+        .toc-links { display: flex; flex-wrap: wrap; gap: 6px; }
+        .toc-links a { font-size: 12px; color: var(--muted); text-decoration: none; padding: 4px 10px; border-radius: 6px; border: 1px solid var(--border); transition: border-color .15s, color .15s, background .15s; white-space: nowrap; }
+        .toc-links a:hover { border-color: var(--azul); color: var(--azul); background: var(--azul-d); }
+
+        /* SECTIONS */
+        .section { margin-bottom: 52px; scroll-margin-top: 32px; }
+        .section-num { font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--amber); font-weight: 600; letter-spacing: 1px; margin-bottom: 8px; }
+        .section h2 { font-family: 'Playfair Display', serif; font-size: 22px; font-weight: 700; line-height: 1.3; margin-bottom: 16px; color: var(--text); }
+        .section p { color: var(--text); margin-bottom: 14px; }
+        .section p:last-child { margin-bottom: 0; }
+
+        /* CALLOUT */
+        .callout { border-left: 3px solid var(--amber); background: var(--amber-dim); border-radius: 0 8px 8px 0; padding: 14px 18px; margin: 20px 0; }
+        .callout-label { font-family: 'JetBrains Mono', monospace; font-size: 9px; font-weight: 600; color: var(--amber); letter-spacing: 1.2px; text-transform: uppercase; margin-bottom: 6px; }
+        .callout p { font-size: 14px; color: var(--text); margin: 0; }
+        .callout.azul { border-left-color: var(--azul); background: var(--azul-d); }
+        .callout.azul .callout-label { color: var(--azul); }
+
+        /* CONCEPT CARD */
+        .concept-def {
+            background: var(--surface); border: 1px solid var(--border);
+            border-radius: 12px; padding: 20px 22px; margin: 20px 0;
+        }
+        .concept-term {
+            font-family: 'JetBrains Mono', monospace; font-size: 11px;
+            font-weight: 600; color: var(--azul); letter-spacing: .8px;
+            text-transform: uppercase; margin-bottom: 8px;
+        }
+        .concept-def p { font-size: 14px; color: var(--text); margin: 0; }
+        .concept-analogy {
+            margin-top: 10px; padding-top: 10px;
+            border-top: 1px solid var(--border);
+            font-size: 13px; color: var(--muted);
+            font-style: italic;
+        }
+
+        /* AGENT LOOP */
+        .loop-wrap { margin: 28px 0; background: var(--surface); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
+        .loop-label { font-family: 'JetBrains Mono', monospace; font-size: 9px; color: var(--faint); letter-spacing: 1.2px; text-transform: uppercase; padding: 14px 18px 0; }
+        .loop-wrap svg { display: block; width: 100%; height: auto; }
+
+        /* SKILLS VISUAL */
+        .skills-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; margin: 20px 0; }
+        .skill-card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 16px 18px; }
+        .skill-card-icon { font-size: 20px; margin-bottom: 8px; }
+        .skill-card-title { font-weight: 600; font-size: 13.5px; margin-bottom: 4px; }
+        .skill-card-desc { font-size: 12.5px; color: var(--muted); line-height: 1.5; }
+        .skill-card-tag { display: inline-block; font-family: 'JetBrains Mono', monospace; font-size: 9px; color: var(--verde); background: var(--verde-d); padding: 2px 7px; border-radius: 4px; margin-top: 8px; }
+        .skill-card-spoiler { font-size: 11.5px; color: var(--amber); background: #FFFBEB; border: 1px dashed var(--amber); border-radius: 6px; padding: 7px 10px; margin: 10px 0 4px; font-family: 'JetBrains Mono', monospace; line-height: 1.5; }
+
+        /* ENV COMPARISON */
+        .env-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin: 20px 0; }
+        @media (max-width: 560px) { .env-grid { grid-template-columns: 1fr; } }
+        .env-card { border: 1px solid var(--border); border-radius: 10px; overflow: hidden; }
+        .env-header { padding: 12px 14px; background: var(--azul-d); border-bottom: 1px solid rgba(37,99,235,.15); }
+        .env-name { font-weight: 700; font-size: 13px; color: var(--text); }
+        .env-maker { font-family: 'JetBrains Mono', monospace; font-size: 9px; color: var(--muted); margin-top: 2px; }
+        .env-body { padding: 12px 14px; background: var(--surface); }
+        .env-row { font-size: 12px; color: var(--text); padding: 4px 0; border-bottom: 1px solid var(--border); line-height: 1.4; display: flex; gap: 6px; }
+        .env-row:last-child { border-bottom: none; padding-bottom: 0; }
+        .env-row-label { font-family: 'JetBrains Mono', monospace; font-size: 9px; color: var(--faint); flex-shrink: 0; margin-top: 1px; }
+
+        /* BONUS BADGE */
+        .bonus-header { display: flex; align-items: center; gap: 10px; margin-bottom: 16px; }
+        .bonus-badge { font-family: 'JetBrains Mono', monospace; font-size: 9px; font-weight: 600; color: var(--morad); background: var(--morad-d); padding: 3px 9px; border-radius: 100px; letter-spacing: .5px; flex-shrink: 0; }
+
+        /* FAQ */
+        .faq-item { border: 1px solid var(--border); border-radius: 10px; overflow: hidden; margin-bottom: 10px; }
+        .faq-q { padding: 14px 18px; font-weight: 600; font-size: 13.5px; background: var(--surface); cursor: pointer; display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+        .faq-q:hover { background: var(--azul-d); }
+        .faq-chevron { font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--faint); flex-shrink: 0; transition: transform .2s; }
+        .faq-a { padding: 14px 18px; font-size: 13.5px; color: var(--text); line-height: 1.65; border-top: 1px solid var(--border); display: none; }
+        .faq-item.open .faq-a { display: block; }
+        .faq-item.open .faq-chevron { transform: rotate(180deg); }
+
+        /* CHECKLIST */
+        .checklist-section { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 24px 26px; margin-bottom: 52px; }
+        .checklist-title { font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--amber); font-weight: 600; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 16px; }
+        .checklist-items { list-style: none; display: flex; flex-direction: column; gap: 10px; }
+        .checklist-items li { display: flex; align-items: flex-start; gap: 10px; font-size: 13.5px; color: var(--text); line-height: 1.5; cursor: pointer; }
+        .check-box { width: 17px; height: 17px; border: 1.5px solid var(--border); border-radius: 4px; flex-shrink: 0; margin-top: 1px; transition: border-color .15s, background .15s; display: flex; align-items: center; justify-content: center; font-size: 10px; color: white; }
+        .checklist-items li.done .check-box { background: var(--verde); border-color: var(--verde); }
+        .checklist-items li.done .check-text { text-decoration: line-through; color: var(--muted); }
+
+        /* FOOTER */
+        .resource-footer { border-top: 1px solid var(--border); padding: 32px 0 56px; display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
+        .footer-back { font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--muted); text-decoration: none; display: flex; align-items: center; gap: 6px; transition: color .15s; }
+        .footer-back:hover { color: var(--amber); }
+        .footer-next { font-size: 13px; font-weight: 500; color: var(--amber); text-decoration: none; display: flex; align-items: center; gap: 6px; transition: gap .15s; }
+        .footer-next:hover { gap: 10px; }
+
+        @media (max-width: 600px) { .wrap { padding: 0 16px; } .resource-title { font-size: 24px; } }
+    </style>
+</head>
+<body>
+<div class="wrap">
+
+    <!-- NAV -->
+    <nav class="top-nav">
+        <a href="../index.html">alex.decode</a>
+        <span class="sep">/</span><span>Biblioteca</span>
+        <span class="sep">/</span><span>Nivel 1</span>
+        <span class="sep">/</span><span>Conceptos</span>
+        <a href="../index.html" class="nav-owl" aria-label="Volver a la biblioteca">
+            <svg width="28" height="32" viewBox="0 0 140 160" fill="none"><polygon points="44,32 36,6 52,26" fill="#92400E"/><polygon points="96,32 104,6 88,26" fill="#92400E"/><circle cx="70" cy="56" r="38" fill="#B45309"/><ellipse cx="70" cy="58" rx="26" ry="24" fill="#D97706" opacity="0.28"/><circle cx="56" cy="52" r="13" fill="#FEF3C7"/><circle cx="84" cy="52" r="13" fill="#FEF3C7"/><circle cx="56" cy="52" r="6.5" fill="#1C1917"/><circle cx="84" cy="52" r="6.5" fill="#1C1917"/><circle cx="59" cy="49" r="2.2" fill="white"/><circle cx="87" cy="49" r="2.2" fill="white"/><polygon points="63,64 77,64 70,75" fill="#D97706"/><ellipse cx="70" cy="120" rx="34" ry="36" fill="#B45309"/><ellipse cx="70" cy="126" rx="20" ry="24" fill="#D97706" opacity="0.22"/></svg>
+        </a>
+    </nav>
+
+    <!-- HEADER -->
+    <header class="resource-header">
+        <div class="tag azul"><span class="dot"></span>Conceptos</div>
+        <h1 class="resource-title">Los conceptos que necesitas antes de tocar nada</h1>
+        <div class="resource-meta">
+            <span>10 min de lectura</span>
+            <span class="meta-dot"></span>
+            <span>Nivel 1</span>
+            <span class="meta-dot"></span>
+            <span>Mayo 2026</span>
+        </div>
+    </header>
+
+    <!-- COVER SVG — Mapa de conceptos -->
+    <div class="cover-wrap">
+        <svg viewBox="0 0 720 315" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect width="720" height="315" fill="#F5F7FF"/>
+
+            <!-- Líneas de conexión -->
+            <line x1="200" y1="157" x2="300" y2="110" stroke="#BFCFFF" stroke-width="1.5" stroke-dasharray="5,4"/>
+            <line x1="420" y1="110" x2="520" y2="157" stroke="#BFCFFF" stroke-width="1.5" stroke-dasharray="5,4"/>
+            <line x1="200" y1="157" x2="300" y2="205" stroke="#BFCFFF" stroke-width="1.5" stroke-dasharray="5,4"/>
+            <line x1="420" y1="205" x2="520" y2="157" stroke="#BFCFFF" stroke-width="1.5" stroke-dasharray="5,4"/>
+            <line x1="300" y1="110" x2="420" y2="110" stroke="#BFCFFF" stroke-width="1" stroke-dasharray="3,4"/>
+            <line x1="300" y1="205" x2="420" y2="205" stroke="#BFCFFF" stroke-width="1" stroke-dasharray="3,4"/>
+
+            <!-- Nodo central -->
+            <circle cx="360" cy="157" r="40" fill="#EEF2FF" stroke="#C7D2FE" stroke-width="1.5"/>
+            <text x="360" y="152" font-family="Playfair Display, serif" font-size="11" fill="#2563EB" font-weight="700" text-anchor="middle">IA que</text>
+            <text x="360" y="167" font-family="Playfair Display, serif" font-size="11" fill="#2563EB" font-weight="700" text-anchor="middle">actúa</text>
+
+            <!-- Nodo MCP (izquierda) -->
+            <rect x="110" y="120" width="90" height="74" rx="10" fill="#FFFFFF" stroke="#C7D2FE" stroke-width="1.5"/>
+            <rect x="110" y="120" width="90" height="26" rx="10" fill="#EEF2FF"/>
+            <rect x="110" y="136" width="90" height="10" fill="#EEF2FF"/>
+            <text x="155" y="137" font-family="JetBrains Mono, monospace" font-size="9" fill="#2563EB" font-weight="600" text-anchor="middle" letter-spacing="0.5">MCP</text>
+            <text x="155" y="156" font-family="Inter, sans-serif" font-size="9" fill="#1C1917" text-anchor="middle">conecta la IA</text>
+            <text x="155" y="169" font-family="Inter, sans-serif" font-size="9" fill="#1C1917" text-anchor="middle">con tus apps</text>
+            <text x="155" y="185" font-family="JetBrains Mono, monospace" font-size="8" fill="#78716C" text-anchor="middle">estándar abierto</text>
+
+            <!-- Nodo Agente (arriba) -->
+            <rect x="300" y="48" width="120" height="50" rx="10" fill="#FFFFFF" stroke="#C7D2FE" stroke-width="1.5"/>
+            <rect x="300" y="48" width="120" height="20" rx="10" fill="#EEF2FF"/>
+            <rect x="300" y="58" width="120" height="10" fill="#EEF2FF"/>
+            <text x="360" y="62" font-family="JetBrains Mono, monospace" font-size="9" fill="#2563EB" font-weight="600" text-anchor="middle" letter-spacing="0.5">AGENTE DE IA</text>
+            <text x="360" y="80" font-family="Inter, sans-serif" font-size="9" fill="#1C1917" text-anchor="middle">persigue un objetivo</text>
+            <text x="360" y="92" font-family="Inter, sans-serif" font-size="9" fill="#1C1917" text-anchor="middle">en loop hasta lograrlo</text>
+
+            <!-- Nodo Skills (abajo) -->
+            <rect x="300" y="217" width="120" height="50" rx="10" fill="#FFFFFF" stroke="#C7D2FE" stroke-width="1.5"/>
+            <rect x="300" y="217" width="120" height="20" rx="10" fill="#EEF2FF"/>
+            <rect x="300" y="227" width="120" height="10" fill="#EEF2FF"/>
+            <text x="360" y="231" font-family="JetBrains Mono, monospace" font-size="9" fill="#2563EB" font-weight="600" text-anchor="middle" letter-spacing="0.5">SKILLS</text>
+            <text x="360" y="249" font-family="Inter, sans-serif" font-size="9" fill="#1C1917" text-anchor="middle">extensiones que enseñan</text>
+            <text x="360" y="261" font-family="Inter, sans-serif" font-size="9" fill="#1C1917" text-anchor="middle">tareas nuevas a la IA</text>
+
+            <!-- Nodo Entornos (derecha) -->
+            <rect x="520" y="120" width="100" height="74" rx="10" fill="#FFFFFF" stroke="#C7D2FE" stroke-width="1.5"/>
+            <rect x="520" y="120" width="100" height="26" rx="10" fill="#EEF2FF"/>
+            <rect x="520" y="136" width="100" height="10" fill="#EEF2FF"/>
+            <text x="570" y="137" font-family="JetBrains Mono, monospace" font-size="9" fill="#2563EB" font-weight="600" text-anchor="middle" letter-spacing="0.5">ENTORNOS</text>
+            <text x="570" y="156" font-family="Inter, sans-serif" font-size="9" fill="#1C1917" text-anchor="middle">Claude Code</text>
+            <text x="570" y="169" font-family="Inter, sans-serif" font-size="9" fill="#1C1917" text-anchor="middle">Cursor · Copilot</text>
+            <text x="570" y="185" font-family="JetBrains Mono, monospace" font-size="8" fill="#78716C" text-anchor="middle">la interfaz, no el cerebro</text>
+
+            <!-- Etiqueta -->
+            <text x="36" y="300" font-family="JetBrains Mono, monospace" font-size="9" fill="#B0A89E">Nivel 1 · Conceptos · alex.decode</text>
+        </svg>
+    </div>
+
+    <!-- PREREQ -->
+    <div class="prereq-box">
+        <svg width="14" height="14" fill="none" stroke="#2563EB" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>
+        <p>Recomendado: <a href="1-1.html">Lee el 1.1 primero</a> — ahí está la nevera con los ingredientes disponibles. Aquí aprendes a qué saben.</p>
+    </div>
+
+    <!-- LEARN BOX -->
+    <div class="learn-box">
+        <div class="learn-box-label">Lo que vas a aprender</div>
+        <ul>
+            <li>Qué es MCP y por qué todos los grandes proveedores lo han adoptado</li>
+            <li>Cómo funciona un agente de IA — el loop que no para hasta conseguirlo</li>
+            <li>Qué son las skills y cómo amplían lo que puede hacer la IA</li>
+            <li>La diferencia real entre Claude Code, Cursor y GitHub Copilot</li>
+        </ul>
+    </div>
+
+    <!-- TOC -->
+    <nav class="toc" aria-label="Contenido">
+        <div class="toc-label">En este recurso</div>
+        <div class="toc-links">
+            <a href="#s01">01 Por qué estos conceptos</a>
+            <a href="#s02">02 MCP</a>
+            <a href="#s03">03 Agente de IA</a>
+            <a href="#s04">04 Skills y Kits</a>
+            <a href="#s05">05 Bonus: entornos</a>
+            <a href="#faq">FAQ</a>
+            <a href="#checklist">Checklist</a>
+        </div>
+    </nav>
+
+    <!-- S01 -->
+    <section class="section" id="s01">
+        <div class="section-num">01</div>
+        <h2>Por qué estos conceptos y no otros</h2>
+        <p>No necesitas saber qué es un frontend, un backend ni una API para empezar a construir con IA. Eso llega solo, cuando lo tocas. Lo que sí necesitas ahora son cuatro palabras que van a aparecer constantemente en todo lo que sigue — y que la mayoría de tutoriales asumen que ya sabes.</p>
+        <p>Igual que antes de cocinar necesitas saber qué es una sartén y qué es un horno — no para ser chef, sino para no quemarte la primera vez. Este recurso es eso.</p>
+
+        <div class="callout azul">
+            <div class="callout-label">La diferencia clave</div>
+            <p>Un <strong>modelo</strong> es el cerebro (Claude, GPT, Gemini). Un <strong>entorno</strong> es la interfaz donde trabajas (Claude Code, Cursor). Un <strong>agente</strong> es el sistema que usa el cerebro para alcanzar un objetivo. Un <strong>skill</strong> le enseña al sistema una habilidad nueva. Son cuatro cosas distintas.</p>
+        </div>
+    </section>
+
+    <!-- S02 -->
+    <section class="section" id="s02">
+        <div class="section-num">02</div>
+        <h2>MCP — el protocolo que conecta la IA con tus herramientas</h2>
+        <p>Hasta hace poco, la IA solo podía ver texto. Le enviabas un mensaje, te respondía. Fin. No podía abrir tu calendario, leer tus archivos o consultar una base de datos en tiempo real.</p>
+        <p>MCP cambia eso.</p>
+
+        <div class="concept-def">
+            <div class="concept-term">Model Context Protocol (MCP)</div>
+            <p>Estándar abierto creado por Anthropic en noviembre de 2024 y adoptado por OpenAI, Google DeepMind y Microsoft. Define cómo los modelos de IA se conectan con herramientas externas — archivos, calendarios, bases de datos, APIs — de forma segura y estandarizada.</p>
+            <div class="concept-analogy">Analogía: MCP es como el puerto USB. Antes de que existiera, cada dispositivo tenía su propio conector. Con MCP, todo se conecta igual, sin importar el fabricante.</div>
+        </div>
+
+        <p>Sin MCP, la IA solo puede hablar. Con MCP, puede actuar: leer un documento, escribir en una hoja de cálculo, consultar el tiempo, reservar algo. La diferencia es la misma que entre un asesor que te da consejos y uno que también puede ejecutarlos.</p>
+
+        <div class="callout azul">
+            <div class="callout-label">Por qué importa ahora</div>
+            <p>Las herramientas que vamos a usar en este nivel (Antigravity, Stitch) se conectan con la IA a través de protocolos similares. Cuando oigas "integración" o "conector", estás hablando de la misma idea que MCP.</p>
+        </div>
+    </section>
+
+    <!-- S03 -->
+    <section class="section" id="s03">
+        <div class="section-num">03</div>
+        <h2>Agente de IA — el loop que no para hasta conseguirlo</h2>
+        <p>Un chatbot responde. Un agente actúa. La diferencia no es el modelo que usan — es lo que hacen con él.</p>
+        <p>Cuando le das un objetivo a un agente, no espera tu confirmación en cada paso. Planifica, ejecuta, evalúa el resultado y corrige. Si no ha conseguido el objetivo, vuelve a empezar. El loop no para hasta que la iteración es correcta — o hasta que le dices que pare.</p>
+
+        <div class="loop-wrap">
+            <div class="loop-label">Loop iterativo del agente</div>
+            <svg viewBox="0 0 560 450" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <rect width="560" height="450" fill="#FAFAF7"/>
+
+                <defs>
+                    <marker id="arr" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+                        <path d="M0,0 L0,6 L8,3 z" fill="#2563EB"/>
+                    </marker>
+                    <marker id="arrRed" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+                        <path d="M0,0 L0,6 L8,3 z" fill="#DC2626"/>
+                    </marker>
+                    <marker id="arrGreen" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+                        <path d="M0,0 L0,6 L8,3 z" fill="#059669"/>
+                    </marker>
+                    <marker id="arrPurple" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+                        <path d="M0,0 L0,6 L8,3 z" fill="#7C3AED"/>
+                    </marker>
+                </defs>
+
+                <!-- Círculo de fondo — muestra el loop -->
+                <circle cx="275" cy="220" r="163" stroke="#DBEAFE" stroke-width="2.5" stroke-dasharray="10,5" fill="none"/>
+
+                <!-- Etiqueta central -->
+                <text x="275" y="214" font-family="JetBrains Mono, monospace" font-size="10" fill="#BFDBFE" font-weight="700" text-anchor="middle" letter-spacing="1.5">LOOP</text>
+                <text x="275" y="230" font-family="JetBrains Mono, monospace" font-size="10" fill="#BFDBFE" font-weight="700" text-anchor="middle" letter-spacing="1.5">ITERATIVO</text>
+
+                <!-- FLECHAS -->
+
+                <!-- Entrada: OBJETIVO → PLANIFICA -->
+                <path d="M 160 49 L 160 80" stroke="#7C3AED" stroke-width="1.8" marker-end="url(#arrPurple)"/>
+
+                <!-- Loop horario: PLANIFICA → EJECUTA (arriba) -->
+                <path d="M 225 105 L 325 105" stroke="#2563EB" stroke-width="1.8" marker-end="url(#arr)"/>
+
+                <!-- Loop horario: EJECUTA → EVALÚA (derecha) -->
+                <path d="M 390 130 L 390 310" stroke="#2563EB" stroke-width="1.8" marker-end="url(#arr)"/>
+
+                <!-- Loop horario: EVALÚA → ¿CONSEGUIDO? (abajo) -->
+                <path d="M 325 335 L 237 335" stroke="#2563EB" stroke-width="1.8" marker-end="url(#arr)"/>
+
+                <!-- Loop horario: ¿CONSEGUIDO? → PLANIFICA (izquierda, NO — sigue el círculo) -->
+                <path d="M 160 310 L 160 130" stroke="#DC2626" stroke-width="1.5" stroke-dasharray="6,3" marker-end="url(#arrRed)"/>
+
+                <!-- Salida: ¿CONSEGUIDO? → FIN (SÍ — rompe el loop) -->
+                <path d="M 160 360 L 160 400" stroke="#059669" stroke-width="1.8" marker-end="url(#arrGreen)"/>
+
+                <!-- NODOS -->
+
+                <!-- OBJETIVO (entrada, sobre el loop) -->
+                <rect x="95" y="11" width="130" height="38" rx="8" fill="#F5F3FF" stroke="#7C3AED" stroke-width="1.5"/>
+                <text x="160" y="27" font-family="JetBrains Mono, monospace" font-size="8" fill="#7C3AED" font-weight="600" text-anchor="middle" letter-spacing="0.5">OBJETIVO</text>
+                <text x="160" y="41" font-family="Inter, sans-serif" font-size="9" fill="#4C1D95" text-anchor="middle">qué quieres lograr</text>
+
+                <!-- PLANIFICA (arriba-izquierda) -->
+                <rect x="95" y="80" width="130" height="50" rx="8" fill="#EEF2FF" stroke="#2563EB" stroke-width="1.5"/>
+                <text x="160" y="101" font-family="JetBrains Mono, monospace" font-size="8" fill="#2563EB" font-weight="600" text-anchor="middle" letter-spacing="0.5">PLANIFICA</text>
+                <text x="160" y="116" font-family="Inter, sans-serif" font-size="9" fill="#1C1917" text-anchor="middle">decide los pasos</text>
+
+                <!-- EJECUTA (arriba-derecha) -->
+                <rect x="325" y="80" width="130" height="50" rx="8" fill="#EEF2FF" stroke="#2563EB" stroke-width="1.5"/>
+                <text x="390" y="101" font-family="JetBrains Mono, monospace" font-size="8" fill="#2563EB" font-weight="600" text-anchor="middle" letter-spacing="0.5">EJECUTA</text>
+                <text x="390" y="116" font-family="Inter, sans-serif" font-size="9" fill="#1C1917" text-anchor="middle">lleva a cabo la acción</text>
+
+                <!-- EVALÚA (abajo-derecha) -->
+                <rect x="325" y="310" width="130" height="50" rx="8" fill="#EEF2FF" stroke="#2563EB" stroke-width="1.5"/>
+                <text x="390" y="331" font-family="JetBrains Mono, monospace" font-size="8" fill="#2563EB" font-weight="600" text-anchor="middle" letter-spacing="0.5">EVALÚA</text>
+                <text x="390" y="346" font-family="Inter, sans-serif" font-size="9" fill="#1C1917" text-anchor="middle">¿funcionó?</text>
+
+                <!-- ¿CONSEGUIDO? (abajo-izquierda, nodo de decisión) -->
+                <rect x="82" y="310" width="155" height="50" rx="8" fill="#FFF7ED" stroke="#D97706" stroke-width="1.5"/>
+                <text x="160" y="331" font-family="JetBrains Mono, monospace" font-size="8" fill="#92400E" font-weight="600" text-anchor="middle" letter-spacing="0.5">¿CONSEGUIDO?</text>
+                <text x="160" y="346" font-family="Inter, sans-serif" font-size="9" fill="#78350F" text-anchor="middle">decide si seguir o salir</text>
+
+                <!-- FIN (salida, debajo del loop) -->
+                <rect x="82" y="400" width="155" height="40" rx="8" fill="#D1FAE5" stroke="#059669" stroke-width="1.5"/>
+                <text x="160" y="417" font-family="JetBrains Mono, monospace" font-size="8" fill="#059669" font-weight="600" text-anchor="middle" letter-spacing="0.5">OBJETIVO LOGRADO ✓</text>
+                <text x="160" y="431" font-family="Inter, sans-serif" font-size="9" fill="#065F46" text-anchor="middle">el agente termina</text>
+
+                <!-- ETIQUETAS DE DECISIÓN -->
+                <text x="45" y="217" font-family="JetBrains Mono, monospace" font-size="8" fill="#DC2626" font-weight="700" text-anchor="middle">NO</text>
+                <text x="45" y="231" font-family="JetBrains Mono, monospace" font-size="8" fill="#DC2626" text-anchor="middle">repite</text>
+                <text x="228" y="385" font-family="JetBrains Mono, monospace" font-size="8" fill="#059669" font-weight="700" text-anchor="start">SÍ — sale</text>
+            </svg>
+        </div>
+
+        <p>Esto es importante entenderlo antes de tocar las herramientas del nivel 1. Cuando Antigravity genera una app, no lo hace de un golpe — itera: genera, evalúa, corrige. Tú ves el resultado final. El loop ocurrió entre bastidores.</p>
+
+        <div class="callout">
+            <div class="callout-label">Lo que cambia para ti</div>
+            <p>Con un agente no describes lo que quieres paso a paso. Describes el objetivo y dejas que el sistema decida cómo llegar. Tu trabajo es evaluar el resultado y redirigir si no es lo que esperabas.</p>
+        </div>
+    </section>
+
+    <!-- S04 -->
+    <section class="section" id="s04">
+        <div class="section-num">04</div>
+        <h2>Skills y Kits — ampliar lo que puede hacer la IA</h2>
+        <p>Un modelo de IA sabe muchas cosas de forma genérica. Una skill le enseña a hacer algo específico, con un comportamiento concreto y repetible.</p>
+
+        <div class="concept-def">
+            <div class="concept-term">Skill</div>
+            <p>Extensión modular que añade una capacidad específica a Claude Code. Se almacena en el directorio <code style="font-family:'JetBrains Mono',monospace;font-size:12px;background:var(--bg);padding:1px 5px;border-radius:3px;">~/.claude/skills/</code> y se activa con un comando. Contiene instrucciones estructuradas en un archivo SKILL.md.</p>
+            <div class="concept-analogy">Analogía: como instalar un plugin en un navegador. El navegador ya funciona, el plugin le añade algo que antes no podía hacer.</div>
+        </div>
+
+        <div class="skills-grid">
+            <div class="skill-card">
+                <div class="skill-card-icon">🧠</div>
+                <div class="skill-card-title">Prompt Master</div>
+                <div class="skill-card-desc">Construye prompts precisos automáticamente. Ya la usaste en el Nivel 0.</div>
+                <span class="skill-card-tag">instalada · global</span>
+            </div>
+            <div class="skill-card">
+                <div class="skill-card-icon">📦</div>
+                <div class="skill-card-title">Kit de Skills</div>
+                <div class="skill-card-desc">Colección de varias skills empaquetadas. Un kit puede incluir 10 o 200 skills de un repositorio.</div>
+                <span class="skill-card-tag">colección</span>
+            </div>
+            <div class="skill-card">
+                <div class="skill-card-icon">⚡</div>
+                <div class="skill-card-title">Skills propias</div>
+                <div class="skill-card-desc">Puedes crear las tuyas. Si repites un flujo de trabajo, conviértelo en skill — con una herramienta llamada <strong>Skill Creator</strong>.</div>
+                <div class="skill-card-spoiler">→ Spoiler: en el Nivel 2 verás cómo crear tu primera skill desde cero. Sigue leyendo.</div>
+                <span class="skill-card-tag">avanzado · Nivel 2</span>
+            </div>
+        </div>
+
+        <p>Las skills que usamos en esta biblioteca (ai-seo, copywriting, social-content...) son exactamente eso — extensiones que le enseñan a Claude Code a hacer tareas específicas de marketing y creación de contenido.</p>
+    </section>
+
+    <!-- S05 BONUS -->
+    <section class="section" id="s05">
+        <div class="section-num">05</div>
+        <div class="bonus-header">
+            <h2 style="margin:0">Claude Code vs Cursor vs GitHub Copilot</h2>
+            <span class="bonus-badge">BONUS</span>
+        </div>
+        <p>Tres nombres que generan FOMO. La realidad es más simple: son <strong>entornos de trabajo</strong>, no modelos. El modelo es el cerebro. El entorno es el espacio donde trabajas con ese cerebro.</p>
+
+        <div class="env-grid">
+            <div class="env-card">
+                <div class="env-header">
+                    <div class="env-name">Claude Code</div>
+                    <div class="env-maker">Anthropic · CLI</div>
+                </div>
+                <div class="env-body">
+                    <div class="env-row"><span class="env-row-label">Qué es</span>Herramienta de línea de comandos (terminal)</div>
+                    <div class="env-row"><span class="env-row-label">Modelo</span>Solo Claude (no multi-modelo)</div>
+                    <div class="env-row"><span class="env-row-label">Para qué</span>Agente de código agentico — lee, edita y ejecuta en tu repo</div>
+                    <div class="env-row"><span class="env-row-label">Acceso</span>Requiere plan Claude válido</div>
+                </div>
+            </div>
+            <div class="env-card">
+                <div class="env-header">
+                    <div class="env-name">Cursor</div>
+                    <div class="env-maker">Anysphere · Editor</div>
+                </div>
+                <div class="env-body">
+                    <div class="env-row"><span class="env-row-label">Qué es</span>Editor de código (fork de VS Code)</div>
+                    <div class="env-row"><span class="env-row-label">Modelo</span>Multi-modelo: Claude, GPT, Gemini, Grok...</div>
+                    <div class="env-row"><span class="env-row-label">Para qué</span>Escribir y editar código con IA integrada</div>
+                    <div class="env-row"><span class="env-row-label">Precio</span>$20/mes plan individual</div>
+                </div>
+            </div>
+            <div class="env-card">
+                <div class="env-header">
+                    <div class="env-name">GitHub Copilot</div>
+                    <div class="env-maker">GitHub · Plugin</div>
+                </div>
+                <div class="env-body">
+                    <div class="env-row"><span class="env-row-label">Qué es</span>Plugin para VS Code, JetBrains y otros editores</div>
+                    <div class="env-row"><span class="env-row-label">Modelo</span>OpenAI principalmente (GPT-4o, o3)</div>
+                    <div class="env-row"><span class="env-row-label">Para qué</span>Autocompletado y asistencia dentro de tu editor actual</div>
+                    <div class="env-row"><span class="env-row-label">Precio</span>$10/mes individual</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="callout">
+            <div class="callout-label">La pregunta correcta</div>
+            <p>No es "¿cuál es mejor?" Es "¿qué quiero hacer?" Si quieres construir apps sin tocar código — como hacemos en este nivel con Antigravity — ninguno de los tres es necesario ahora mismo. Son herramientas para cuando empieces a trabajar con código directamente.</p>
+        </div>
+    </section>
+
+    <!-- FAQ -->
+    <section class="section" id="faq">
+        <div class="section-num">FAQ</div>
+        <h2>Preguntas frecuentes</h2>
+
+        <div class="faq-item">
+            <div class="faq-q" onclick="toggleFaq(this)">
+                ¿Qué es MCP en inteligencia artificial?
+                <span class="faq-chevron">▾</span>
+            </div>
+            <div class="faq-a">Estándar abierto creado por Anthropic (noviembre 2024) y adoptado por OpenAI, Google y Microsoft. Permite que los modelos de IA accedan a herramientas externas — archivos, calendarios, bases de datos — de forma segura. Sin MCP la IA solo habla. Con MCP puede actuar.</div>
+        </div>
+        <div class="faq-item">
+            <div class="faq-q" onclick="toggleFaq(this)">
+                ¿Qué diferencia hay entre un chatbot y un agente de IA?
+                <span class="faq-chevron">▾</span>
+            </div>
+            <div class="faq-a">Un chatbot responde. Un agente actúa. El agente tiene un objetivo, planifica cómo alcanzarlo, ejecuta acciones y evalúa el resultado. Si no funciona, corrige y repite — sin que tú tengas que intervenir en cada paso.</div>
+        </div>
+        <div class="faq-item">
+            <div class="faq-q" onclick="toggleFaq(this)">
+                ¿Claude Code, Cursor y GitHub Copilot son lo mismo?
+                <span class="faq-chevron">▾</span>
+            </div>
+            <div class="faq-a">No. Son entornos de trabajo distintos — la interfaz donde interactúas con la IA. Claude Code es un CLI de terminal (solo Claude). Cursor es un editor de código con múltiples modelos. Copilot es un plugin para tu editor actual. El modelo es el cerebro; el entorno es el espacio de trabajo.</div>
+        </div>
+        <div class="faq-item">
+            <div class="faq-q" onclick="toggleFaq(this)">
+                ¿Necesito entender todos estos conceptos para construir la app del Nivel 1?
+                <span class="faq-chevron">▾</span>
+            </div>
+            <div class="faq-a">No para ejecutar — sí para entender qué está pasando mientras lo haces. Antigravity y Stitch usan agentes internamente. Saber que existe el loop iterativo te ayuda a interpretar por qué el resultado no es instantáneo y cómo redirigirlo cuando no es lo que esperabas.</div>
+        </div>
+    </section>
+
+    <!-- CHECKLIST -->
+    <div class="checklist-section" id="checklist">
+        <div class="checklist-title">Lista de comprobación</div>
+        <ul class="checklist-items" id="checklistItems">
+            <li onclick="toggleCheck(this)"><span class="check-box"></span><span class="check-text">Sé qué es MCP y para qué sirve en una línea</span></li>
+            <li onclick="toggleCheck(this)"><span class="check-box"></span><span class="check-text">Entiendo el loop del agente: planifica → ejecuta → evalúa → corrige</span></li>
+            <li onclick="toggleCheck(this)"><span class="check-box"></span><span class="check-text">Sé qué es una skill y cómo se diferencia del modelo</span></li>
+            <li onclick="toggleCheck(this)"><span class="check-box"></span><span class="check-text">Entiendo que Claude Code, Cursor y Copilot son entornos, no modelos</span></li>
+            <li onclick="toggleCheck(this)"><span class="check-box"></span><span class="check-text">Estoy listo para ver las herramientas con las que voy a construir</span></li>
+        </ul>
+    </div>
+
+    <!-- FOOTER -->
+    <footer class="resource-footer">
+        <a href="1-1.html" class="footer-back">
+            <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+            Gratis vs. pago
+        </a>
+        <a href="1-3.html" class="footer-next">
+            Antigravity y Stitch
+            <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </a>
+    </footer>
+
+</div>
+
+<script>
+function toggleFaq(btn) {
+    const item = btn.parentElement;
+    item.classList.toggle('open');
+}
+function toggleCheck(li) {
+    li.classList.toggle('done');
+    li.querySelector('.check-box').textContent = li.classList.contains('done') ? '✓' : '';
+    const items = document.querySelectorAll('#checklistItems li');
+    if ([...items].every(i => i.classList.contains('done'))) launchConfetti();
+}
+function launchConfetti() {
+    const canvas = document.getElementById('confettiCanvas');
+    if (!canvas) return;
+    canvas.style.display = 'block';
+    const ctx = canvas.getContext('2d');
+    canvas.width = window.innerWidth; canvas.height = window.innerHeight;
+    const colors = ['#B45309','#D97706','#FDE68A','#059669','#7C3AED','#2563EB','#F59E0B','#10B981','#EF4444'];
+    const pieces = Array.from({length: 140}, () => ({
+        x: Math.random() * canvas.width, y: -10 - Math.random() * canvas.height * 0.6,
+        w: Math.random() * 11 + 5, h: Math.random() * 6 + 3,
+        color: colors[Math.floor(Math.random() * colors.length)],
+        vx: (Math.random() - 0.5) * 4, vy: Math.random() * 3 + 1.5,
+        rot: Math.random() * 360, vrot: (Math.random() - 0.5) * 10,
+        alpha: 1, shape: Math.random() > 0.5 ? 'rect' : 'circle'
+    }));
+    let frame = 0;
+    (function animate() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        pieces.forEach(p => {
+            p.x += p.vx; p.y += p.vy; p.rot += p.vrot; p.vy += 0.06;
+            if (frame > 90) p.alpha = Math.max(0, p.alpha - 0.012);
+            ctx.save(); ctx.globalAlpha = p.alpha;
+            ctx.translate(p.x + p.w/2, p.y + p.h/2); ctx.rotate(p.rot * Math.PI/180);
+            ctx.fillStyle = p.color;
+            if (p.shape === 'circle') { ctx.beginPath(); ctx.arc(0,0,p.w/2,0,Math.PI*2); ctx.fill(); }
+            else { ctx.fillRect(-p.w/2,-p.h/2,p.w,p.h); }
+            ctx.restore();
+        });
+        frame++;
+        if (frame < 170) requestAnimationFrame(animate);
+        else canvas.style.display = 'none';
+    })();
+}
+</script>
+<canvas id="confettiCanvas" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:9999;"></canvas>
+</body>
+</html>
