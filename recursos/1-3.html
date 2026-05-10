@@ -1,0 +1,979 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Antigravity y Stitch: las dos herramientas con las que vas a construir tu primera app — alex.decode</title>
+    <link rel="icon" type="image/svg+xml" href="../favicon.svg">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        :root {
+            --bg:        #FAFAF7;
+            --surface:   #FFFFFF;
+            --border:    #E8E2D9;
+            --text:      #1C1917;
+            --muted:     #78716C;
+            --faint:     #B0A89E;
+            --amber:     #B45309;
+            --amber-mid: #D97706;
+            --amber-dim: rgba(180,83,9,0.07);
+            --rojo:  #DC2626; --rojo-d:  rgba(220,38,38,0.07);
+            --amar:  #D97706; --amar-d:  rgba(217,119,6,0.07);
+            --azul:  #2563EB; --azul-d:  rgba(37,99,235,0.07);
+            --verde: #059669; --verde-d: rgba(5,150,105,0.07);
+            --morad: #7C3AED; --morad-d: rgba(124,58,237,0.07);
+        }
+
+        html { scroll-behavior: smooth; }
+        body {
+            background: var(--bg);
+            color: var(--text);
+            font-family: 'Inter', system-ui, sans-serif;
+            font-size: 15px;
+            line-height: 1.7;
+            min-height: 100vh;
+        }
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0; left: 0; right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, #D97706 0%, var(--amber) 50%, #D97706 100%);
+            z-index: 100;
+        }
+
+        .wrap { max-width: 720px; margin: 0 auto; padding: 0 24px; }
+
+        /* ── NAV ── */
+        .top-nav {
+            padding: 28px 0 0;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 11px;
+            color: var(--faint);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
+        .top-nav a { color: var(--amber); text-decoration: none; transition: opacity .15s; }
+        .top-nav a:hover { opacity: .7; }
+        .top-nav .sep { color: var(--faint); }
+
+        .nav-owl {
+            margin-left: auto;
+            display: flex;
+            align-items: center;
+            text-decoration: none;
+            transition: opacity .15s;
+            animation: owlFloat 5s ease-in-out 1s infinite;
+        }
+        .nav-owl:hover { opacity: .7; }
+        @keyframes owlFloat { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-4px)} }
+
+        /* ── COVER ── */
+        .resource-cover {
+            margin: 24px 0 0;
+            border-radius: 14px;
+            overflow: hidden;
+            width: 100%;
+            aspect-ratio: 16/7;
+            background: var(--verde-d);
+            border: 1px solid rgba(5,150,105,0.15);
+        }
+        .resource-cover svg { width: 100%; height: 100%; display: block; }
+
+        /* ── HEADER ── */
+        .resource-header { padding: 28px 0 28px; border-bottom: 1px solid var(--border); margin-bottom: 24px; }
+
+        .tag {
+            display: inline-flex; align-items: center; gap: 5px;
+            font-size: 10px; font-weight: 600; padding: 3px 10px;
+            border-radius: 100px; margin-bottom: 14px;
+        }
+        .tag .dot { width: 5px; height: 5px; border-radius: 50%; flex-shrink: 0; }
+        .tag.verde { background: var(--verde-d); color: var(--verde); }
+        .tag.verde .dot { background: var(--verde); }
+
+        .resource-title {
+            font-family: 'Playfair Display', Georgia, serif;
+            font-size: clamp(24px, 4vw, 34px);
+            font-weight: 700;
+            line-height: 1.2;
+            letter-spacing: -.3px;
+            margin-bottom: 12px;
+        }
+        .resource-meta {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 11px;
+            color: var(--faint);
+            display: flex;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+        .resource-meta span { display: flex; align-items: center; gap: 5px; }
+        .meta-dot { width: 3px; height: 3px; border-radius: 50%; background: var(--faint); }
+
+        /* ── LO QUE VAS A APRENDER ── */
+        .learn-box {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 20px 22px;
+            margin-bottom: 16px;
+        }
+        .learn-label {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 9px;
+            font-weight: 600;
+            color: var(--amber);
+            letter-spacing: 1.4px;
+            text-transform: uppercase;
+            margin-bottom: 12px;
+        }
+        .learn-list { list-style: none; display: flex; flex-direction: column; gap: 8px; }
+        .learn-list li {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            font-size: 13.5px;
+            color: var(--text);
+            line-height: 1.5;
+        }
+        .learn-dot {
+            width: 6px; height: 6px;
+            border-radius: 50%;
+            background: var(--verde);
+            flex-shrink: 0;
+            margin-top: 7px;
+        }
+
+        /* ── TABLE OF CONTENTS ── */
+        .toc {
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 14px 18px;
+            margin-bottom: 44px;
+        }
+        .toc-label {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 9px;
+            color: var(--faint);
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            margin-bottom: 10px;
+        }
+        .toc-links { display: flex; flex-wrap: wrap; gap: 6px; }
+        .toc-links a {
+            font-size: 12px;
+            color: var(--muted);
+            text-decoration: none;
+            padding: 4px 10px;
+            border-radius: 6px;
+            border: 1px solid var(--border);
+            transition: border-color .15s, color .15s, background .15s;
+            white-space: nowrap;
+        }
+        .toc-links a:hover { border-color: var(--verde); color: var(--verde); background: var(--verde-d); }
+
+        /* ── CONTENT SECTIONS ── */
+        .section { margin-bottom: 52px; scroll-margin-top: 32px; }
+        .section-num {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 10px;
+            color: var(--amber);
+            font-weight: 600;
+            letter-spacing: 1px;
+            margin-bottom: 8px;
+        }
+        .section h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: 21px;
+            font-weight: 700;
+            line-height: 1.3;
+            margin-bottom: 14px;
+        }
+        .section p { color: var(--text); margin-bottom: 12px; font-size: 14.5px; }
+        .section p:last-child { margin-bottom: 0; }
+        .section em { font-style: italic; }
+
+        /* ── UI / UX SPLIT CARD ── */
+        .def-split {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin: 18px 0;
+        }
+        .def-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 14px 16px;
+        }
+        .def-card-label {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 9px;
+            font-weight: 600;
+            letter-spacing: 1.3px;
+            text-transform: uppercase;
+            margin-bottom: 6px;
+        }
+        .def-card.ui .def-card-label { color: var(--verde); }
+        .def-card.ux .def-card-label { color: var(--azul); }
+        .def-card-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text);
+            margin-bottom: 4px;
+        }
+        .def-card-desc { font-size: 12px; color: var(--muted); line-height: 1.5; }
+        .def-card-tool {
+            margin-top: 10px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 10px;
+            padding: 3px 8px;
+            border-radius: 6px;
+            display: inline-block;
+        }
+        .def-card.ui .def-card-tool { background: var(--verde-d); color: var(--verde); }
+        .def-card.ux .def-card-tool { background: var(--azul-d); color: var(--azul); }
+
+        /* ── CALLOUT ── */
+        .callout {
+            border-left: 3px solid var(--amber);
+            background: var(--amber-dim);
+            border-radius: 0 8px 8px 0;
+            padding: 13px 16px;
+            margin: 18px 0;
+        }
+        .callout.azul  { border-left-color: var(--azul);  background: var(--azul-d); }
+        .callout.verde { border-left-color: var(--verde); background: var(--verde-d); }
+        .callout.rojo  { border-left-color: var(--rojo);  background: var(--rojo-d); }
+        .callout-label {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 9px;
+            font-weight: 600;
+            color: var(--amber);
+            letter-spacing: 1.2px;
+            text-transform: uppercase;
+            margin-bottom: 5px;
+        }
+        .callout.azul  .callout-label { color: var(--azul); }
+        .callout.verde .callout-label { color: var(--verde); }
+        .callout.rojo  .callout-label { color: var(--rojo); }
+        .callout p { font-size: 13.5px; color: var(--text); margin: 0; line-height: 1.6; }
+
+        /* ── FEATURE LIST ── */
+        .feature-list {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 18px 20px;
+            margin: 18px 0;
+        }
+        .feature-list-label {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 9px;
+            font-weight: 600;
+            color: var(--verde);
+            letter-spacing: 1.4px;
+            text-transform: uppercase;
+            margin-bottom: 12px;
+        }
+        .feature-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            padding: 9px 0;
+            border-bottom: 1px solid var(--border);
+        }
+        .feature-item:last-child { border-bottom: none; padding-bottom: 0; }
+        .feature-num {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 10px;
+            font-weight: 600;
+            color: var(--verde);
+            min-width: 20px;
+            margin-top: 2px;
+            flex-shrink: 0;
+        }
+        .feature-desc { font-size: 13.5px; color: var(--text); line-height: 1.5; }
+        .feature-desc strong { font-weight: 600; color: var(--text); }
+
+        /* ── COMPARISON TABLE ── */
+        .table-wrap { overflow-x: auto; margin: 18px 0; }
+        table { width: 100%; border-collapse: collapse; font-size: 13px; }
+        thead th {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 10px;
+            font-weight: 600;
+            letter-spacing: .8px;
+            text-transform: uppercase;
+            padding: 10px 14px;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            color: var(--muted);
+            text-align: left;
+        }
+        thead th:first-child { border-top-left-radius: 8px; }
+        thead th:last-child  { border-top-right-radius: 8px; }
+        thead th.col-stitch    { color: var(--verde); }
+        thead th.col-antigrav  { color: var(--azul); }
+        tbody td {
+            padding: 10px 14px;
+            border: 1px solid var(--border);
+            vertical-align: top;
+            line-height: 1.5;
+            color: var(--text);
+        }
+        tbody tr:last-child td:first-child { border-bottom-left-radius: 8px; }
+        tbody tr:last-child td:last-child  { border-bottom-right-radius: 8px; }
+        tbody tr:nth-child(even) td { background: var(--surface); }
+
+        /* ── ACTION STEPS ── */
+        .action-steps {
+            background: var(--verde-d);
+            border: 1px solid rgba(5,150,105,0.2);
+            border-radius: 12px;
+            padding: 20px 22px;
+            margin: 18px 0;
+        }
+        .action-steps-label {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 9px;
+            font-weight: 600;
+            color: var(--verde);
+            letter-spacing: 1.4px;
+            text-transform: uppercase;
+            margin-bottom: 14px;
+        }
+        .action-step {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 10px;
+            align-items: flex-start;
+        }
+        .action-step:last-child { margin-bottom: 0; }
+        .step-num {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 10px;
+            font-weight: 600;
+            color: var(--verde);
+            min-width: 20px;
+            margin-top: 3px;
+        }
+        .step-text { font-size: 13.5px; color: var(--text); line-height: 1.5; }
+        .step-text strong { font-weight: 600; }
+
+        /* ── LIMITATION LIST ── */
+        .limit-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin: 14px 0;
+        }
+        .limit-list li {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            font-size: 13.5px;
+            color: var(--text);
+            line-height: 1.5;
+        }
+        .limit-dot {
+            width: 6px; height: 6px;
+            border-radius: 50%;
+            background: var(--rojo);
+            flex-shrink: 0;
+            margin-top: 8px;
+        }
+
+        /* ── ALEX IMPRESSION CARD ── */
+        .impression-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 20px 22px;
+            margin: 20px 0;
+        }
+        .impression-label {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 9px;
+            font-weight: 600;
+            color: var(--morad);
+            letter-spacing: 1.4px;
+            text-transform: uppercase;
+            margin-bottom: 12px;
+        }
+        .impression-row {
+            display: flex;
+            gap: 12px;
+            padding: 10px 0;
+            border-bottom: 1px solid var(--border);
+            font-size: 13.5px;
+            line-height: 1.5;
+        }
+        .impression-row:last-child { border-bottom: none; padding-bottom: 0; }
+        .impression-key {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 10px;
+            font-weight: 600;
+            color: var(--faint);
+            min-width: 78px;
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
+
+        /* ── NEXT HOOK ── */
+        .next-hook {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            background: var(--verde-d);
+            border: 1px solid rgba(5,150,105,0.22);
+            border-radius: 12px;
+            padding: 18px 20px;
+            margin-top: 24px;
+            text-decoration: none;
+            transition: border-color .15s;
+        }
+        .next-hook:hover { border-color: var(--verde); }
+        .next-hook-arrow {
+            font-size: 20px;
+            color: var(--verde);
+            flex-shrink: 0;
+            transition: transform .15s;
+        }
+        .next-hook:hover .next-hook-arrow { transform: translateX(4px); }
+        .next-hook-text { font-size: 13.5px; color: var(--text); line-height: 1.5; }
+        .next-hook-text strong { color: var(--verde); font-weight: 600; }
+
+        /* ── CHECKLIST ── */
+        .checklist-section {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 22px 24px;
+            margin-bottom: 48px;
+        }
+        .checklist-title {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 10px;
+            color: var(--amber);
+            font-weight: 600;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            margin-bottom: 14px;
+        }
+        .checklist-items { list-style: none; display: flex; flex-direction: column; gap: 10px; }
+        .checklist-items li {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            font-size: 13px;
+            color: var(--text);
+            line-height: 1.5;
+            cursor: pointer;
+        }
+        .check-box {
+            width: 17px; height: 17px;
+            border: 1.5px solid var(--border);
+            border-radius: 4px;
+            flex-shrink: 0;
+            margin-top: 1px;
+            transition: border-color .15s, background .15s;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 10px;
+            color: white;
+        }
+        .checklist-items li.done .check-box { background: var(--verde); border-color: var(--verde); }
+        .checklist-items li.done .check-text { text-decoration: line-through; color: var(--muted); }
+
+        /* ── FOOTER NAV ── */
+        .resource-footer {
+            border-top: 1px solid var(--border);
+            padding: 28px 0 52px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+        .footer-back {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 12px;
+            color: var(--muted);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: color .15s;
+        }
+        .footer-back:hover { color: var(--amber); }
+        .footer-next {
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--amber);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: gap .15s;
+        }
+        .footer-next:hover { gap: 10px; }
+
+        /* ── RESPONSIVE ── */
+        @media (max-width: 600px) {
+            .wrap { padding: 0 16px; }
+            .resource-title { font-size: 22px; }
+            .def-split { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+<div class="wrap">
+
+    <!-- NAV BREADCRUMB -->
+    <nav class="top-nav">
+        <a href="../index.html">alex.decode</a>
+        <span class="sep">/</span>
+        <span>Biblioteca</span>
+        <span class="sep">/</span>
+        <span>Nivel 1</span>
+        <span class="sep">/</span>
+        <span>Antigravity y Stitch</span>
+        <a href="../index.html" class="nav-owl" aria-label="Volver a la biblioteca">
+            <svg width="28" height="32" viewBox="0 0 140 160" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <polygon points="44,32 36,6 52,26" fill="#92400E"/>
+                <polygon points="96,32 104,6 88,26" fill="#92400E"/>
+                <circle cx="70" cy="56" r="38" fill="#B45309"/>
+                <ellipse cx="70" cy="58" rx="26" ry="24" fill="#D97706" opacity="0.28"/>
+                <circle cx="56" cy="52" r="13" fill="#FEF3C7"/>
+                <circle cx="84" cy="52" r="13" fill="#FEF3C7"/>
+                <circle cx="56" cy="52" r="6.5" fill="#1C1917"/>
+                <circle cx="84" cy="52" r="6.5" fill="#1C1917"/>
+                <circle cx="59" cy="49" r="2.2" fill="white"/>
+                <circle cx="87" cy="49" r="2.2" fill="white"/>
+                <polygon points="63,64 77,64 70,75" fill="#D97706"/>
+                <ellipse cx="70" cy="120" rx="34" ry="36" fill="#B45309"/>
+                <ellipse cx="70" cy="126" rx="20" ry="24" fill="#D97706" opacity="0.22"/>
+            </svg>
+        </a>
+    </nav>
+
+    <!-- PORTADA VISUAL -->
+    <div class="resource-cover">
+        <svg viewBox="0 0 800 350" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice">
+            <!-- Background -->
+            <rect width="800" height="350" fill="#ECFDF5"/>
+            <!-- Dot grid -->
+            <pattern id="dots" width="24" height="24" patternUnits="userSpaceOnUse">
+                <circle cx="12" cy="12" r="1" fill="#A7F3D0"/>
+            </pattern>
+            <rect width="800" height="350" fill="url(#dots)" opacity="0.6"/>
+
+            <!-- Top labels -->
+            <text x="197" y="30" font-family="JetBrains Mono, monospace" font-size="9" fill="#6EE7B7" text-anchor="middle" letter-spacing="2">STITCH · EL ARQUITECTO</text>
+            <text x="603" y="30" font-family="JetBrains Mono, monospace" font-size="9" fill="#6EE7B7" text-anchor="middle" letter-spacing="2">ANTIGRAVITY · EL ALBAÑIL</text>
+
+            <!-- LEFT CARD: Stitch -->
+            <rect x="46" y="40" width="302" height="220" rx="14" fill="white"/>
+            <rect x="46" y="40" width="302" height="40" rx="14" fill="#D1FAE5"/>
+            <rect x="46" y="62" width="302" height="18" fill="#D1FAE5"/>
+            <rect x="46" y="40" width="302" height="220" rx="14" fill="none" stroke="#6EE7B7" stroke-width="1.5"/>
+            <text x="197" y="65" font-family="Inter, sans-serif" font-size="11" fill="#065F46" text-anchor="middle" font-weight="500">Diseñar interfaz de gastos...</text>
+            <!-- Wireframe content -->
+            <rect x="66" y="92" width="262" height="18" rx="4" fill="#D1FAE5"/>
+            <rect x="66" y="118" width="124" height="60" rx="6" fill="#F0FDF4" stroke="#D1FAE5" stroke-width="1"/>
+            <rect x="198" y="118" width="130" height="60" rx="6" fill="#F0FDF4" stroke="#D1FAE5" stroke-width="1"/>
+            <rect x="66" y="186" width="262" height="10" rx="3" fill="#D1FAE5"/>
+            <rect x="66" y="202" width="190" height="10" rx="3" fill="#F0FDF4"/>
+            <rect x="66" y="220" width="84" height="24" rx="7" fill="#059669" opacity="0.20"/>
+            <text x="108" y="237" font-family="Inter, sans-serif" font-size="9.5" fill="#059669" text-anchor="middle" font-weight="500">UI lista ✓</text>
+
+            <!-- CENTER + circle -->
+            <circle cx="400" cy="152" r="30" fill="#D1FAE5" opacity="0.7"/>
+            <text x="400" y="160" font-family="Inter, sans-serif" font-size="38" fill="#059669" text-anchor="middle" opacity="0.65">+</text>
+
+            <!-- RIGHT CARD: Antigravity -->
+            <rect x="452" y="40" width="302" height="220" rx="14" fill="white"/>
+            <rect x="452" y="40" width="302" height="40" rx="14" fill="#D1FAE5"/>
+            <rect x="452" y="62" width="302" height="18" fill="#D1FAE5"/>
+            <rect x="452" y="40" width="302" height="220" rx="14" fill="none" stroke="#6EE7B7" stroke-width="1.5"/>
+            <text x="603" y="65" font-family="Inter, sans-serif" font-size="11" fill="#065F46" text-anchor="middle" font-weight="500">Crear app de gestión de gastos...</text>
+            <!-- Code lines -->
+            <rect x="472" y="92" width="120" height="8" rx="3" fill="#D1FAE5"/>
+            <rect x="472" y="106" width="200" height="8" rx="3" fill="#F0FDF4"/>
+            <rect x="486" y="120" width="168" height="8" rx="3" fill="#F0FDF4"/>
+            <rect x="486" y="134" width="136" height="8" rx="3" fill="#F0FDF4"/>
+            <rect x="472" y="150" width="104" height="8" rx="3" fill="#D1FAE5"/>
+            <rect x="472" y="164" width="212" height="8" rx="3" fill="#F0FDF4"/>
+            <rect x="486" y="178" width="160" height="8" rx="3" fill="#F0FDF4"/>
+            <rect x="472" y="194" width="180" height="8" rx="3" fill="#F0FDF4"/>
+            <rect x="472" y="210" width="90" height="24" rx="7" fill="#059669" opacity="0.20"/>
+            <text x="517" y="227" font-family="Inter, sans-serif" font-size="9.5" fill="#059669" text-anchor="middle" font-weight="500">Deploy →</text>
+
+            <!-- Bottom result bar -->
+            <rect x="224" y="284" width="352" height="40" rx="10" fill="white" stroke="#A7F3D0" stroke-width="1.5"/>
+            <text x="400" y="299" font-family="JetBrains Mono, monospace" font-size="8.5" fill="#6EE7B7" text-anchor="middle" letter-spacing="1.5">RESULTADO</text>
+            <text x="400" y="316" font-family="Inter, sans-serif" font-size="11" fill="#059669" text-anchor="middle" font-weight="500">App funcionando en tu móvil · sin una línea de código</text>
+
+            <!-- Connector lines card → bar -->
+            <line x1="197" y1="262" x2="320" y2="284" stroke="#A7F3D0" stroke-width="1.5" stroke-dasharray="5,4"/>
+            <line x1="603" y1="262" x2="480" y2="284" stroke="#A7F3D0" stroke-width="1.5" stroke-dasharray="5,4"/>
+        </svg>
+    </div>
+
+    <!-- HEADER -->
+    <header class="resource-header">
+        <div class="tag verde"><span class="dot"></span>Herramientas</div>
+        <h1 class="resource-title">Antigravity y Stitch: las dos herramientas con las que vas a construir tu primera app</h1>
+        <div class="resource-meta">
+            <span>12 min de lectura</span>
+            <span class="meta-dot"></span>
+            <span>Nivel 1 — Probar</span>
+            <span class="meta-dot"></span>
+            <span>Verano 2026</span>
+        </div>
+    </header>
+
+    <!-- LO QUE VAS A APRENDER -->
+    <div class="learn-box">
+        <div class="learn-label">Lo que vas a aprender</div>
+        <ul class="learn-list">
+            <li><span class="learn-dot"></span>La diferencia entre UI y UX — y qué herramienta cubre cada una</li>
+            <li><span class="learn-dot"></span>Qué puede hacer Antigravity y qué puede hacer Stitch exactamente</li>
+            <li><span class="learn-dot"></span>Cómo encajan las dos juntas en un flujo real de construcción</li>
+            <li><span class="learn-dot"></span>Las limitaciones reales que nadie menciona — y lo que me sorprendió al usarlas</li>
+        </ul>
+    </div>
+
+    <!-- TABLE OF CONTENTS -->
+    <nav class="toc" aria-label="Contenido">
+        <div class="toc-label">En este recurso</div>
+        <div class="toc-links">
+            <a href="#s01">01 El arquitecto y el albañil</a>
+            <a href="#s02">02 Antigravity</a>
+            <a href="#s03">03 Stitch</a>
+            <a href="#s04">04 Cómo encajan</a>
+            <a href="#s05">05 Lo que no pueden hacer</a>
+            <a href="#checklist">Checklist</a>
+        </div>
+    </nav>
+
+    <!-- ── SECCIÓN 01 ── -->
+    <section class="section" id="s01">
+        <div class="section-num">01</div>
+        <h2>El arquitecto y el albañil</h2>
+
+        <p>Antes de abrir ninguna de las dos herramientas, necesitas una imagen mental de qué hace cada una. Sin esa imagen, vas a mezclarlas en el orden equivocado — y la app va a parecer rota antes de estarlo.</p>
+
+        <p><strong>Stitch es el arquitecto.</strong> Diseña los planos. Dibuja cómo va a verse la app: colores, botones, formularios, espacios. Todo lo que el usuario va a <em>ver</em>.</p>
+
+        <p><strong>Antigravity es el albañil.</strong> Construye la estructura. Define la lógica, las conexiones, los flujos de datos. Todo lo que la app va a <em>hacer</em>.</p>
+
+        <p>Ninguno puede hacer el trabajo del otro. El arquitecto sin el albañil tiene un plano que nunca se construye. El albañil sin el arquitecto levanta paredes sin saber para qué.</p>
+
+        <div class="def-split">
+            <div class="def-card ui">
+                <div class="def-card-label">UI — User Interface</div>
+                <div class="def-card-title">Lo que el usuario ve</div>
+                <div class="def-card-desc">Colores, tipografía, botones, iconos. Todo el aspecto visual con el que el usuario interactúa.</div>
+                <div class="def-card-tool">Stitch lo genera</div>
+            </div>
+            <div class="def-card ux">
+                <div class="def-card-label">UX — User Experience</div>
+                <div class="def-card-title">Lo que el usuario hace</div>
+                <div class="def-card-desc">Flujos, lógica, datos. Cómo funciona la app por dentro cuando alguien interactúa con ella.</div>
+                <div class="def-card-tool">Antigravity lo construye</div>
+            </div>
+        </div>
+
+        <div class="callout azul">
+            <div class="callout-label">Dónde encajan en lo que ya viste en 1.2</div>
+            <p>Antigravity y Stitch no son agentes ni MCPs. Son <strong>entornos de construcción asistidos por IA</strong>: describes lo que quieres en lenguaje natural, la IA genera el código, tú revisas, corriges y repites. Es el mismo loop iterativo del agente que viste en 1.2 — solo que aquí tú eres quien dirige cada vuelta del ciclo.</p>
+        </div>
+    </section>
+
+    <!-- ── SECCIÓN 02 ── -->
+    <section class="section" id="s02">
+        <div class="section-num">02</div>
+        <h2>Antigravity: el albañil</h2>
+
+        <p>Antigravity es un generador de apps de Google. Le describes en texto lo que quieres — en español, sin tecnicismos — y construye la lógica: formularios, bases de datos, flujos, filtros. El código existe por debajo, pero nunca tienes que tocarlo.</p>
+
+        <p>En el 1.1 vimos que "gratis de verdad" tiene condiciones. Antigravity entra en esa columna — funciona sin cuenta de pago para lo que necesita la mayoría al empezar.</p>
+
+        <div class="feature-list">
+            <div class="feature-list-label">Qué puede hacer</div>
+            <div class="feature-item">
+                <span class="feature-num">01</span>
+                <span class="feature-desc"><strong>Genera apps funcionales desde una descripción en texto</strong> — sin una línea de código escrita por ti. Describes la app, él la construye.</span>
+            </div>
+            <div class="feature-item">
+                <span class="feature-num">02</span>
+                <span class="feature-desc"><strong>Conecta de forma nativa con Google Sheets y Drive</strong> — los datos de tu app pueden vivir en una hoja de cálculo que ya tienes.</span>
+            </div>
+            <div class="feature-item">
+                <span class="feature-num">03</span>
+                <span class="feature-desc"><strong>Edita la lógica en lenguaje natural después de generar</strong> — "añade un campo de categoría al formulario", "haz que el total se calcule solo". Sin reescribir nada.</span>
+            </div>
+            <div class="feature-item">
+                <span class="feature-num">04</span>
+                <span class="feature-desc"><strong>Despliega en GitHub Pages</strong> — la app queda accesible desde cualquier dispositivo como una web. Sin configurar servidores.</span>
+            </div>
+            <div class="feature-item">
+                <span class="feature-num">05</span>
+                <span class="feature-desc"><strong>Muestra el código generado si quieres verlo</strong> — no es necesario tocarlo, pero está ahí si algún día quieres entender qué construyó.</span>
+            </div>
+        </div>
+
+        <div class="callout">
+            <div class="callout-label">Aviso — Beta activa</div>
+            <p>Antigravity está en fase beta (mayo 2026). Algunas funciones cambian entre versiones y la documentación oficial va por detrás de la realidad. Si algo no funciona igual que aquí, ajusta la instrucción y sigue — no es un error tuyo, es el ritmo de una herramienta en construcción.</p>
+        </div>
+    </section>
+
+    <!-- ── SECCIÓN 03 ── -->
+    <section class="section" id="s03">
+        <div class="section-num">03</div>
+        <h2>Stitch: el arquitecto</h2>
+
+        <p>Stitch es el diseñador de interfaces de Google. Le describes la pantalla que necesitas y la genera visualmente: colores, botones, formularios, layouts. Después iteras: "hazlo más limpio", "cambia el botón a verde", "añade una barra de navegación inferior". Cuando el diseño está listo, exportas el código HTML y CSS.</p>
+
+        <div class="feature-list">
+            <div class="feature-list-label">Qué puede hacer</div>
+            <div class="feature-item">
+                <span class="feature-num">01</span>
+                <span class="feature-desc"><strong>Genera interfaces completas desde una descripción</strong> — o desde un sketch si prefieres dibujar primero. Punto de partida flexible.</span>
+            </div>
+            <div class="feature-item">
+                <span class="feature-num">02</span>
+                <span class="feature-desc"><strong>Permite iterar el diseño con instrucciones en lenguaje natural</strong> — cambio a cambio, sin rehacer desde cero. El diseño evoluciona contigo.</span>
+            </div>
+            <div class="feature-item">
+                <span class="feature-num">03</span>
+                <span class="feature-desc"><strong>Exporta código HTML/CSS limpio</strong> — listo para integrar con Antigravity o usar directamente. Sin dependencias raras.</span>
+            </div>
+            <div class="feature-item">
+                <span class="feature-num">04</span>
+                <span class="feature-desc"><strong>Adapta el diseño a móvil y escritorio automáticamente</strong> — responsive sin configurar nada. La app se ve bien en cualquier pantalla.</span>
+            </div>
+            <div class="feature-item">
+                <span class="feature-num">05</span>
+                <span class="feature-desc"><strong>Genera variantes de estilo si no tienes claro el look final</strong> — te muestra opciones. Eliges, ajustas, exportas.</span>
+            </div>
+        </div>
+
+        <div class="callout verde">
+            <div class="callout-label">El orden importa</div>
+            <p>Stitch genera el aspecto — Antigravity genera el funcionamiento. No los mezcles al revés. <strong>Primero diseñas con Stitch, después construyes con Antigravity.</strong> Si empiezas por la lógica, construirás algo que funciona pero que nadie va a querer usar.</p>
+        </div>
+    </section>
+
+    <!-- ── SECCIÓN 04 ── -->
+    <section class="section" id="s04">
+        <div class="section-num">04</div>
+        <h2>Cómo encajan las dos</h2>
+
+        <p>Por separado, cada herramienta resuelve la mitad del problema. Juntas, cubren el ciclo completo: del plano a la app funcionando en tu móvil.</p>
+
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr>
+                        <th></th>
+                        <th class="col-stitch">Stitch</th>
+                        <th class="col-antigrav">Antigravity</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Rol</strong></td>
+                        <td>Arquitecto — UI</td>
+                        <td>Albañil — UX</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Genera</strong></td>
+                        <td>Código visual (HTML/CSS)</td>
+                        <td>Lógica, datos, flujos</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Cuándo entra</strong></td>
+                        <td>Primero — el plano</td>
+                        <td>Segundo — la estructura</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Se edita con</strong></td>
+                        <td>Instrucciones visuales</td>
+                        <td>Instrucciones de lógica</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Resultado final</strong></td>
+                        <td>Interfaz lista para integrar</td>
+                        <td>App desplegable en GitHub Pages</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <p>El flujo combinado no es complicado. Cinco pasos, en orden:</p>
+
+        <div class="action-steps">
+            <div class="action-steps-label">El flujo de construcción</div>
+            <div class="action-step">
+                <span class="step-num">1.</span>
+                <span class="step-text"><strong>Define qué quieres que haga la app</strong> — una frase basta. No hace falta un documento de requisitos.</span>
+            </div>
+            <div class="action-step">
+                <span class="step-num">2.</span>
+                <span class="step-text"><strong>Abre Stitch</strong> → describe la pantalla principal → itera el diseño → exporta el código HTML/CSS.</span>
+            </div>
+            <div class="action-step">
+                <span class="step-num">3.</span>
+                <span class="step-text"><strong>Abre Antigravity</strong> → describe la lógica: qué guarda la app, qué calcula, qué conecta, cómo fluyen los datos.</span>
+            </div>
+            <div class="action-step">
+                <span class="step-num">4.</span>
+                <span class="step-text"><strong>Integra el diseño de Stitch</strong> con la lógica de Antigravity — la app empieza a tomar forma real.</span>
+            </div>
+            <div class="action-step">
+                <span class="step-num">5.</span>
+                <span class="step-text"><strong>Despliega en GitHub Pages</strong> → accede desde tu móvil → la app existe fuera de tu ordenador.</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- ── SECCIÓN 05 ── -->
+    <section class="section" id="s05">
+        <div class="section-num">05</div>
+        <h2>Lo que no pueden hacer — y lo que me sorprendió al usarlas</h2>
+
+        <p>Las limitaciones primero, porque importan antes de empezar. Después, lo que no esperaba encontrar.</p>
+
+        <div class="callout rojo">
+            <div class="callout-label">Limitaciones reales</div>
+            <ul class="limit-list">
+                <li><span class="limit-dot"></span>No sirven para apps con lógica compleja o integraciones externas — pagos, APIs de terceros, autenticación de usuarios real. Ese no es su territorio.</li>
+                <li><span class="limit-dot"></span>Beta significa inestabilidad. Algo que funciona hoy puede dar error mañana por una actualización. Es el precio de usar herramientas en construcción.</li>
+                <li><span class="limit-dot"></span>El modelo gratuito tiene límites de generación. Si construyes mucho en una sesión, puede pausarte. Trabaja en bloques, no en maratones.</li>
+            </ul>
+        </div>
+
+        <div class="impression-card">
+            <div class="impression-label">Primera impresión — alex.decode</div>
+            <div class="impression-row">
+                <span class="impression-key">esperaba</span>
+                <span>Algo como Bubble o Webflow. Complejo, con curva de aprendizaje, con tutoriales de dos horas antes de poder hacer algo mínimo.</span>
+            </div>
+            <div class="impression-row">
+                <span class="impression-key">encontré</span>
+                <span>Lo contrario. Describe → genera → revisas → corriges. La primera versión de algo funcionando llegó en menos de 30 minutos.</span>
+            </div>
+            <div class="impression-row">
+                <span class="impression-key">sorpresa</span>
+                <span>La edición iterativa. Escribir "añade un campo de categoría al formulario" y ver la app restructurarse en segundos. Eso no lo esperaba. La construcción inicial es rápida — la edición es el verdadero diferencial.</span>
+            </div>
+        </div>
+
+        <p>La app que vas a ver construirse a partir del 1.4 es el resultado de ese proceso: una gestión de gastos de viaje que uso cada vez que salgo. Nació de una descripción de una línea. Lo que tiene ahora es producto de muchas iteraciones — exactamente el loop que viste en 1.2.</p>
+
+        <a href="1-4.html" class="next-hook">
+            <span class="next-hook-arrow">→</span>
+            <span class="next-hook-text">En el siguiente recurso usas estas dos herramientas con un objetivo concreto. <strong>Construyes antes de saber cómo. Así se aprende de verdad.</strong></span>
+        </a>
+    </section>
+
+    <!-- ── CHECKLIST FINAL ── -->
+    <div class="checklist-section" id="checklist">
+        <div class="checklist-title">Ya sé de qué va — compruébalo</div>
+        <ul class="checklist-items" id="checklistItems">
+            <li onclick="toggleCheck(this)"><span class="check-box"></span><span class="check-text">Sé qué hace Stitch y qué hace Antigravity. No las he confundido.</span></li>
+            <li onclick="toggleCheck(this)"><span class="check-box"></span><span class="check-text">Entiendo la diferencia entre UI y UX — y cuál herramienta es cuál.</span></li>
+            <li onclick="toggleCheck(this)"><span class="check-box"></span><span class="check-text">He abierto Antigravity. Solo 5 minutos. Sin objetivo todavía — solo ver cómo sabe el ingrediente.</span></li>
+            <li onclick="toggleCheck(this)"><span class="check-box"></span><span class="check-text">No me he puesto a construir todavía. Hay un orden y lo voy a respetar.</span></li>
+            <li onclick="toggleCheck(this)"><span class="check-box"></span><span class="check-text">Sé que en el 1.4 toca construir algo mío. Ya estoy pensando qué.</span></li>
+        </ul>
+    </div>
+
+    <!-- FOOTER NAV -->
+    <footer class="resource-footer">
+        <a href="1-2.html" class="footer-back">
+            <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+            Recurso anterior
+        </a>
+        <a href="1-4.html" class="footer-next">
+            Siguiente recurso
+            <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </a>
+    </footer>
+
+</div>
+
+<script>
+function toggleCheck(li) {
+    li.classList.toggle('done');
+    li.querySelector('.check-box').textContent = li.classList.contains('done') ? '✓' : '';
+    const items = document.querySelectorAll('#checklistItems li');
+    if ([...items].every(i => i.classList.contains('done'))) launchConfetti();
+}
+
+function launchConfetti() {
+    const canvas = document.getElementById('confettiCanvas');
+    if (!canvas) return;
+    canvas.style.display = 'block';
+    const ctx = canvas.getContext('2d');
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+    const colors = ['#B45309','#D97706','#FDE68A','#059669','#7C3AED','#2563EB','#F59E0B','#10B981','#EF4444'];
+    const pieces = Array.from({length: 140}, () => ({
+        x: Math.random() * canvas.width,
+        y: -10 - Math.random() * canvas.height * 0.6,
+        w: Math.random() * 11 + 5,
+        h: Math.random() * 6 + 3,
+        color: colors[Math.floor(Math.random() * colors.length)],
+        vx: (Math.random() - 0.5) * 4,
+        vy: Math.random() * 3 + 1.5,
+        rot: Math.random() * 360,
+        vrot: (Math.random() - 0.5) * 10,
+        alpha: 1,
+        shape: Math.random() > 0.5 ? 'rect' : 'circle'
+    }));
+    let frame = 0;
+    (function animate() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        pieces.forEach(p => {
+            p.x += p.vx;
+            p.y += p.vy;
+            p.rot += p.vrot;
+            p.vy += 0.06;
+            if (frame > 90) p.alpha = Math.max(0, p.alpha - 0.012);
+            ctx.save();
+            ctx.globalAlpha = p.alpha;
+            ctx.translate(p.x + p.w / 2, p.y + p.h / 2);
+            ctx.rotate(p.rot * Math.PI / 180);
+            ctx.fillStyle = p.color;
+            if (p.shape === 'circle') {
+                ctx.beginPath();
+                ctx.arc(0, 0, p.w / 2, 0, Math.PI * 2);
+                ctx.fill();
+            } else {
+                ctx.fillRect(-p.w / 2, -p.h / 2, p.w, p.h);
+            }
+            ctx.restore();
+        });
+        frame++;
+        if (frame < 170) requestAnimationFrame(animate);
+        else canvas.style.display = 'none';
+    })();
+}
+</script>
+
+<canvas id="confettiCanvas" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:9999;"></canvas>
+</body>
+</html>
