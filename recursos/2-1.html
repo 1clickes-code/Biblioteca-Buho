@@ -426,6 +426,64 @@
         }
         .next-hook-title { font-size: 13.5px; font-weight: 600; color: var(--text); line-height: 1.3; }
 
+        /* ── GOLD QUOTE ── */
+        .gold-quote {
+            background: linear-gradient(135deg, var(--amber-dim) 0%, rgba(217,119,6,0.04) 100%);
+            border: 1.5px solid rgba(180,83,9,0.2);
+            border-radius: 12px;
+            padding: 22px 28px 20px;
+            margin: 24px 0;
+            text-align: center;
+            position: relative;
+        }
+        .gold-quote::before {
+            content: '"';
+            position: absolute;
+            top: 2px; left: 16px;
+            font-family: 'Playfair Display', serif;
+            font-size: 52px;
+            line-height: 1;
+            color: rgba(180,83,9,0.12);
+        }
+        .gold-quote-text {
+            font-family: 'Playfair Display', serif;
+            font-size: 17px;
+            font-weight: 700;
+            line-height: 1.5;
+            color: var(--text);
+            padding: 0 8px;
+        }
+        .gold-quote-text em { color: var(--amber); font-style: normal; }
+
+        /* ── KNOWLEDGE GAP ── */
+        .knowledge-gap {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 20px 22px;
+            margin: 24px 0;
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+        .knowledge-gap-title {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 9px;
+            color: var(--faint);
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+        }
+        .gap-row { display: flex; flex-direction: column; gap: 5px; }
+        .gap-row-header { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; flex-wrap: wrap; }
+        .gap-row-label { font-size: 12.5px; font-weight: 600; color: var(--text); }
+        .gap-row-desc { font-size: 11px; color: var(--muted); font-style: italic; }
+        .gap-track { height: 9px; background: var(--bg); border: 1px solid var(--border); border-radius: 100px; overflow: hidden; }
+        .gap-fill { height: 100%; border-radius: 100px; }
+        .gap-fill.high { width: 88%; background: linear-gradient(90deg, #FCA5A5, #FECACA); }
+        .gap-fill.mid  { width: 46%; background: linear-gradient(90deg, #FCD34D, #FDE68A); }
+        .gap-fill.low  { width: 18%; background: linear-gradient(90deg, #93C5FD, #BFDBFE); }
+        .gap-note { font-size: 12px; color: var(--muted); padding-top: 10px; border-top: 1px solid var(--border); }
+
         /* ── CHECKLIST ── */
         .checklist-section {
             background: var(--surface);
@@ -714,15 +772,13 @@
             </div>
         </div>
 
-        <p>El resto no era ruido — era contenido decente. Pero no lo usé porque cuando llegó el momento de construir, lo que necesitaba no era más información. Era empezar y ver qué fallaba.</p>
+        <p>No los usé porque cuando llegó el momento de construir, no necesitaba más información. Necesitaba empezar.</p>
     </section>
 
     <!-- ── S02: LA PARÁLISIS POR ANÁLISIS ── -->
     <section class="section" id="s02">
         <div class="section-num">02</div>
         <h2>El conocimiento que acumulas no construye nada por sí solo</h2>
-        <p>La parálisis por análisis tiene una lógica interna perfecta: si aprendo un poco más, estaré mejor preparado para no cometer errores. El problema es que esa lógica nunca se cierra. Siempre hay un concepto nuevo, una herramienta diferente, un tutorial más antes de empezar.</p>
-
         <div class="myth-card">
             <div class="myth-badge">Mito #1</div>
             <div class="myth-statement">"Necesito aprender más antes de empezar."</div>
@@ -730,12 +786,34 @@
             <p class="myth-reality">El cerebro trata el consumo de contenido como progreso porque activa los mismos circuitos de recompensa que aprender de verdad — pero sin el riesgo del error, sin la incomodidad de construir algo que falla a la primera. Es aprendizaje sin coste. Y por eso es una trampa cómoda.</p>
         </div>
 
-        <p>La distinción que cambia todo: el conocimiento sin construcción es información. El conocimiento con construcción es habilidad. No son lo mismo, y acumular una no te da la otra.</p>
-        <p>No aprendí a construir prompts leyendo sobre prompts. Los aprendí cuando construía algo que fallaba y necesitaba un mejor prompt para que funcionara. El error fue el profesor, no el recurso.</p>
+        <div class="knowledge-gap">
+            <div class="knowledge-gap-title">La brecha real del conocimiento</div>
+            <div class="gap-row">
+                <div class="gap-row-header">
+                    <span class="gap-row-label">Lo que consumes</span>
+                    <span class="gap-row-desc">vídeos, recursos, tutoriales</span>
+                </div>
+                <div class="gap-track"><div class="gap-fill high"></div></div>
+            </div>
+            <div class="gap-row">
+                <div class="gap-row-header">
+                    <span class="gap-row-label">Lo que sabrías explicar</span>
+                    <span class="gap-row-desc">con claridad, sin notas, a alguien que empieza</span>
+                </div>
+                <div class="gap-track"><div class="gap-fill mid"></div></div>
+            </div>
+            <div class="gap-row">
+                <div class="gap-row-header">
+                    <span class="gap-row-label">Lo que podrías construir</span>
+                    <span class="gap-row-desc">algo real, con criterio propio, que funcione</span>
+                </div>
+                <div class="gap-track"><div class="gap-fill low"></div></div>
+            </div>
+            <p class="gap-note">La parálisis vive en la brecha entre la primera barra y la última.</p>
+        </div>
 
-        <div class="callout">
-            <div class="callout-label">La pregunta que cambia la dirección</div>
-            <p>En lugar de "¿qué debería aprender a continuación?" pregúntate "¿qué quiero construir?" El segundo question genera el primero de forma automática — y solo el conocimiento que necesitas para avanzar.</p>
+        <div class="gold-quote">
+            <div class="gold-quote-text">El conocimiento sin construcción es <em>información</em>.<br>El conocimiento con construcción es <em>habilidad</em>.</div>
         </div>
     </section>
 
@@ -743,8 +821,7 @@
     <section class="section" id="s03">
         <div class="section-num">03</div>
         <h2>La IA no construye rápido. Tú construyes diferente.</h2>
-        <p>El segundo mito va en dirección contraria. Si la parálisis te frena, la falacia de la planificación te lanza hacia delante — directo hacia el chasco.</p>
-        <p>Has visto los vídeos. Los títulos. Los tiempos. Y probablemente has intentado replicar algo y te has preguntado por qué a ti te llevó tres veces más.</p>
+        <p>Si la parálisis te frena, la falacia de la planificación te lanza hacia delante — directo hacia el chasco.</p>
 
         <div class="myth-card">
             <div class="myth-badge">Mito #2</div>
@@ -770,8 +847,6 @@
             </table>
         </div>
 
-        <p>La app del Nivel 1 no salió en 2 horas. Salió en varias sesiones, con errores reales, con cambios de dirección. El resultado fue €0 y algo que realmente uso cada vez que viajo. El tiempo no fue el punto. La dirección lo fue.</p>
-
         <div class="callout verde">
             <div class="callout-label">Por qué lo profundo vale más que lo rápido</div>
             <p>Si cualquiera puede construir lo mismo en 10 minutos copiando un tutorial, no vale gran cosa. Lo que vale es el criterio que guía la construcción. Ese criterio no se copia — se desarrolla construyendo con dirección propia.</p>
@@ -782,8 +857,6 @@
     <section class="section" id="s04">
         <div class="section-num">04</div>
         <h2>En el Nivel 2 ya no aprendes. Diseñas.</h2>
-        <p>Aquí está la diferencia real entre Nivel 1 y Nivel 2. No es cuánto sabes. Es desde dónde preguntas.</p>
-
         <div class="table-wrap">
             <table>
                 <thead>
@@ -813,8 +886,6 @@
             </table>
         </div>
 
-        <p>El aprendiz acumula conocimiento esperando tener suficiente para empezar. El arquitecto empieza con lo que tiene y aprende exactamente lo que le falta para seguir. El segundo aprende más rápido, porque cada cosa que aprende tiene un destino inmediato.</p>
-
         <div class="callout azul">
             <div class="callout-label">La distinción no es de habilidad</div>
             <p>Es de posición. Y la posición la eliges tú. No hace falta saber más para pasar de aprendiz a arquitecto — hace falta decidir qué construir antes de buscar cómo.</p>
@@ -825,9 +896,8 @@
     <section class="section" id="s05">
         <div class="section-num">05</div>
         <h2>Una sola línea. Eso es todo lo que necesitas ahora.</h2>
-        <p>El primer acto del arquitecto no es buscar el tutorial correcto. No es elegir la herramienta definitiva. No es terminar este recurso y abrir el siguiente.</p>
-        <p>Es decidir qué va a construir.</p>
-        <p>No cómo. No con qué herramientas. No cuánto va a tardar ni si va a salir bien. Solo qué. Antes de que esa decisión parezca pequeña o insuficiente, recuerda: la app del Nivel 1 empezó con "quiero registrar mis gastos cuando viajo". Nada más.</p>
+        <p>El primer acto del arquitecto no es aprender más. Es decidir qué construir.</p>
+        <p>Solo qué. No cómo. La app del Nivel 1 empezó con "quiero registrar mis gastos cuando viajo" — nada más.</p>
 
         <div class="action-write">
             <div class="action-write-label">Tu primer acto como arquitecto</div>
@@ -835,9 +905,6 @@
             <input class="action-write-line" type="text" placeholder="escríbelo aquí o en cualquier sitio que tengas a mano" maxlength="120"/>
             <p class="action-write-hint">No tiene que ser perfecto. Solo tiene que existir.</p>
         </div>
-
-        <p>Ese "qué" es el punto de partida de todo lo que viene a continuación en este nivel. El 2.2 te da el modelo mental para convertirlo en un sistema. El 2.3 te dice qué herramientas necesitas realmente. El 2.4 te lleva a construir la primera versión.</p>
-        <p>Pero nada de eso importa si no decides primero qué quieres construir.</p>
 
         <a href="2-2.html" class="next-hook">
             <div class="next-hook-arrow">
