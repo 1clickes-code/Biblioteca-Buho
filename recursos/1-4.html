@@ -457,6 +457,30 @@
             line-height: 1.5;
         }
 
+        /* ── BFLOW EXAMPLE ── */
+        .bflow-example {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 7px;
+            padding: 9px 13px;
+            margin-top: 8px;
+        }
+        .bflow-example-label {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 8.5px;
+            font-weight: 600;
+            color: var(--faint);
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            margin-bottom: 4px;
+        }
+        .bflow-example-text {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 12px;
+            color: var(--muted);
+            line-height: 1.65;
+        }
+
         /* ── NEXT HOOK ── */
         .next-hook {
             display: flex;
@@ -840,6 +864,10 @@
                     <div class="bflow-tool tu">Tú</div>
                     <div class="bflow-title">Define el objetivo en una frase</div>
                     <div class="bflow-desc">Escríbela ahora. No sigas hasta tenerla. Esta frase es lo que le vas a dar a Stitch.</div>
+                    <div class="bflow-example">
+                        <div class="bflow-example-label">Ej.</div>
+                        <div class="bflow-example-text">"Una app que registra mis gastos de viaje y me da el total al cerrar el día."</div>
+                    </div>
                 </div>
             </div>
 
@@ -852,6 +880,10 @@
                     <div class="bflow-tool stitch">Stitch</div>
                     <div class="bflow-title">Describe el mockup que quieres</div>
                     <div class="bflow-desc">Abre Stitch y describe tu pantalla. Qué elementos tiene, cómo están organizados, qué hace el usuario. No pidas código — pide el diseño visual.</div>
+                    <div class="bflow-example">
+                        <div class="bflow-example-label">Ej.</div>
+                        <div class="bflow-example-text">"Pantalla con un campo de texto para el nombre del gasto, un campo numérico para el importe, un desplegable de categoría (comida, transporte, hotel), un botón 'Añadir'. Debajo, lista de gastos y el total al final."</div>
+                    </div>
                     <div class="bflow-review">
                         <span class="bflow-review-icon">Revisas</span>
                         <span class="bflow-review-text">¿El mockup refleja tu frase del paso 1? ¿Entiendes cada elemento que aparece? ¿Qué moverías o quitarías?</span>
@@ -868,6 +900,10 @@
                     <div class="bflow-tool stitch">Stitch</div>
                     <div class="bflow-title">Itera el mockup hasta que sea correcto</div>
                     <div class="bflow-desc">Ajusta hasta que el diseño visual represente exactamente lo que quieres construir. Cada cambio aquí cuesta segundos. El mismo cambio en código cuesta minutos.</div>
+                    <div class="bflow-example">
+                        <div class="bflow-example-label">Ej.</div>
+                        <div class="bflow-example-text">"El botón 'Añadir' está demasiado separado del formulario. Ponlo justo debajo del importe. Y quita la sección de historial semanal — no la necesito en esta versión."</div>
+                    </div>
                     <div class="bflow-review">
                         <span class="bflow-review-icon">Revisas</span>
                         <span class="bflow-review-text">¿Puedes describir este mockup en voz alta sin dudar? Si alguien lo viera sin contexto, ¿entendería para qué sirve?</span>
@@ -884,6 +920,10 @@
                     <div class="bflow-tool antigravity">Antigravity</div>
                     <div class="bflow-title">Pide el código basado en el mockup</div>
                     <div class="bflow-desc">Abre Antigravity, adjunta o describe el mockup aprobado y pide la versión funcional. Da contexto: qué hace la app, quién la usa, qué tiene que ocurrir al pulsar cada botón.</div>
+                    <div class="bflow-example">
+                        <div class="bflow-example-label">Ej.</div>
+                        <div class="bflow-example-text">"Genera una app web en HTML + CSS + JS basada en este diseño. Tiene que registrar gastos con nombre, importe y categoría; mostrar la lista; y calcular el total. Sin backend. Todo en el navegador."</div>
+                    </div>
                     <div class="bflow-review">
                         <span class="bflow-review-icon">Revisas</span>
                         <span class="bflow-review-text">¿El código generado hace lo que pediste? Prueba cada función antes de pedir cambios. Si algo falla, descríbelo con exactitud — no digas "no funciona", di qué esperabas y qué ocurrió.</span>
@@ -900,6 +940,10 @@
                     <div class="bflow-tool antigravity">Antigravity</div>
                     <div class="bflow-title">Ajusta hasta tener una versión que funcione</div>
                     <div class="bflow-desc">No tiene que ser perfecta. Tiene que hacer lo que dijiste en el paso 1. Cuando lo hace — aunque sea imperfecto — tienes tu primera versión.</div>
+                    <div class="bflow-example">
+                        <div class="bflow-example-label">Ej.</div>
+                        <div class="bflow-example-text">"El total no se actualiza cuando elimino un gasto. Esperaba que al pulsar 'eliminar' el total se recalculara solo. Ahora se queda con el número anterior."</div>
+                    </div>
                 </div>
             </div>
 
