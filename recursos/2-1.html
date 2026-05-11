@@ -1,0 +1,935 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Parálisis por análisis: el mito que te mantiene aprendiendo en lugar de construyendo — alex.decode</title>
+    <link rel="icon" type="image/svg+xml" href="../favicon.svg">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        :root {
+            --bg:        #FAFAF7;
+            --surface:   #FFFFFF;
+            --border:    #E8E2D9;
+            --text:      #1C1917;
+            --muted:     #78716C;
+            --faint:     #B0A89E;
+            --amber:     #B45309;
+            --amber-mid: #D97706;
+            --amber-dim: rgba(180,83,9,0.07);
+            --rojo:  #DC2626; --rojo-d:  rgba(220,38,38,0.07);
+            --amar:  #D97706; --amar-d:  rgba(217,119,6,0.07);
+            --azul:  #2563EB; --azul-d:  rgba(37,99,235,0.07);
+            --verde: #059669; --verde-d: rgba(5,150,105,0.07);
+            --morad: #7C3AED; --morad-d: rgba(124,58,237,0.07);
+        }
+
+        html { scroll-behavior: smooth; }
+        body {
+            background: var(--bg);
+            color: var(--text);
+            font-family: 'Inter', system-ui, sans-serif;
+            font-size: 15px;
+            line-height: 1.7;
+            min-height: 100vh;
+        }
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0; left: 0; right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, #B91C1C 0%, #DC2626 50%, #B91C1C 100%);
+            z-index: 100;
+        }
+
+        .wrap { max-width: 720px; margin: 0 auto; padding: 0 24px; }
+
+        /* ── NAV ── */
+        .top-nav {
+            padding: 28px 0 0;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 11px;
+            color: var(--faint);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
+        .top-nav a { color: var(--amber); text-decoration: none; transition: opacity .15s; }
+        .top-nav a:hover { opacity: .7; }
+        .top-nav .sep { color: var(--faint); }
+        .nav-owl {
+            margin-left: auto;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            color: var(--faint);
+            text-decoration: none;
+            font-size: 10px;
+            letter-spacing: .5px;
+            transition: opacity .15s;
+            animation: owlFloat 5s ease-in-out 1s infinite;
+        }
+        .nav-owl:hover { opacity: .7; color: var(--amber); }
+        @keyframes owlFloat { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-4px)} }
+
+        /* ── COVER SVG ── */
+        .cover-wrap {
+            margin: 28px 0 0;
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid var(--border);
+        }
+        .cover-wrap svg { display: block; width: 100%; height: auto; }
+
+        /* ── HEADER ── */
+        .resource-header { padding: 28px 0 28px; border-bottom: 1px solid var(--border); margin-bottom: 28px; }
+
+        .tag {
+            display: inline-flex; align-items: center; gap: 5px;
+            font-size: 10px; font-weight: 600; padding: 3px 10px;
+            border-radius: 100px; margin-bottom: 16px;
+        }
+        .tag .dot { width: 5px; height: 5px; border-radius: 50%; flex-shrink: 0; }
+        .tag.rojo { background: var(--rojo-d); color: var(--rojo); }
+        .tag.rojo .dot { background: var(--rojo); }
+
+        .resource-title {
+            font-family: 'Playfair Display', Georgia, serif;
+            font-size: clamp(24px, 4vw, 34px);
+            font-weight: 700;
+            line-height: 1.18;
+            letter-spacing: -.3px;
+            margin-bottom: 14px;
+        }
+        .resource-sub {
+            font-size: 15px;
+            color: var(--muted);
+            line-height: 1.6;
+            margin-bottom: 18px;
+            max-width: 560px;
+        }
+        .resource-meta {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 11px;
+            color: var(--faint);
+            display: flex;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+        .resource-meta span { display: flex; align-items: center; gap: 5px; }
+        .meta-dot { width: 3px; height: 3px; border-radius: 50%; background: var(--faint); }
+
+        /* ── LEARN BOX ── */
+        .learn-box {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 18px 22px;
+            margin-bottom: 28px;
+        }
+        .learn-box-title {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 9px;
+            color: var(--faint);
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            margin-bottom: 12px;
+        }
+        .learn-list { list-style: none; display: flex; flex-direction: column; gap: 8px; }
+        .learn-item {
+            display: flex; align-items: flex-start; gap: 8px;
+            font-size: 13px; color: var(--text); line-height: 1.45;
+        }
+        .learn-item::before {
+            content: '→';
+            color: var(--rojo);
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 11px;
+            flex-shrink: 0;
+            margin-top: 1px;
+        }
+
+        /* ── TABLE OF CONTENTS ── */
+        .toc {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 16px 20px;
+            margin-bottom: 48px;
+        }
+        .toc-label {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 9px;
+            color: var(--faint);
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            margin-bottom: 10px;
+        }
+        .toc-links { display: flex; flex-wrap: wrap; gap: 6px; }
+        .toc-links a {
+            font-size: 12px;
+            color: var(--muted);
+            text-decoration: none;
+            padding: 4px 10px;
+            border-radius: 6px;
+            border: 1px solid var(--border);
+            transition: border-color .15s, color .15s, background .15s;
+            white-space: nowrap;
+        }
+        .toc-links a:hover { border-color: var(--rojo); color: var(--rojo); background: var(--rojo-d); }
+
+        /* ── CONTENT SECTIONS ── */
+        .section { margin-bottom: 52px; scroll-margin-top: 32px; }
+        .section-num {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 10px;
+            color: var(--rojo);
+            font-weight: 600;
+            letter-spacing: 1px;
+            margin-bottom: 8px;
+        }
+        .section h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: 22px;
+            font-weight: 700;
+            line-height: 1.3;
+            margin-bottom: 16px;
+            color: var(--text);
+        }
+        .section p { color: var(--text); margin-bottom: 14px; }
+        .section p:last-child { margin-bottom: 0; }
+
+        /* ── CALLOUT VARIANTS ── */
+        .callout {
+            border-left: 3px solid var(--amber);
+            background: var(--amber-dim);
+            border-radius: 0 8px 8px 0;
+            padding: 14px 18px;
+            margin: 20px 0;
+        }
+        .callout-label {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 9px;
+            font-weight: 600;
+            color: var(--amber);
+            letter-spacing: 1.2px;
+            text-transform: uppercase;
+            margin-bottom: 6px;
+        }
+        .callout p { font-size: 14px; color: var(--text); margin: 0; }
+        .callout.rojo { border-left-color: var(--rojo); background: var(--rojo-d); }
+        .callout.rojo .callout-label { color: var(--rojo); }
+        .callout.verde { border-left-color: var(--verde); background: var(--verde-d); }
+        .callout.verde .callout-label { color: var(--verde); }
+        .callout.azul { border-left-color: var(--azul); background: var(--azul-d); }
+        .callout.azul .callout-label { color: var(--azul); }
+
+        /* ── MYTH CARD ── */
+        .myth-card {
+            background: var(--surface);
+            border: 1px solid #FECACA;
+            border-radius: 10px;
+            padding: 22px 24px;
+            margin: 24px 0;
+            position: relative;
+        }
+        .myth-badge {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 9px;
+            font-weight: 600;
+            color: var(--rojo);
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .myth-badge::before {
+            content: '';
+            display: inline-block;
+            width: 6px; height: 6px;
+            border-radius: 50%;
+            background: var(--rojo);
+            flex-shrink: 0;
+        }
+        .myth-statement {
+            font-family: 'Playfair Display', serif;
+            font-size: 17px;
+            font-weight: 700;
+            color: var(--text);
+            line-height: 1.35;
+            margin-bottom: 14px;
+            padding-bottom: 14px;
+            border-bottom: 1px solid #FECACA;
+        }
+        .myth-reality-label {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 9px;
+            font-weight: 600;
+            color: var(--verde);
+            letter-spacing: 1.2px;
+            text-transform: uppercase;
+            margin-bottom: 8px;
+        }
+        .myth-reality { font-size: 13.5px; color: var(--text); line-height: 1.55; }
+
+        /* ── STAT PAIR ── */
+        .stat-pair {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 14px;
+            margin: 24px 0;
+        }
+        .stat-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 18px 20px;
+            text-align: center;
+        }
+        .stat-card.rojo { border-color: #FECACA; }
+        .stat-card.verde { border-color: #BBF7D0; }
+        .stat-num {
+            font-family: 'Playfair Display', serif;
+            font-size: 40px;
+            font-weight: 700;
+            line-height: 1;
+            margin-bottom: 6px;
+        }
+        .stat-card.rojo .stat-num { color: var(--rojo); }
+        .stat-card.verde .stat-num { color: var(--verde); }
+        .stat-label {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 10px;
+            color: var(--muted);
+            letter-spacing: .5px;
+            line-height: 1.4;
+        }
+
+        /* ── FALACIA TABLE (lo que dicen vs lo que es) ── */
+        .table-wrap { overflow-x: auto; margin: 20px 0; }
+        table { width: 100%; border-collapse: collapse; font-size: 13px; }
+        thead th {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 10px;
+            font-weight: 600;
+            letter-spacing: .8px;
+            text-transform: uppercase;
+            padding: 10px 14px;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            color: var(--muted);
+            text-align: left;
+        }
+        thead th.th-rojo { color: var(--rojo); border-top-left-radius: 8px; }
+        thead th.th-verde { color: var(--verde); border-top-right-radius: 8px; }
+        thead th.th-muted-l { color: var(--muted); border-top-left-radius: 8px; }
+        thead th.th-muted-r { color: var(--amber); border-top-right-radius: 8px; }
+        tbody td {
+            padding: 10px 14px;
+            border: 1px solid var(--border);
+            vertical-align: top;
+            line-height: 1.55;
+            color: var(--text);
+        }
+        tbody tr:last-child td:first-child { border-bottom-left-radius: 8px; }
+        tbody tr:last-child td:last-child  { border-bottom-right-radius: 8px; }
+        tbody tr:nth-child(even) td { background: var(--surface); }
+
+        /* ── ACTION WRITE BOX ── */
+        .action-write {
+            background: var(--surface);
+            border: 2px dashed var(--border);
+            border-radius: 12px;
+            padding: 26px 28px;
+            margin: 24px 0;
+            text-align: center;
+        }
+        .action-write-label {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 10px;
+            color: var(--amber);
+            font-weight: 600;
+            letter-spacing: 1.2px;
+            text-transform: uppercase;
+            margin-bottom: 14px;
+        }
+        .action-write-prompt {
+            font-family: 'Playfair Display', serif;
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--text);
+            margin-bottom: 16px;
+            line-height: 1.35;
+        }
+        .action-write-line {
+            display: block;
+            width: 100%;
+            max-width: 440px;
+            margin: 0 auto;
+            border: none;
+            border-bottom: 2px solid var(--border);
+            background: transparent;
+            padding: 8px 4px;
+            font-family: 'Inter', sans-serif;
+            font-size: 15px;
+            color: var(--text);
+            text-align: center;
+            outline: none;
+            transition: border-color .2s;
+        }
+        .action-write-line:focus { border-bottom-color: var(--amber); }
+        .action-write-line::placeholder { color: var(--faint); }
+        .action-write-hint {
+            font-size: 12px;
+            color: var(--faint);
+            margin-top: 10px;
+            font-style: italic;
+        }
+
+        /* ── NEXT HOOK ── */
+        .next-hook {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: var(--azul-d);
+            border: 1px solid rgba(37,99,235,0.15);
+            border-radius: 10px;
+            padding: 16px 20px;
+            margin: 28px 0 0;
+            text-decoration: none;
+            transition: background .15s, gap .15s;
+            cursor: pointer;
+        }
+        .next-hook:hover { background: rgba(37,99,235,0.12); gap: 16px; }
+        .next-hook-arrow {
+            width: 32px; height: 32px;
+            border-radius: 50%;
+            background: var(--azul);
+            display: flex; align-items: center; justify-content: center;
+            flex-shrink: 0;
+        }
+        .next-hook-text { flex: 1; }
+        .next-hook-label {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 9px;
+            color: var(--azul);
+            letter-spacing: 1.2px;
+            text-transform: uppercase;
+            margin-bottom: 3px;
+        }
+        .next-hook-title { font-size: 13.5px; font-weight: 600; color: var(--text); line-height: 1.3; }
+
+        /* ── CHECKLIST ── */
+        .checklist-section {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 24px 26px;
+            margin-bottom: 52px;
+        }
+        .checklist-title {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 10px;
+            color: var(--amber);
+            font-weight: 600;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            margin-bottom: 16px;
+        }
+        .checklist-items { list-style: none; display: flex; flex-direction: column; gap: 10px; }
+        .checklist-items li {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            font-size: 13.5px;
+            color: var(--text);
+            line-height: 1.5;
+            cursor: pointer;
+        }
+        .check-box {
+            width: 17px; height: 17px;
+            border: 1.5px solid var(--border);
+            border-radius: 4px;
+            flex-shrink: 0;
+            margin-top: 1px;
+            transition: border-color .15s, background .15s;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 10px;
+            color: white;
+        }
+        .checklist-items li.done .check-box { background: var(--verde); border-color: var(--verde); }
+        .checklist-items li.done .check-text { text-decoration: line-through; color: var(--muted); }
+
+        /* ── FOOTER NAV ── */
+        .resource-footer {
+            border-top: 1px solid var(--border);
+            padding: 32px 0 56px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+        .footer-back {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 12px;
+            color: var(--muted);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: color .15s;
+        }
+        .footer-back:hover { color: var(--amber); }
+        .footer-next {
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--amber);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: gap .15s;
+        }
+        .footer-next:hover { gap: 10px; }
+
+        /* ── RESPONSIVE ── */
+        @media (max-width: 600px) {
+            .wrap { padding: 0 16px; }
+            .resource-title { font-size: 22px; }
+            .stat-pair { grid-template-columns: 1fr; }
+            .stat-num { font-size: 32px; }
+        }
+    </style>
+</head>
+<body>
+<div class="wrap">
+
+    <!-- NAV BREADCRUMB -->
+    <nav class="top-nav">
+        <a href="../index.html">alex.decode</a>
+        <span class="sep">/</span>
+        <span>Biblioteca</span>
+        <span class="sep">/</span>
+        <span>Nivel 2</span>
+        <span class="sep">/</span>
+        <span>Parálisis por análisis</span>
+        <a href="../index.html" class="nav-owl" aria-label="Volver a la biblioteca">
+            <svg width="28" height="32" viewBox="0 0 140 160" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <polygon points="44,32 36,6 52,26" fill="#92400E"/>
+                <polygon points="96,32 104,6 88,26" fill="#92400E"/>
+                <circle cx="70" cy="56" r="38" fill="#B45309"/>
+                <ellipse cx="70" cy="58" rx="26" ry="24" fill="#D97706" opacity="0.28"/>
+                <circle cx="56" cy="52" r="13" fill="#FEF3C7"/>
+                <circle cx="84" cy="52" r="13" fill="#FEF3C7"/>
+                <circle cx="56" cy="52" r="6.5" fill="#1C1917"/>
+                <circle cx="84" cy="52" r="6.5" fill="#1C1917"/>
+                <circle cx="59" cy="49" r="2.2" fill="white"/>
+                <circle cx="87" cy="49" r="2.2" fill="white"/>
+                <polygon points="63,64 77,64 70,75" fill="#D97706"/>
+                <ellipse cx="70" cy="120" rx="34" ry="36" fill="#B45309"/>
+                <ellipse cx="70" cy="126" rx="20" ry="24" fill="#D97706" opacity="0.22"/>
+            </svg>
+        </a>
+    </nav>
+
+    <!-- COVER SVG -->
+    <div class="cover-wrap">
+        <svg viewBox="0 0 800 350" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <!-- Background -->
+            <rect width="800" height="350" fill="#FAFAF7"/>
+            <rect width="390" height="350" fill="#FEF2F2"/>
+            <rect x="410" width="390" height="350" fill="#F0FDF4"/>
+
+            <!-- Left section label -->
+            <text x="195" y="38" text-anchor="middle" font-family="system-ui,sans-serif" font-size="10" fill="#DC2626" letter-spacing="2" font-weight="700">LO QUE CONSUMES</text>
+
+            <!-- Right section label -->
+            <text x="605" y="38" text-anchor="middle" font-family="system-ui,sans-serif" font-size="10" fill="#059669" letter-spacing="2" font-weight="700">LO QUE REALMENTE USAS</text>
+
+            <!-- Divider -->
+            <line x1="400" y1="18" x2="400" y2="332" stroke="#E8E2D9" stroke-width="1.5" stroke-dasharray="5 4"/>
+            <rect x="381" y="154" width="38" height="30" rx="8" fill="white" stroke="#E8E2D9" stroke-width="1.2"/>
+            <text x="400" y="174" text-anchor="middle" font-family="system-ui,sans-serif" font-size="15" fill="#78716C" font-weight="700">≠</text>
+
+            <!-- Left: scattered content cards -->
+            <!-- Card 1 -->
+            <g transform="rotate(-4 120 220)">
+                <rect x="48" y="220" width="145" height="70" rx="6" fill="white" stroke="#FECACA" stroke-width="1.2"/>
+                <rect x="60" y="233" width="32" height="22" rx="4" fill="#FEE2E2"/>
+                <text x="76" y="248" text-anchor="middle" font-family="system-ui,sans-serif" font-size="11" fill="#DC2626">▶</text>
+                <rect x="102" y="237" width="76" height="4" rx="2" fill="#FECACA"/>
+                <rect x="102" y="247" width="52" height="3" rx="2" fill="#FECACA" opacity="0.6"/>
+                <rect x="102" y="255" width="64" height="3" rx="2" fill="#FECACA" opacity="0.4"/>
+            </g>
+            <!-- Card 2 -->
+            <g transform="rotate(3 140 165)">
+                <rect x="80" y="155" width="145" height="70" rx="6" fill="white" stroke="#FECACA" stroke-width="1.2"/>
+                <rect x="92" y="168" width="32" height="22" rx="4" fill="#FEE2E2"/>
+                <text x="108" y="183" text-anchor="middle" font-family="system-ui,sans-serif" font-size="11" fill="#DC2626">▶</text>
+                <rect x="134" y="172" width="76" height="4" rx="2" fill="#FECACA"/>
+                <rect x="134" y="182" width="52" height="3" rx="2" fill="#FECACA" opacity="0.6"/>
+                <rect x="134" y="190" width="64" height="3" rx="2" fill="#FECACA" opacity="0.4"/>
+            </g>
+            <!-- Card 3 -->
+            <g transform="rotate(-2 120 100)">
+                <rect x="40" y="88" width="145" height="70" rx="6" fill="white" stroke="#FECACA" stroke-width="1.2"/>
+                <rect x="52" y="101" width="32" height="22" rx="4" fill="#FEE2E2"/>
+                <text x="68" y="116" text-anchor="middle" font-family="system-ui,sans-serif" font-size="11" fill="#DC2626">▶</text>
+                <rect x="94" y="105" width="76" height="4" rx="2" fill="#FECACA"/>
+                <rect x="94" y="115" width="52" height="3" rx="2" fill="#FECACA" opacity="0.6"/>
+                <rect x="94" y="123" width="64" height="3" rx="2" fill="#FECACA" opacity="0.4"/>
+            </g>
+            <!-- Card 4 -->
+            <g transform="rotate(5 240 110)">
+                <rect x="185" y="68" width="145" height="70" rx="6" fill="white" stroke="#FECACA" stroke-width="1.2"/>
+                <rect x="197" y="81" width="32" height="22" rx="4" fill="#FEE2E2"/>
+                <text x="213" y="96" text-anchor="middle" font-family="system-ui,sans-serif" font-size="11" fill="#DC2626">▶</text>
+                <rect x="239" y="85" width="76" height="4" rx="2" fill="#FECACA"/>
+                <rect x="239" y="95" width="52" height="3" rx="2" fill="#FECACA" opacity="0.6"/>
+                <rect x="239" y="103" width="64" height="3" rx="2" fill="#FECACA" opacity="0.4"/>
+            </g>
+            <!-- Card 5 -->
+            <g transform="rotate(-3 230 185)">
+                <rect x="190" y="175" width="145" height="70" rx="6" fill="white" stroke="#FECACA" stroke-width="1.2"/>
+                <rect x="202" y="188" width="32" height="22" rx="4" fill="#FEE2E2"/>
+                <text x="218" y="203" text-anchor="middle" font-family="system-ui,sans-serif" font-size="11" fill="#DC2626">▶</text>
+                <rect x="244" y="192" width="76" height="4" rx="2" fill="#FECACA"/>
+                <rect x="244" y="202" width="52" height="3" rx="2" fill="#FECACA" opacity="0.6"/>
+                <rect x="244" y="210" width="64" height="3" rx="2" fill="#FECACA" opacity="0.4"/>
+            </g>
+            <!-- Card 6 faded in back -->
+            <g transform="rotate(1 120 290)" opacity="0.5">
+                <rect x="60" y="278" width="145" height="55" rx="6" fill="white" stroke="#FECACA" stroke-width="1.2"/>
+                <rect x="72" y="289" width="32" height="18" rx="4" fill="#FEE2E2"/>
+                <rect x="114" y="293" width="76" height="4" rx="2" fill="#FECACA"/>
+                <rect x="114" y="303" width="52" height="3" rx="2" fill="#FECACA" opacity="0.5"/>
+            </g>
+
+            <!-- Left big stat -->
+            <text x="195" y="302" text-anchor="middle" font-family="Georgia,serif" font-size="36" fill="#DC2626" font-weight="700">60+</text>
+            <text x="195" y="324" text-anchor="middle" font-family="system-ui,sans-serif" font-size="11" fill="#B91C1C" letter-spacing="0.5">recursos consumidos</text>
+
+            <!-- Right: 4 clean organized cards -->
+            <!-- Block 1 -->
+            <rect x="448" y="60" width="290" height="48" rx="8" fill="white" stroke="#BBF7D0" stroke-width="1.2"/>
+            <rect x="460" y="72" width="26" height="24" rx="5" fill="#D1FAE5"/>
+            <text x="473" y="88" text-anchor="middle" font-family="system-ui,sans-serif" font-size="12" fill="#059669">✓</text>
+            <rect x="498" y="76" width="150" height="5" rx="2" fill="#BBF7D0"/>
+            <rect x="498" y="88" width="100" height="3.5" rx="2" fill="#BBF7D0" opacity="0.6"/>
+
+            <!-- Block 2 -->
+            <rect x="448" y="122" width="290" height="48" rx="8" fill="white" stroke="#BBF7D0" stroke-width="1.2"/>
+            <rect x="460" y="134" width="26" height="24" rx="5" fill="#D1FAE5"/>
+            <text x="473" y="150" text-anchor="middle" font-family="system-ui,sans-serif" font-size="12" fill="#059669">✓</text>
+            <rect x="498" y="138" width="150" height="5" rx="2" fill="#BBF7D0"/>
+            <rect x="498" y="150" width="100" height="3.5" rx="2" fill="#BBF7D0" opacity="0.6"/>
+
+            <!-- Block 3 -->
+            <rect x="448" y="184" width="290" height="48" rx="8" fill="white" stroke="#BBF7D0" stroke-width="1.2"/>
+            <rect x="460" y="196" width="26" height="24" rx="5" fill="#D1FAE5"/>
+            <text x="473" y="212" text-anchor="middle" font-family="system-ui,sans-serif" font-size="12" fill="#059669">✓</text>
+            <rect x="498" y="200" width="150" height="5" rx="2" fill="#BBF7D0"/>
+            <rect x="498" y="212" width="100" height="3.5" rx="2" fill="#BBF7D0" opacity="0.6"/>
+
+            <!-- Block 4 -->
+            <rect x="448" y="246" width="290" height="48" rx="8" fill="white" stroke="#BBF7D0" stroke-width="1.2"/>
+            <rect x="460" y="258" width="26" height="24" rx="5" fill="#D1FAE5"/>
+            <text x="473" y="274" text-anchor="middle" font-family="system-ui,sans-serif" font-size="12" fill="#059669">✓</text>
+            <rect x="498" y="262" width="150" height="5" rx="2" fill="#BBF7D0"/>
+            <rect x="498" y="274" width="100" height="3.5" rx="2" fill="#BBF7D0" opacity="0.6"/>
+
+            <!-- Right big stat -->
+            <text x="605" y="302" text-anchor="middle" font-family="Georgia,serif" font-size="36" fill="#059669" font-weight="700">4</text>
+            <text x="605" y="324" text-anchor="middle" font-family="system-ui,sans-serif" font-size="11" fill="#047857" letter-spacing="0.5">realmente aplicados</text>
+        </svg>
+    </div>
+
+    <!-- HEADER -->
+    <header class="resource-header">
+        <div class="tag rojo"><span class="dot"></span>Mitos</div>
+        <h1 class="resource-title">Parálisis por análisis: el mito que te mantiene aprendiendo en lugar de construyendo</h1>
+        <p class="resource-sub">Llevas tiempo consumiendo contenido sobre IA. Sigues esperando el momento adecuado. Este recurso explica por qué ese momento nunca va a llegar solo.</p>
+        <div class="resource-meta">
+            <span>10 min de lectura</span>
+            <span class="meta-dot"></span>
+            <span>Nivel 2</span>
+            <span class="meta-dot"></span>
+            <span>Mayo 2026</span>
+        </div>
+    </header>
+
+    <!-- LEARN BOX -->
+    <div class="learn-box">
+        <div class="learn-box-title">Lo que vas a entender</div>
+        <ul class="learn-list">
+            <li class="learn-item">Por qué acumular más conocimiento no acelera tu construcción</li>
+            <li class="learn-item">La diferencia real entre información y habilidad</li>
+            <li class="learn-item">Qué es la falacia de la planificación y cómo te afecta con la IA</li>
+            <li class="learn-item">Por qué en el Nivel 2 la posición cambia — del aprendiz al arquitecto</li>
+        </ul>
+    </div>
+
+    <!-- TABLE OF CONTENTS -->
+    <nav class="toc" aria-label="Contenido">
+        <div class="toc-label">En este recurso</div>
+        <div class="toc-links">
+            <a href="#s01">01 El síntoma</a>
+            <a href="#s02">02 Parálisis por análisis</a>
+            <a href="#s03">03 Falacia de la planificación</a>
+            <a href="#s04">04 Aprendiz vs arquitecto</a>
+            <a href="#s05">05 Tu primer acto</a>
+            <a href="#checklist">Checklist</a>
+        </div>
+    </nav>
+
+    <!-- ── S01: EL SÍNTOMA ── -->
+    <section class="section" id="s01">
+        <div class="section-num">01</div>
+        <h2>¿Cuántos recursos has consumido en los últimos 30 días?</h2>
+        <p>Completaste el Nivel 0. Cambiaste el paradigma: de preguntar a colaborar, de consumir a construir. En el Nivel 1 lo pusiste en práctica: construiste algo real, gratis, sin programar. Viste que funciona.</p>
+        <p>Y aquí estás otra vez, abriendo otro recurso. No porque no sepas nada. Sino porque sientes que <em>todavía no sabes suficiente</em>.</p>
+        <p>Eso no es aprendizaje. Es el síntoma de un problema que este recurso existe para nombrar.</p>
+
+        <div class="callout rojo">
+            <div class="callout-label">El momento exacto en que consumir se convierte en postergación</div>
+            <p>Hay un punto en que prepararse es más cómodo que empezar. No duele equivocarse. No hay riesgo de que algo no funcione. Y el cerebro lo registra como progreso porque técnicamente <em>estás aprendiendo</em>. El problema es que sin construcción, ese aprendizaje no va a ningún sitio.</p>
+        </div>
+
+        <div class="stat-pair">
+            <div class="stat-card rojo">
+                <div class="stat-num">60+</div>
+                <div class="stat-label">recursos que consumí<br>en mis primeros 3 meses</div>
+            </div>
+            <div class="stat-card verde">
+                <div class="stat-num">4</div>
+                <div class="stat-label">los que realmente usé<br>cuando construí algo</div>
+            </div>
+        </div>
+
+        <p>El resto no era ruido — era contenido decente. Pero no lo usé porque cuando llegó el momento de construir, lo que necesitaba no era más información. Era empezar y ver qué fallaba.</p>
+    </section>
+
+    <!-- ── S02: LA PARÁLISIS POR ANÁLISIS ── -->
+    <section class="section" id="s02">
+        <div class="section-num">02</div>
+        <h2>El conocimiento que acumulas no construye nada por sí solo</h2>
+        <p>La parálisis por análisis tiene una lógica interna perfecta: si aprendo un poco más, estaré mejor preparado para no cometer errores. El problema es que esa lógica nunca se cierra. Siempre hay un concepto nuevo, una herramienta diferente, un tutorial más antes de empezar.</p>
+
+        <div class="myth-card">
+            <div class="myth-badge">Mito #1</div>
+            <div class="myth-statement">"Necesito aprender más antes de empezar."</div>
+            <div class="myth-reality-label">La realidad</div>
+            <p class="myth-reality">El cerebro trata el consumo de contenido como progreso porque activa los mismos circuitos de recompensa que aprender de verdad — pero sin el riesgo del error, sin la incomodidad de construir algo que falla a la primera. Es aprendizaje sin coste. Y por eso es una trampa cómoda.</p>
+        </div>
+
+        <p>La distinción que cambia todo: el conocimiento sin construcción es información. El conocimiento con construcción es habilidad. No son lo mismo, y acumular una no te da la otra.</p>
+        <p>No aprendí a construir prompts leyendo sobre prompts. Los aprendí cuando construía algo que fallaba y necesitaba un mejor prompt para que funcionara. El error fue el profesor, no el recurso.</p>
+
+        <div class="callout">
+            <div class="callout-label">La pregunta que cambia la dirección</div>
+            <p>En lugar de "¿qué debería aprender a continuación?" pregúntate "¿qué quiero construir?" El segundo question genera el primero de forma automática — y solo el conocimiento que necesitas para avanzar.</p>
+        </div>
+    </section>
+
+    <!-- ── S03: LA FALACIA DE LA PLANIFICACIÓN ── -->
+    <section class="section" id="s03">
+        <div class="section-num">03</div>
+        <h2>La IA no construye rápido. Tú construyes diferente.</h2>
+        <p>El segundo mito va en dirección contraria. Si la parálisis te frena, la falacia de la planificación te lanza hacia delante — directo hacia el chasco.</p>
+        <p>Has visto los vídeos. Los títulos. Los tiempos. Y probablemente has intentado replicar algo y te has preguntado por qué a ti te llevó tres veces más.</p>
+
+        <div class="myth-card">
+            <div class="myth-badge">Mito #2</div>
+            <div class="myth-statement">"Con IA esto se construye rápido y fácil."</div>
+            <div class="myth-reality-label">La realidad</div>
+            <p class="myth-reality">La IA acelera. No elimina. Lo que ves en el vídeo es el resultado, no el proceso. Detrás hay iteraciones fallidas, cambios de dirección, tiempo de corrección. Lo valioso es profundo. Y lo profundo no es rápido — es diferente.</p>
+        </div>
+
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr>
+                        <th class="th-rojo">Lo que ves en los vídeos</th>
+                        <th class="th-verde">Lo que no dicen</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr><td>"Construí una app en 2 horas"</td><td>X sesiones de iteración fallida antes</td></tr>
+                    <tr><td>"Sin complicaciones, sin código"</td><td>Correcciones de dirección que no se graban</td></tr>
+                    <tr><td>"El resultado es perfecto"</td><td>La primera versión no funcionó</td></tr>
+                    <tr><td>"Cualquiera puede hacerlo"</td><td>El criterio para dirigirlo lleva tiempo construirlo</td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <p>La app del Nivel 1 no salió en 2 horas. Salió en varias sesiones, con errores reales, con cambios de dirección. El resultado fue €0 y algo que realmente uso cada vez que viajo. El tiempo no fue el punto. La dirección lo fue.</p>
+
+        <div class="callout verde">
+            <div class="callout-label">Por qué lo profundo vale más que lo rápido</div>
+            <p>Si cualquiera puede construir lo mismo en 10 minutos copiando un tutorial, no vale gran cosa. Lo que vale es el criterio que guía la construcción. Ese criterio no se copia — se desarrolla construyendo con dirección propia.</p>
+        </div>
+    </section>
+
+    <!-- ── S04: APRENDIZ VS ARQUITECTO ── -->
+    <section class="section" id="s04">
+        <div class="section-num">04</div>
+        <h2>En el Nivel 2 ya no aprendes. Diseñas.</h2>
+        <p>Aquí está la diferencia real entre Nivel 1 y Nivel 2. No es cuánto sabes. Es desde dónde preguntas.</p>
+
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr>
+                        <th class="th-muted-l">El aprendiz pregunta…</th>
+                        <th class="th-muted-r">El arquitecto pregunta…</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>¿Qué herramienta debería aprender?</td>
+                        <td>¿Qué quiero construir?</td>
+                    </tr>
+                    <tr>
+                        <td>¿Cuál es el mejor modelo de IA?</td>
+                        <td>¿Cómo encajan las piezas que tengo?</td>
+                    </tr>
+                    <tr>
+                        <td>¿Cuánto tarda en dominar esto?</td>
+                        <td>¿Qué me falta exactamente para seguir?</td>
+                    </tr>
+                    <tr>
+                        <td>¿Estoy preparado para empezar?</td>
+                        <td>¿Por dónde empieza la primera versión?</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <p>El aprendiz acumula conocimiento esperando tener suficiente para empezar. El arquitecto empieza con lo que tiene y aprende exactamente lo que le falta para seguir. El segundo aprende más rápido, porque cada cosa que aprende tiene un destino inmediato.</p>
+
+        <div class="callout azul">
+            <div class="callout-label">La distinción no es de habilidad</div>
+            <p>Es de posición. Y la posición la eliges tú. No hace falta saber más para pasar de aprendiz a arquitecto — hace falta decidir qué construir antes de buscar cómo.</p>
+        </div>
+    </section>
+
+    <!-- ── S05: TU PRIMER ACTO ── -->
+    <section class="section" id="s05">
+        <div class="section-num">05</div>
+        <h2>Una sola línea. Eso es todo lo que necesitas ahora.</h2>
+        <p>El primer acto del arquitecto no es buscar el tutorial correcto. No es elegir la herramienta definitiva. No es terminar este recurso y abrir el siguiente.</p>
+        <p>Es decidir qué va a construir.</p>
+        <p>No cómo. No con qué herramientas. No cuánto va a tardar ni si va a salir bien. Solo qué. Antes de que esa decisión parezca pequeña o insuficiente, recuerda: la app del Nivel 1 empezó con "quiero registrar mis gastos cuando viajo". Nada más.</p>
+
+        <div class="action-write">
+            <div class="action-write-label">Tu primer acto como arquitecto</div>
+            <div class="action-write-prompt">Quiero construir…</div>
+            <input class="action-write-line" type="text" placeholder="escríbelo aquí o en cualquier sitio que tengas a mano" maxlength="120"/>
+            <p class="action-write-hint">No tiene que ser perfecto. Solo tiene que existir.</p>
+        </div>
+
+        <p>Ese "qué" es el punto de partida de todo lo que viene a continuación en este nivel. El 2.2 te da el modelo mental para convertirlo en un sistema. El 2.3 te dice qué herramientas necesitas realmente. El 2.4 te lleva a construir la primera versión.</p>
+        <p>Pero nada de eso importa si no decides primero qué quieres construir.</p>
+
+        <a href="2-2.html" class="next-hook">
+            <div class="next-hook-arrow">
+                <svg width="14" height="14" fill="none" stroke="white" stroke-width="2.5" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+            </div>
+            <div class="next-hook-text">
+                <div class="next-hook-label">Siguiente — 2.2 · Conceptos</div>
+                <div class="next-hook-title">La lógica detrás de los sistemas: cómo pensar antes de conectar nada</div>
+            </div>
+        </a>
+    </section>
+
+    <!-- ── CHECKLIST FINAL ── -->
+    <div class="checklist-section" id="checklist">
+        <div class="checklist-title">Lista de comprobación</div>
+        <ul class="checklist-items" id="checklistItems">
+            <li onclick="toggleCheck(this)"><span class="check-box"></span><span class="check-text">He identificado el síntoma — y me he sentido un poco incómodo (señal de que ha aterrizado)</span></li>
+            <li onclick="toggleCheck(this)"><span class="check-box"></span><span class="check-text">Entiendo por qué acumular más conocimiento no es la solución</span></li>
+            <li onclick="toggleCheck(this)"><span class="check-box"></span><span class="check-text">He ajustado mis expectativas sobre lo que "rápido con IA" significa realmente</span></li>
+            <li onclick="toggleCheck(this)"><span class="check-box"></span><span class="check-text">Sé la diferencia entre la posición del aprendiz y la del arquitecto</span></li>
+            <li onclick="toggleCheck(this)"><span class="check-box"></span><span class="check-text">He escrito qué quiero construir (aunque sea con mala letra en un post-it)</span></li>
+        </ul>
+    </div>
+
+    <!-- FOOTER NAV -->
+    <footer class="resource-footer">
+        <a href="1-5.html" class="footer-back">
+            <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+            Nivel 1 · Casos reales
+        </a>
+        <a href="2-2.html" class="footer-next">
+            La lógica de los sistemas
+            <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </a>
+    </footer>
+
+</div>
+
+<script>
+function toggleCheck(li) {
+    li.classList.toggle('done');
+    li.querySelector('.check-box').textContent = li.classList.contains('done') ? '✓' : '';
+    const items = document.querySelectorAll('#checklistItems li');
+    if ([...items].every(i => i.classList.contains('done'))) launchConfetti();
+}
+
+function launchConfetti() {
+    const canvas = document.getElementById('confettiCanvas');
+    if (!canvas) return;
+    canvas.style.display = 'block';
+    const ctx = canvas.getContext('2d');
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+    const colors = ['#B45309','#D97706','#FDE68A','#059669','#7C3AED','#2563EB','#F59E0B','#10B981','#DC2626'];
+    const pieces = Array.from({length: 140}, () => ({
+        x: Math.random() * canvas.width,
+        y: -10 - Math.random() * canvas.height * 0.6,
+        w: Math.random() * 11 + 5,
+        h: Math.random() * 6 + 3,
+        color: colors[Math.floor(Math.random() * colors.length)],
+        vx: (Math.random() - 0.5) * 4,
+        vy: Math.random() * 3 + 1.5,
+        rot: Math.random() * 360,
+        vrot: (Math.random() - 0.5) * 10,
+        alpha: 1,
+        shape: Math.random() > 0.5 ? 'rect' : 'circle'
+    }));
+    let frame = 0;
+    (function animate() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        pieces.forEach(p => {
+            p.x += p.vx; p.y += p.vy; p.rot += p.vrot; p.vy += 0.06;
+            if (frame > 90) p.alpha = Math.max(0, p.alpha - 0.012);
+            ctx.save();
+            ctx.globalAlpha = p.alpha;
+            ctx.translate(p.x + p.w / 2, p.y + p.h / 2);
+            ctx.rotate(p.rot * Math.PI / 180);
+            ctx.fillStyle = p.color;
+            if (p.shape === 'circle') {
+                ctx.beginPath(); ctx.arc(0, 0, p.w / 2, 0, Math.PI * 2); ctx.fill();
+            } else {
+                ctx.fillRect(-p.w / 2, -p.h / 2, p.w, p.h);
+            }
+            ctx.restore();
+        });
+        frame++;
+        if (frame < 170) requestAnimationFrame(animate);
+        else canvas.style.display = 'none';
+    })();
+}
+</script>
+
+<canvas id="confettiCanvas" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:9999;"></canvas>
+</body>
+</html>
