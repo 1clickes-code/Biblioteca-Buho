@@ -1,0 +1,969 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cómo construí una app de gastos de viaje (y la tengo en mi móvil) — alex.decode</title>
+    <link rel="icon" type="image/svg+xml" href="../favicon.svg">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        :root {
+            --bg:        #FAFAF7;
+            --surface:   #FFFFFF;
+            --border:    #E8E2D9;
+            --text:      #1C1917;
+            --muted:     #78716C;
+            --faint:     #B0A89E;
+            --amber:     #B45309;
+            --amber-mid: #D97706;
+            --amber-dim: rgba(180,83,9,0.07);
+            --rojo:  #DC2626; --rojo-d:  rgba(220,38,38,0.07);
+            --amar:  #D97706; --amar-d:  rgba(217,119,6,0.07);
+            --azul:  #2563EB; --azul-d:  rgba(37,99,235,0.07);
+            --verde: #059669; --verde-d: rgba(5,150,105,0.07);
+            --morad: #7C3AED; --morad-d: rgba(124,58,237,0.07);
+        }
+
+        html { scroll-behavior: smooth; }
+        body {
+            background: var(--bg);
+            color: var(--text);
+            font-family: 'Inter', system-ui, sans-serif;
+            font-size: 15px;
+            line-height: 1.7;
+            min-height: 100vh;
+        }
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0; left: 0; right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, #7C3AED 0%, #9F67FA 50%, #7C3AED 100%);
+            z-index: 100;
+        }
+
+        .wrap { max-width: 720px; margin: 0 auto; padding: 0 24px; }
+
+        /* ── NAV ── */
+        .top-nav {
+            padding: 28px 0 0;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 11px;
+            color: var(--faint);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
+        .top-nav a { color: var(--amber); text-decoration: none; transition: opacity .15s; }
+        .top-nav a:hover { opacity: .7; }
+        .top-nav .sep { color: var(--faint); }
+        .nav-owl {
+            margin-left: auto;
+            display: flex;
+            align-items: center;
+            text-decoration: none;
+            transition: opacity .15s;
+            animation: owlFloat 5s ease-in-out 1s infinite;
+        }
+        .nav-owl:hover { opacity: .7; }
+        @keyframes owlFloat { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-4px)} }
+
+        /* ── COVER ── */
+        .resource-cover {
+            margin: 24px 0 0;
+            border-radius: 14px;
+            overflow: hidden;
+            width: 100%;
+            aspect-ratio: 16/7;
+            background: var(--morad-d);
+            border: 1px solid rgba(124,58,237,0.18);
+        }
+        .resource-cover svg { width: 100%; height: 100%; display: block; }
+
+        /* ── HEADER ── */
+        .resource-header { padding: 28px 0 28px; border-bottom: 1px solid var(--border); margin-bottom: 24px; }
+
+        .tag {
+            display: inline-flex; align-items: center; gap: 5px;
+            font-size: 10px; font-weight: 600; padding: 3px 10px;
+            border-radius: 100px; margin-bottom: 14px;
+        }
+        .tag .dot { width: 5px; height: 5px; border-radius: 50%; flex-shrink: 0; }
+        .tag.morad { background: var(--morad-d); color: var(--morad); } .tag.morad .dot { background: var(--morad); }
+
+        .resource-title {
+            font-family: 'Playfair Display', Georgia, serif;
+            font-size: clamp(24px, 4vw, 34px);
+            font-weight: 700;
+            line-height: 1.2;
+            letter-spacing: -.3px;
+            margin-bottom: 12px;
+        }
+        .resource-meta {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 11px;
+            color: var(--faint);
+            display: flex;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+        .resource-meta span { display: flex; align-items: center; gap: 5px; }
+        .meta-dot { width: 3px; height: 3px; border-radius: 50%; background: var(--faint); }
+
+        /* ── LEARN BOX ── */
+        .learn-box {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 20px 22px;
+            margin-bottom: 16px;
+        }
+        .learn-label {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 9px;
+            font-weight: 600;
+            color: var(--amber);
+            letter-spacing: 1.4px;
+            text-transform: uppercase;
+            margin-bottom: 12px;
+        }
+        .learn-list { list-style: none; display: flex; flex-direction: column; gap: 8px; }
+        .learn-list li {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            font-size: 13.5px;
+            color: var(--text);
+            line-height: 1.5;
+        }
+        .learn-dot {
+            width: 6px; height: 6px;
+            border-radius: 50%;
+            background: var(--morad);
+            flex-shrink: 0;
+            margin-top: 7px;
+        }
+
+        /* ── PREREQ BOX ── */
+        .prereq-box {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            background: var(--azul-d);
+            border: 1px solid rgba(37,99,235,0.18);
+            border-radius: 10px;
+            padding: 14px 18px;
+            margin-bottom: 20px;
+        }
+        .prereq-icon { font-family: 'JetBrains Mono', monospace; font-size: 13px; color: var(--azul); flex-shrink: 0; margin-top: 1px; }
+        .prereq-text { font-size: 13px; color: var(--text); line-height: 1.55; }
+        .prereq-text a { color: var(--azul); text-decoration: underline; text-decoration-color: rgba(37,99,235,0.35); text-underline-offset: 2px; }
+
+        /* ── TOC ── */
+        .toc {
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 14px 18px;
+            margin-bottom: 44px;
+        }
+        .toc-label {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 9px;
+            color: var(--faint);
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            margin-bottom: 10px;
+        }
+        .toc-links { display: flex; flex-wrap: wrap; gap: 6px; }
+        .toc-links a {
+            font-size: 12px;
+            color: var(--muted);
+            text-decoration: none;
+            padding: 4px 10px;
+            border-radius: 6px;
+            border: 1px solid var(--border);
+            transition: border-color .15s, color .15s, background .15s;
+            white-space: nowrap;
+        }
+        .toc-links a:hover { border-color: var(--morad); color: var(--morad); background: var(--morad-d); }
+
+        /* ── SECTIONS ── */
+        .section { margin-bottom: 48px; scroll-margin-top: 32px; }
+        .section-num {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 10px;
+            color: var(--amber);
+            font-weight: 600;
+            letter-spacing: 1px;
+            margin-bottom: 8px;
+        }
+        .section h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: 21px;
+            font-weight: 700;
+            line-height: 1.3;
+            margin-bottom: 14px;
+        }
+        .section p { color: var(--text); margin-bottom: 12px; font-size: 14.5px; }
+        .section p:last-child { margin-bottom: 0; }
+
+        /* ── CALLOUT ── */
+        .callout {
+            border-left: 3px solid var(--amber);
+            background: var(--amber-dim);
+            border-radius: 0 8px 8px 0;
+            padding: 13px 16px;
+            margin: 18px 0;
+        }
+        .callout.morad { border-left-color: var(--morad); background: var(--morad-d); }
+        .callout.verde { border-left-color: var(--verde); background: var(--verde-d); }
+        .callout.amar  { border-left-color: var(--amar);  background: var(--amar-d); }
+        .callout-label {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 9px;
+            font-weight: 600;
+            color: var(--amber);
+            letter-spacing: 1.2px;
+            text-transform: uppercase;
+            margin-bottom: 5px;
+        }
+        .callout.morad .callout-label { color: var(--morad); }
+        .callout.verde .callout-label { color: var(--verde); }
+        .callout.amar  .callout-label { color: var(--amar); }
+        .callout p { font-size: 13.5px; color: var(--text); margin: 0; line-height: 1.6; }
+        .callout p a { color: var(--morad); text-decoration: underline; text-underline-offset: 2px; }
+
+        /* ── RESULT STATS ── */
+        .result-stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin: 18px 0;
+        }
+        .result-stat {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 14px 12px;
+            text-align: center;
+        }
+        .result-stat-num {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--morad);
+            display: block;
+            margin-bottom: 4px;
+            line-height: 1;
+        }
+        .result-stat-label {
+            font-size: 11.5px;
+            color: var(--muted);
+            line-height: 1.4;
+        }
+
+        /* ── ERROR LIST ── */
+        .error-list { display: flex; flex-direction: column; gap: 10px; margin: 18px 0; }
+        .error-item {
+            display: flex;
+            gap: 14px;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 14px 16px;
+            align-items: flex-start;
+        }
+        .error-num {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 22px;
+            font-weight: 700;
+            color: var(--morad);
+            opacity: 0.25;
+            min-width: 22px;
+            flex-shrink: 0;
+            line-height: 1;
+            margin-top: 2px;
+        }
+        .error-body {}
+        .error-title {
+            font-size: 13.5px;
+            font-weight: 600;
+            color: var(--text);
+            margin-bottom: 4px;
+            line-height: 1.4;
+        }
+        .error-lesson {
+            font-size: 12.5px;
+            color: var(--muted);
+            line-height: 1.55;
+        }
+        .error-lesson a { color: var(--morad); text-decoration: underline; text-decoration-color: rgba(124,58,237,0.35); text-underline-offset: 2px; }
+
+        /* ── APP FEATURE GRID ── */
+        .app-feature-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin: 18px 0;
+        }
+        .app-feature {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 9px;
+            padding: 12px 14px;
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+        }
+        .app-feature-dot {
+            width: 6px; height: 6px;
+            border-radius: 50%;
+            background: var(--morad);
+            flex-shrink: 0;
+            margin-top: 7px;
+        }
+        .app-feature-text { font-size: 13px; color: var(--text); line-height: 1.5; }
+
+        /* ── APP LINK ── */
+        .app-link {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 14px;
+            background: var(--morad-d);
+            border: 1.5px solid rgba(124,58,237,0.3);
+            border-radius: 10px;
+            padding: 14px 18px;
+            text-decoration: none;
+            transition: border-color .15s, background .15s;
+            margin: 18px 0;
+        }
+        .app-link:hover { border-color: var(--morad); background: rgba(124,58,237,0.11); }
+        .app-link-left {}
+        .app-link-label {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 9px;
+            font-weight: 600;
+            color: var(--morad);
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            margin-bottom: 4px;
+        }
+        .app-link-url {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 12px;
+            color: var(--text);
+        }
+        .app-link-arrow {
+            color: var(--morad);
+            flex-shrink: 0;
+            transition: transform .2s;
+        }
+        .app-link:hover .app-link-arrow { transform: translateX(4px); }
+
+        /* ── DEPLOY STEPS ── */
+        .deploy-box {
+            background: var(--morad-d);
+            border: 1px solid rgba(124,58,237,0.2);
+            border-radius: 12px;
+            padding: 20px 22px;
+            margin: 18px 0;
+        }
+        .deploy-label {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 9px;
+            font-weight: 600;
+            color: var(--morad);
+            letter-spacing: 1.4px;
+            text-transform: uppercase;
+            margin-bottom: 14px;
+        }
+        .deploy-step { display: flex; gap: 12px; margin-bottom: 10px; align-items: flex-start; }
+        .deploy-step:last-child { margin-bottom: 0; }
+        .deploy-num {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 10px;
+            font-weight: 600;
+            color: var(--morad);
+            min-width: 18px;
+            margin-top: 3px;
+        }
+        .deploy-text { font-size: 13.5px; color: var(--text); line-height: 1.5; }
+        .deploy-text strong { font-weight: 600; }
+
+        /* ── NIVEL BRIDGE ── */
+        .nivel-bridge {
+            background: var(--surface);
+            border: 1.5px solid rgba(124,58,237,0.3);
+            border-radius: 14px;
+            padding: 28px 26px;
+            margin: 18px 0;
+            text-align: center;
+        }
+        .nivel-bridge-tag {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 9px;
+            font-weight: 600;
+            color: var(--morad);
+            letter-spacing: 1.4px;
+            text-transform: uppercase;
+            margin-bottom: 14px;
+        }
+        .nivel-bridge-text {
+            font-family: 'Playfair Display', serif;
+            font-size: 19px;
+            font-weight: 700;
+            color: var(--text);
+            line-height: 1.4;
+            margin-bottom: 10px;
+        }
+        .nivel-bridge-sub {
+            font-size: 13.5px;
+            color: var(--muted);
+            line-height: 1.65;
+            max-width: 480px;
+            margin: 0 auto;
+        }
+
+        /* ── CHECKLIST ── */
+        .checklist-section {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 22px 24px;
+            margin-bottom: 48px;
+        }
+        .checklist-title {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 10px;
+            color: var(--amber);
+            font-weight: 600;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            margin-bottom: 14px;
+        }
+        .checklist-items { list-style: none; display: flex; flex-direction: column; gap: 10px; }
+        .checklist-items li {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            font-size: 13px;
+            color: var(--text);
+            line-height: 1.5;
+            cursor: pointer;
+        }
+        .check-box {
+            width: 17px; height: 17px;
+            border: 1.5px solid var(--border);
+            border-radius: 4px;
+            flex-shrink: 0;
+            margin-top: 1px;
+            transition: border-color .15s, background .15s;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 10px;
+            color: white;
+        }
+        .checklist-items li.done .check-box { background: var(--verde); border-color: var(--verde); }
+        .checklist-items li.done .check-text { text-decoration: line-through; color: var(--muted); }
+
+        /* ── FOOTER ── */
+        .resource-footer {
+            border-top: 1px solid var(--border);
+            padding: 28px 0 52px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+        .footer-back {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 12px;
+            color: var(--muted);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: color .15s;
+        }
+        .footer-back:hover { color: var(--amber); }
+        .footer-lib {
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--amber);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: gap .15s;
+        }
+        .footer-lib:hover { gap: 10px; }
+
+        @media (max-width: 600px) {
+            .wrap { padding: 0 16px; }
+            .resource-title { font-size: 22px; }
+            .result-stats { grid-template-columns: repeat(3, 1fr); }
+            .app-feature-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+<div class="wrap">
+
+    <!-- NAV -->
+    <nav class="top-nav">
+        <a href="../index.html">alex.decode</a>
+        <span class="sep">/</span>
+        <span>Biblioteca</span>
+        <span class="sep">/</span>
+        <span>Nivel 1</span>
+        <span class="sep">/</span>
+        <span>App de gastos de viaje</span>
+        <a href="../index.html" class="nav-owl" aria-label="Volver a la biblioteca">
+            <svg width="28" height="32" viewBox="0 0 140 160" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <polygon points="44,32 36,6 52,26" fill="#92400E"/>
+                <polygon points="96,32 104,6 88,26" fill="#92400E"/>
+                <circle cx="70" cy="56" r="38" fill="#B45309"/>
+                <ellipse cx="70" cy="58" rx="26" ry="24" fill="#D97706" opacity="0.28"/>
+                <circle cx="56" cy="52" r="13" fill="#FEF3C7"/>
+                <circle cx="84" cy="52" r="13" fill="#FEF3C7"/>
+                <circle cx="56" cy="52" r="6.5" fill="#1C1917"/>
+                <circle cx="84" cy="52" r="6.5" fill="#1C1917"/>
+                <circle cx="59" cy="49" r="2.2" fill="white"/>
+                <circle cx="87" cy="49" r="2.2" fill="white"/>
+                <polygon points="63,64 77,64 70,75" fill="#D97706"/>
+                <ellipse cx="70" cy="120" rx="34" ry="36" fill="#B45309"/>
+                <ellipse cx="70" cy="126" rx="20" ry="24" fill="#D97706" opacity="0.22"/>
+            </svg>
+        </a>
+    </nav>
+
+    <!-- COVER -->
+    <div class="resource-cover">
+        <svg viewBox="0 0 800 350" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice">
+            <rect width="800" height="350" fill="#FAF5FF"/>
+
+            <!-- Fondo decorativo -->
+            <circle cx="680" cy="60" r="120" fill="rgba(124,58,237,0.05)"/>
+            <circle cx="100" cy="280" r="90" fill="rgba(124,58,237,0.04)"/>
+
+            <!-- LADO IZQUIERDO: el problema -->
+            <text x="140" y="38" font-family="JetBrains Mono, monospace" font-size="9" fill="#C4B5FD" text-anchor="middle" letter-spacing="2" font-weight="600">EL PROBLEMA</text>
+
+            <!-- WhatsApp bubble -->
+            <rect x="30" y="52" width="180" height="38" rx="8" fill="white" stroke="#E8E2D9" stroke-width="1"/>
+            <text x="120" y="68" font-family="Inter, sans-serif" font-size="11" fill="#78716C" text-anchor="middle">¿Cuánto has gastado tú?</text>
+            <text x="120" y="82" font-family="Inter, sans-serif" font-size="10" fill="#B0A89E" text-anchor="middle">12:43 · WhatsApp</text>
+
+            <!-- Nota papel -->
+            <rect x="30" y="102" width="80" height="64" rx="4" fill="#FFFBEB" stroke="#FDE68A" stroke-width="1"/>
+            <rect x="40" y="114" width="50" height="3" rx="1.5" fill="#FDE68A"/>
+            <rect x="40" y="122" width="40" height="3" rx="1.5" fill="#FDE68A" opacity="0.6"/>
+            <rect x="40" y="130" width="55" height="3" rx="1.5" fill="#FDE68A" opacity="0.6"/>
+            <rect x="40" y="138" width="35" height="3" rx="1.5" fill="#FDE68A" opacity="0.4"/>
+            <rect x="40" y="146" width="48" height="3" rx="1.5" fill="#FDE68A" opacity="0.4"/>
+            <text x="70" y="176" font-family="Inter, sans-serif" font-size="10" fill="#B0A89E" text-anchor="middle">gastos a mano</text>
+
+            <!-- Calculadora -->
+            <rect x="130" y="102" width="80" height="64" rx="6" fill="white" stroke="#E8E2D9" stroke-width="1"/>
+            <rect x="140" y="112" width="60" height="16" rx="3" fill="#F3F4F6"/>
+            <text x="196" y="124" font-family="JetBrains Mono, monospace" font-size="11" fill="#1C1917" text-anchor="end">347,50</text>
+            <rect x="140" y="132" width="16" height="10" rx="2" fill="#E5E7EB"/>
+            <rect x="162" y="132" width="16" height="10" rx="2" fill="#E5E7EB"/>
+            <rect x="184" y="132" width="16" height="10" rx="2" fill="#7C3AED" opacity="0.4"/>
+            <rect x="140" y="146" width="16" height="10" rx="2" fill="#E5E7EB"/>
+            <rect x="162" y="146" width="16" height="10" rx="2" fill="#E5E7EB"/>
+            <rect x="184" y="146" width="16" height="10" rx="2" fill="#E5E7EB"/>
+            <text x="170" y="176" font-family="Inter, sans-serif" font-size="10" fill="#B0A89E" text-anchor="middle">calculadora</text>
+
+            <text x="120" y="202" font-family="Inter, sans-serif" font-size="10.5" fill="#C4B5FD" text-anchor="middle">cuentas manuales · confusión · discusiones</text>
+
+            <!-- DIVISOR -->
+            <defs>
+                <marker id="arr-morad" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+                    <path d="M0,0 L0,6 L8,3 z" fill="#7C3AED"/>
+                </marker>
+            </defs>
+            <line x1="310" y1="175" x2="356" y2="175" stroke="#7C3AED" stroke-width="2" marker-end="url(#arr-morad)"/>
+            <text x="333" y="196" font-family="JetBrains Mono, monospace" font-size="8.5" fill="#C4B5FD" text-anchor="middle">2 horas</text>
+
+            <!-- CENTRO: Mockup del móvil con la app -->
+            <!-- Marco del móvil -->
+            <rect x="370" y="18" width="162" height="314" rx="18" fill="#1C1917"/>
+            <rect x="375" y="24" width="152" height="302" rx="14" fill="white"/>
+
+            <!-- Notch -->
+            <rect x="425" y="26" width="52" height="8" rx="4" fill="#1C1917"/>
+
+            <!-- App header -->
+            <rect x="375" y="24" width="152" height="46" rx="14" fill="#7C3AED"/>
+            <rect x="375" y="52" width="152" height="18" fill="#7C3AED"/>
+            <text x="451" y="44" font-family="Inter, sans-serif" font-size="11" fill="white" text-anchor="middle" font-weight="600">Malta 2026</text>
+            <text x="451" y="58" font-family="JetBrains Mono, monospace" font-size="8.5" fill="rgba(255,255,255,0.7)" text-anchor="middle">€800 · presupuesto total</text>
+
+            <!-- Budget bar -->
+            <rect x="385" y="80" width="132" height="8" rx="4" fill="#F3F4F6"/>
+            <rect x="385" y="80" width="86" height="8" rx="4" fill="#7C3AED"/>
+            <text x="385" y="100" font-family="JetBrains Mono, monospace" font-size="8" fill="#7C3AED">gastado</text>
+            <text x="517" y="100" font-family="JetBrains Mono, monospace" font-size="8" fill="#B0A89E" text-anchor="end">€340</text>
+
+            <!-- Divider -->
+            <line x1="385" y1="108" x2="517" y2="108" stroke="#E8E2D9" stroke-width="1"/>
+
+            <!-- Miembro 1 -->
+            <text x="385" y="124" font-family="Inter, sans-serif" font-size="10" fill="#1C1917" font-weight="600">Alex</text>
+            <text x="517" y="124" font-family="JetBrains Mono, monospace" font-size="9" fill="#7C3AED" text-anchor="end">45%</text>
+            <rect x="385" y="128" width="132" height="5" rx="2.5" fill="#F3F4F6"/>
+            <rect x="385" y="128" width="59" height="5" rx="2.5" fill="#7C3AED" opacity="0.7"/>
+
+            <!-- Miembro 2 -->
+            <text x="385" y="148" font-family="Inter, sans-serif" font-size="10" fill="#1C1917" font-weight="600">Sergio</text>
+            <text x="517" y="148" font-family="JetBrains Mono, monospace" font-size="9" fill="#7C3AED" text-anchor="end">55%</text>
+            <rect x="385" y="152" width="132" height="5" rx="2.5" fill="#F3F4F6"/>
+            <rect x="385" y="152" width="73" height="5" rx="2.5" fill="#7C3AED" opacity="0.5"/>
+
+            <!-- Divider -->
+            <line x1="385" y1="168" x2="517" y2="168" stroke="#E8E2D9" stroke-width="1"/>
+
+            <!-- Disponible -->
+            <text x="385" y="184" font-family="Inter, sans-serif" font-size="10" fill="#78716C">Disponible</text>
+            <text x="517" y="184" font-family="JetBrains Mono, monospace" font-size="11" fill="#059669" text-anchor="end" font-weight="600">€460</text>
+
+            <!-- Botón añadir gasto -->
+            <rect x="385" y="196" width="132" height="28" rx="8" fill="#7C3AED"/>
+            <text x="451" y="214" font-family="Inter, sans-serif" font-size="10.5" fill="white" text-anchor="middle" font-weight="500">+ Añadir gasto</text>
+
+            <!-- Lista gastos mini -->
+            <rect x="385" y="232" width="132" height="22" rx="5" fill="#F9F5FF" stroke="#E9D5FF" stroke-width="1"/>
+            <text x="390" y="247" font-family="Inter, sans-serif" font-size="9" fill="#7C3AED">Cena restaurante</text>
+            <text x="517" y="247" font-family="JetBrains Mono, monospace" font-size="9" fill="#1C1917" text-anchor="end">€62</text>
+
+            <rect x="385" y="258" width="132" height="22" rx="5" fill="#F9F5FF" stroke="#E9D5FF" stroke-width="1"/>
+            <text x="390" y="273" font-family="Inter, sans-serif" font-size="9" fill="#7C3AED">Transporte aeropuerto</text>
+            <text x="517" y="273" font-family="JetBrains Mono, monospace" font-size="9" fill="#1C1917" text-anchor="end">€28</text>
+
+            <rect x="385" y="284" width="132" height="22" rx="5" fill="#F9F5FF" stroke="#E9D5FF" stroke-width="1"/>
+            <text x="390" y="299" font-family="Inter, sans-serif" font-size="9" fill="#7C3AED">Hotel noche 1</text>
+            <text x="517" y="299" font-family="JetBrains Mono, monospace" font-size="9" fill="#1C1917" text-anchor="end">€95</text>
+
+            <!-- LADO DERECHO: el resultado -->
+            <text x="660" y="38" font-family="JetBrains Mono, monospace" font-size="9" fill="#7C3AED" text-anchor="middle" letter-spacing="2" font-weight="600">EL RESULTADO</text>
+
+            <!-- Stats derechos -->
+            <rect x="558" y="52" width="172" height="52" rx="9" fill="white" stroke="#E9D5FF" stroke-width="1.2"/>
+            <text x="644" y="76" font-family="JetBrains Mono, monospace" font-size="22" fill="#7C3AED" text-anchor="middle" font-weight="700">2h</text>
+            <text x="644" y="92" font-family="Inter, sans-serif" font-size="10" fill="#B0A89E" text-anchor="middle">de construcción real</text>
+
+            <rect x="558" y="114" width="80" height="52" rx="9" fill="white" stroke="#E9D5FF" stroke-width="1.2"/>
+            <text x="598" y="138" font-family="JetBrains Mono, monospace" font-size="18" fill="#059669" text-anchor="middle" font-weight="700">0</text>
+            <text x="598" y="155" font-family="Inter, sans-serif" font-size="9.5" fill="#B0A89E" text-anchor="middle">líneas de código</text>
+
+            <rect x="650" y="114" width="80" height="52" rx="9" fill="white" stroke="#E9D5FF" stroke-width="1.2"/>
+            <text x="690" y="138" font-family="JetBrains Mono, monospace" font-size="18" fill="#7C3AED" text-anchor="middle" font-weight="700">∞</text>
+            <text x="690" y="155" font-family="Inter, sans-serif" font-size="9.5" fill="#B0A89E" text-anchor="middle">iteraciones</text>
+
+            <rect x="558" y="176" width="172" height="52" rx="9" fill="#F9F5FF" stroke="#C4B5FD" stroke-width="1.2"/>
+            <text x="644" y="197" font-family="JetBrains Mono, monospace" font-size="9" fill="#7C3AED" text-anchor="middle" letter-spacing="1">GITHUB PAGES</text>
+            <text x="644" y="213" font-family="Inter, sans-serif" font-size="11" fill="#1C1917" text-anchor="middle">En el móvil como una app</text>
+            <text x="644" y="227" font-family="Inter, sans-serif" font-size="9.5" fill="#7C3AED" text-anchor="middle">sin instalar nada</text>
+
+            <!-- Caption inferior -->
+            <rect x="200" y="296" width="400" height="28" rx="7" fill="white" stroke="#E9D5FF" stroke-width="1"/>
+            <text x="400" y="315" font-family="JetBrains Mono, monospace" font-size="9.5" fill="#7C3AED" text-anchor="middle" letter-spacing="0.3">La app existe porque empecé sin saber cómo iba a terminar.</text>
+        </svg>
+    </div>
+
+    <!-- HEADER -->
+    <header class="resource-header">
+        <div class="tag morad"><span class="dot"></span>Caso real</div>
+        <h1 class="resource-title">Cómo construí una app de gestión de gastos de viaje (y la tengo en mi móvil)</h1>
+        <div class="resource-meta">
+            <span>10 min de lectura</span>
+            <span class="meta-dot"></span>
+            <span>Nivel 1 — Probar</span>
+            <span class="meta-dot"></span>
+            <span>Verano 2026</span>
+        </div>
+    </header>
+
+    <!-- LEARN BOX -->
+    <div class="learn-box">
+        <div class="learn-label">Lo que vas a ver</div>
+        <ul class="learn-list">
+            <li><span class="learn-dot"></span>El proceso real — con los errores que cometí y lo que cada uno me enseñó</li>
+            <li><span class="learn-dot"></span>Qué hace la app, cómo quedó y por qué funciona como MVP</li>
+            <li><span class="learn-dot"></span>Cómo está desplegada en GitHub Pages y accesible desde el móvil</li>
+        </ul>
+    </div>
+
+    <!-- PREREQ -->
+    <div class="prereq-box">
+        <span class="prereq-icon">→</span>
+        <p class="prereq-text">Este recurso es la entrega de lo que prometieron <a href="1-3.html">1.3</a> y <a href="1-4.html">1.4</a>. Si no los has leído, el caso real tiene más sentido después de haberlo intentado tú primero.</p>
+    </div>
+
+    <!-- TOC -->
+    <nav class="toc" aria-label="Contenido">
+        <div class="toc-label">En este recurso</div>
+        <div class="toc-links">
+            <a href="#s01">01 La necesidad</a>
+            <a href="#s02">02 Los errores reales</a>
+            <a href="#s03">03 Qué hace la app</a>
+            <a href="#s04">04 El deploy</a>
+            <a href="#s05">Nivel 2</a>
+            <a href="#checklist">Checklist</a>
+        </div>
+    </nav>
+
+    <!-- ── SECCIÓN 01 ── -->
+    <section class="section" id="s01">
+        <div class="section-num">01</div>
+        <h2>Por qué no usé otra app</h2>
+
+        <p>Existen decenas de apps de gastos. Las probé. Ninguna hacía exactamente lo que yo necesitaba: controlar el gasto por persona en un viaje compartido, ver en tiempo real cuánto queda del presupuesto total y saber qué porcentaje ha gastado cada uno.</p>
+
+        <p>Podría haberme adaptado a lo que existe. En cambio, construí lo que necesitaba. Eso es lo que cambia cuando sabes usar estas herramientas — dejas de buscar la app perfecta y empiezas a construirla.</p>
+
+        <div class="result-stats">
+            <div class="result-stat">
+                <span class="result-stat-num">2h</span>
+                <span class="result-stat-label">construcción + pulido</span>
+            </div>
+            <div class="result-stat">
+                <span class="result-stat-num">0</span>
+                <span class="result-stat-label">líneas de código escritas a mano</span>
+            </div>
+            <div class="result-stat">
+                <span class="result-stat-num">MVP</span>
+                <span class="result-stat-label">base reutilizable para otros viajes</span>
+            </div>
+        </div>
+
+        <div class="callout morad">
+            <div class="callout-label">Por qué 2 horas y no 20 minutos</div>
+            <p>No me conformé con la primera versión que funcionaba. Quería un MVP real — algo que pudiera reutilizar en futuros viajes sin tener que reconstruirlo desde cero. Eso significa pulir, iterar y tomar decisiones de diseño conscientes. Cuánto tiempo inviertes depende de hasta dónde quieres llegar.</p>
+        </div>
+    </section>
+
+    <!-- ── SECCIÓN 02 ── -->
+    <section class="section" id="s02">
+        <div class="section-num">02</div>
+        <h2>Los 4 errores que cometí — y lo que enseña cada uno</h2>
+
+        <p>No los cuento para advertirte. Los cuento porque cada uno apunta a algo que ya explicamos antes.</p>
+
+        <div class="error-list">
+            <div class="error-item">
+                <span class="error-num">1</span>
+                <div class="error-body">
+                    <div class="error-title">Empecé a usar las herramientas sin entender qué hacía cada una</div>
+                    <div class="error-lesson">Usé Stitch para pedir cosas que debía pedir en Antigravity, y al revés. El resultado era confuso porque el contexto llegaba a la herramienta equivocada. Lección: si no tienes claro qué hace cada herramienta, vuelve a <a href="1-3.html">1.3</a> antes de abrir ninguna.</div>
+                </div>
+            </div>
+            <div class="error-item">
+                <span class="error-num">2</span>
+                <div class="error-body">
+                    <div class="error-title">No exploré alternativas — acepté el primer resultado</div>
+                    <div class="error-lesson">La primera versión que generó Antigravity funcionaba, pero no era lo que quería. La acepté porque "funcionaba". Me costó más tiempo corregirla después que si hubiera iterado desde el principio. La pregunta "¿qué más puede hacer esto?" debería ser automática.</div>
+                </div>
+            </div>
+            <div class="error-item">
+                <span class="error-num">3</span>
+                <div class="error-body">
+                    <div class="error-title">Creí que entendía el proceso cuando no lo entendía</div>
+                    <div class="error-lesson">Avancé pasos sin poder explicar qué estaba ocurriendo. Me perdí hasta que me obligué a responder la pregunta del <a href="1-4.html">proceso de revisión</a>: "¿entiendo lo que está haciendo?" Si no puedes responderla, no avances.</div>
+                </div>
+            </div>
+            <div class="error-item">
+                <span class="error-num">4</span>
+                <div class="error-body">
+                    <div class="error-title">Me centré en que fuera bonita antes de que funcionara</div>
+                    <div class="error-lesson">Invertí tiempo en la UI cuando la UX todavía fallaba. Resultado: una pantalla bonita que hacía mal las cuentas. La regla es simple y la repito: primero funcional, luego bonita. Stitch es el arquitecto, Antigravity es el albañil — pero el albañil construye lo que el arquitecto diseñó, no al revés.</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ── SECCIÓN 03 ── -->
+    <section class="section" id="s03">
+        <div class="section-num">03</div>
+        <h2>Qué hace la app — y qué no hace</h2>
+
+        <p>Un MVP honesto: hace exactamente lo que prometí en el paso 1 de <a href="1-4.html">1.4</a>. Nada más.</p>
+
+        <div class="app-feature-grid">
+            <div class="app-feature">
+                <span class="app-feature-dot"></span>
+                <span class="app-feature-text">Crear los miembros del viaje con nombre y presupuesto asignado</span>
+            </div>
+            <div class="app-feature">
+                <span class="app-feature-dot"></span>
+                <span class="app-feature-text">Añadir gastos por categoría: transporte, comida, alojamiento, ocio</span>
+            </div>
+            <div class="app-feature">
+                <span class="app-feature-dot"></span>
+                <span class="app-feature-text">Ver cuánto presupuesto queda disponible en tiempo real</span>
+            </div>
+            <div class="app-feature">
+                <span class="app-feature-dot"></span>
+                <span class="app-feature-text">Ver el porcentaje de gasto de cada miembro sobre el total</span>
+            </div>
+        </div>
+
+        <div class="callout verde">
+            <div class="callout-label">Lo que no hace — y por qué está bien</div>
+            <p>No sincroniza entre dispositivos, no envía notificaciones y no calcula quién debe dinero a quién. Esas funciones harían el MVP más complejo sin hacer el viaje más fácil. Si las necesito en el futuro, las añado. Por ahora, la app hace lo que prometí que haría.</p>
+        </div>
+
+        <a href="https://1clickes-code.github.io/APP-Viaje-Malta-x2/" class="app-link" target="_blank" rel="noopener">
+            <div class="app-link-left">
+                <div class="app-link-label">App en vivo — GitHub Pages</div>
+                <div class="app-link-url">1clickes-code.github.io/APP-Viaje-Malta-x2</div>
+            </div>
+            <svg class="app-link-arrow" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </a>
+    </section>
+
+    <!-- ── SECCIÓN 04 ── -->
+    <section class="section" id="s04">
+        <div class="section-num">04</div>
+        <h2>Cómo está en el móvil — GitHub Pages en 4 pasos</h2>
+
+        <p>GitHub Pages convierte cualquier repositorio en una URL pública. Desde el móvil, esa URL se añade a la pantalla de inicio y se comporta como una app instalada — sin App Store, sin Play Store, sin coste.</p>
+
+        <div class="deploy-box">
+            <div class="deploy-label">El proceso completo</div>
+            <div class="deploy-step">
+                <span class="deploy-num">1.</span>
+                <span class="deploy-text">Sube el código de tu app a un repositorio en GitHub. Si Antigravity generó un archivo HTML, ese es tu repositorio.</span>
+            </div>
+            <div class="deploy-step">
+                <span class="deploy-num">2.</span>
+                <span class="deploy-text">Ve a <strong>Settings → Pages</strong> en tu repositorio. En "Source", selecciona la rama <strong>main</strong> y guarda.</span>
+            </div>
+            <div class="deploy-step">
+                <span class="deploy-num">3.</span>
+                <span class="deploy-text">GitHub genera una URL del tipo <strong>tuusuario.github.io/nombre-repo</strong>. En 1-2 minutos está activa.</span>
+            </div>
+            <div class="deploy-step">
+                <span class="deploy-num">4.</span>
+                <span class="deploy-text">Abre esa URL en el móvil → menú del navegador → <strong>"Añadir a pantalla de inicio"</strong>. Ya tienes tu app.</span>
+            </div>
+        </div>
+
+        <div class="callout amar">
+            <div class="callout-label">El repositorio de esta app</div>
+            <p>Puedes ver el código completo en <a href="https://github.com/1clickes-code/APP-Viaje-Malta-x2" target="_blank" rel="noopener" style="color:var(--morad);text-decoration:underline;">github.com/1clickes-code/APP-Viaje-Malta-x2</a>. No para copiarlo — para ver cómo queda una app real generada con estas herramientas.</p>
+        </div>
+    </section>
+
+    <!-- ── SECCIÓN 05 ── -->
+    <section class="section" id="s05">
+        <div class="section-num">05</div>
+        <h2>Lo que significa haber llegado hasta aquí</h2>
+
+        <p>Pasaste por el mito (1.1), el concepto (1.2), las herramientas (1.3), la acción (1.4) y ahora el caso real. Eso es el Nivel 1 completo.</p>
+
+        <p>No necesitabas saber programar. Necesitabas entender qué hacía cada herramienta, empezar aunque no supieras cómo iba a terminar, y revisar en cada paso. La app existe porque eso es exactamente lo que ocurrió.</p>
+
+        <div class="nivel-bridge">
+            <div class="nivel-bridge-tag">Nivel 2 — Crear</div>
+            <div class="nivel-bridge-text">Ya sabes usar los ingredientes.<br>Ahora aprendes a cocinar con criterio.</div>
+            <div class="nivel-bridge-sub">En el Nivel 1 construiste algo. En el Nivel 2 empiezas a conectar herramientas, automatizar partes del proceso y tomar decisiones técnicas con más control. El salto no es más difícil — es más tuyo.</div>
+        </div>
+    </section>
+
+    <!-- CHECKLIST -->
+    <div class="checklist-section" id="checklist">
+        <div class="checklist-title">Cierre del Nivel 1 — compruébalo</div>
+        <ul class="checklist-items" id="checklistItems">
+            <li onclick="toggleCheck(this)"><span class="check-box"></span><span class="check-text">Entiendo qué hace Stitch (UI) y qué hace Antigravity (UX) — y por qué el orden importa.</span></li>
+            <li onclick="toggleCheck(this)"><span class="check-box"></span><span class="check-text">Sé cuáles son las 3 preguntas del proceso de revisión y por qué hacerlas antes de cada paso.</span></li>
+            <li onclick="toggleCheck(this)"><span class="check-box"></span><span class="check-text">He construido (o tengo claro qué construiría) mi primera versión con estas herramientas.</span></li>
+            <li onclick="toggleCheck(this)"><span class="check-box"></span><span class="check-text">Sé que el primer error no es de la herramienta — es de no revisar lo que pedí.</span></li>
+            <li onclick="toggleCheck(this)"><span class="check-box"></span><span class="check-text">Tengo una idea de qué app o herramienta propia querría construir en el Nivel 2.</span></li>
+        </ul>
+    </div>
+
+    <!-- FOOTER -->
+    <footer class="resource-footer">
+        <a href="1-4.html" class="footer-back">
+            <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+            Recurso anterior
+        </a>
+        <a href="../index.html" class="footer-lib">
+            Volver a la Biblioteca
+            <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </a>
+    </footer>
+
+</div>
+
+<canvas id="confettiCanvas" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:9999;"></canvas>
+
+<script>
+function toggleCheck(li) {
+    li.classList.toggle('done');
+    li.querySelector('.check-box').textContent = li.classList.contains('done') ? '✓' : '';
+    const items = document.querySelectorAll('#checklistItems li');
+    if ([...items].every(i => i.classList.contains('done'))) launchConfetti();
+}
+
+function launchConfetti() {
+    const canvas = document.getElementById('confettiCanvas');
+    if (!canvas) return;
+    canvas.style.display = 'block';
+    const ctx = canvas.getContext('2d');
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+    const colors = ['#7C3AED','#9F67FA','#C4B5FD','#B45309','#D97706','#059669','#2563EB','#F59E0B','#EF4444'];
+    const pieces = Array.from({length: 160}, () => ({
+        x: Math.random() * canvas.width,
+        y: -10 - Math.random() * canvas.height * 0.6,
+        w: Math.random() * 11 + 5,
+        h: Math.random() * 6 + 3,
+        color: colors[Math.floor(Math.random() * colors.length)],
+        vx: (Math.random() - 0.5) * 4,
+        vy: Math.random() * 3 + 1.5,
+        rot: Math.random() * 360,
+        vrot: (Math.random() - 0.5) * 10,
+        alpha: 1,
+        shape: Math.random() > 0.5 ? 'rect' : 'circle'
+    }));
+    let frame = 0;
+    (function animate() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        pieces.forEach(p => {
+            p.x += p.vx;
+            p.y += p.vy;
+            p.rot += p.vrot;
+            p.vy += 0.06;
+            if (frame > 90) p.alpha = Math.max(0, p.alpha - 0.012);
+            ctx.save();
+            ctx.globalAlpha = p.alpha;
+            ctx.translate(p.x + p.w / 2, p.y + p.h / 2);
+            ctx.rotate(p.rot * Math.PI / 180);
+            ctx.fillStyle = p.color;
+            if (p.shape === 'circle') {
+                ctx.beginPath();
+                ctx.arc(0, 0, p.w / 2, 0, Math.PI * 2);
+                ctx.fill();
+            } else {
+                ctx.fillRect(-p.w / 2, -p.h / 2, p.w, p.h);
+            }
+            ctx.restore();
+        });
+        frame++;
+        if (frame < 180) requestAnimationFrame(animate);
+        else canvas.style.display = 'none';
+    })();
+}
+</script>
+</body>
+</html>
