@@ -1,0 +1,1347 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Una persona, cuatro skills — y esto también lo puedes hacer tú · alex.decode</title>
+    <meta name="description" content="El sistema de skills que construyó esta biblioteca. 15 recursos, 4 skills, 1 persona. El caso real más replicable del Nivel 2 — y la prueba de que tú también puedes.">
+    <meta name="keywords" content="sistema skills Claude Code, kit de skills personalizado, producción contenido IA, Claude Code proyecto real 2026, skills coordinadas, biblioteca digital IA, cómo construir con IA">
+    <link rel="icon" type="image/svg+xml" href="../favicon.svg">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        :root {
+            --bg:        #FAFAF7;
+            --surface:   #FFFFFF;
+            --border:    #E8E2D9;
+            --text:      #1C1917;
+            --muted:     #78716C;
+            --faint:     #B0A89E;
+            --amber:     #B45309;
+            --amber-mid: #D97706;
+            --amber-dim: rgba(180,83,9,0.07);
+            --rojo:  #DC2626; --rojo-d:  rgba(220,38,38,0.07);
+            --amar:  #D97706; --amar-d:  rgba(217,119,6,0.07);
+            --azul:  #2563EB; --azul-d:  rgba(37,99,235,0.07);
+            --verde: #059669; --verde-d: rgba(5,150,105,0.07);
+            --morad: #7C3AED; --morad-d: rgba(124,58,237,0.07);
+        }
+
+        html { scroll-behavior: smooth; }
+        body {
+            background: var(--bg);
+            color: var(--text);
+            font-family: 'Inter', system-ui, sans-serif;
+            font-size: 15px;
+            line-height: 1.7;
+            min-height: 100vh;
+        }
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0; left: 0; right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, #7C3AED 0%, #9F67FA 50%, #7C3AED 100%);
+            z-index: 100;
+        }
+
+        .wrap { max-width: 720px; margin: 0 auto; padding: 0 24px; }
+
+        /* ── NAV ── */
+        .top-nav {
+            padding: 28px 0 0;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 11px;
+            color: var(--faint);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
+        .top-nav a { color: var(--amber); text-decoration: none; transition: opacity .15s; }
+        .top-nav a:hover { opacity: .7; }
+        .top-nav .sep { color: var(--faint); }
+        .nav-owl {
+            margin-left: auto;
+            display: flex;
+            align-items: center;
+            text-decoration: none;
+            transition: opacity .15s;
+            animation: owlFloat 5s ease-in-out 1s infinite;
+        }
+        .nav-owl:hover { opacity: .7; }
+        @keyframes owlFloat { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-4px)} }
+
+        /* ── COVER ── */
+        .cover-wrap { margin: 28px 0 0; border-radius: 14px; overflow: hidden; border: 1px solid rgba(124,58,237,0.18); }
+        .cover-wrap svg { display: block; width: 100%; height: auto; }
+
+        /* ── HEADER ── */
+        .resource-header { padding: 28px 0; border-bottom: 1px solid var(--border); margin-bottom: 28px; }
+        .tag {
+            display: inline-flex; align-items: center; gap: 5px;
+            font-size: 10px; font-weight: 600; padding: 3px 10px;
+            border-radius: 100px; margin-bottom: 14px;
+        }
+        .tag .dot { width: 5px; height: 5px; border-radius: 50%; flex-shrink: 0; }
+        .tag.morad { background: var(--morad-d); color: var(--morad); }
+        .tag.morad .dot { background: var(--morad); }
+        .resource-title {
+            font-family: 'Playfair Display', Georgia, serif;
+            font-size: clamp(24px, 4vw, 34px);
+            font-weight: 700;
+            line-height: 1.2;
+            letter-spacing: -.3px;
+            margin-bottom: 12px;
+        }
+        .resource-meta {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 11px;
+            color: var(--faint);
+            display: flex;
+            gap: 16px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+        .resource-meta span { display: flex; align-items: center; gap: 5px; }
+        .meta-dot { width: 3px; height: 3px; border-radius: 50%; background: var(--faint); }
+
+        /* ── UPDATE LIVE BADGE ── */
+        .update-live {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: var(--verde-d);
+            border: 1px solid rgba(5,150,105,0.25);
+            border-radius: 100px;
+            padding: 3px 10px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 9px;
+            font-weight: 600;
+            color: var(--verde);
+            letter-spacing: .8px;
+        }
+        .update-live-dot {
+            width: 6px; height: 6px;
+            border-radius: 50%;
+            background: var(--verde);
+            animation: pulse 2s ease-in-out infinite;
+        }
+        @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.3} }
+
+        /* ── LEARN BOX ── */
+        .learn-box {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 20px 22px;
+            margin-bottom: 20px;
+        }
+        .learn-label {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 9px; font-weight: 600;
+            color: var(--amber); letter-spacing: 1.4px;
+            text-transform: uppercase; margin-bottom: 12px;
+        }
+        .learn-list { list-style: none; display: flex; flex-direction: column; gap: 8px; }
+        .learn-list li {
+            display: flex; align-items: flex-start; gap: 10px;
+            font-size: 13.5px; color: var(--text); line-height: 1.5;
+        }
+        .learn-dot {
+            width: 6px; height: 6px;
+            border-radius: 50%; background: var(--morad);
+            flex-shrink: 0; margin-top: 7px;
+        }
+
+        /* ── PREREQ BOX ── */
+        .prereq-box {
+            display: flex; align-items: flex-start; gap: 12px;
+            background: var(--morad-d);
+            border: 1px solid rgba(124,58,237,0.18);
+            border-radius: 10px;
+            padding: 14px 18px;
+            margin-bottom: 20px;
+        }
+        .prereq-icon { font-family: 'JetBrains Mono', monospace; font-size: 13px; color: var(--morad); flex-shrink: 0; margin-top: 1px; }
+        .prereq-text { font-size: 13px; color: var(--text); line-height: 1.55; }
+        .prereq-text a { color: var(--morad); text-decoration: underline; text-underline-offset: 2px; }
+
+        /* ── ARC NIVEL 2 (modo marvel) ── */
+        .arc-n2-wrap {
+            margin-bottom: 28px;
+        }
+        .arc-n2-label {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 9px; font-weight: 600;
+            color: var(--faint); letter-spacing: 1.5px;
+            text-transform: uppercase; margin-bottom: 12px;
+        }
+        .arc-n2 {
+            display: flex;
+            align-items: stretch;
+            gap: 0;
+            overflow-x: auto;
+            padding-bottom: 4px;
+        }
+        .arc-step {
+            flex-shrink: 0;
+            text-decoration: none;
+            display: block;
+        }
+        .arc-step-inner {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 13px 12px 12px;
+            text-align: center;
+            width: 116px;
+            height: 100%;
+            display: flex; flex-direction: column; gap: 5px;
+            transition: border-color .15s, background .15s;
+        }
+        .arc-step:hover .arc-step-inner { background: var(--bg); }
+        .arc-step.active .arc-step-inner {
+            border-color: var(--morad);
+            background: var(--morad-d);
+        }
+        .arc-step-strip {
+            height: 3px;
+            border-radius: 2px;
+            margin-bottom: 4px;
+        }
+        .arc-step-strip.rojo  { background: var(--rojo); }
+        .arc-step-strip.azul  { background: var(--azul); }
+        .arc-step-strip.verde { background: var(--verde); }
+        .arc-step-strip.amar  { background: var(--amar); }
+        .arc-step-strip.morad { background: var(--morad); }
+        .arc-step-num {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 13px; font-weight: 700;
+            color: var(--text); line-height: 1;
+        }
+        .arc-step.active .arc-step-num { color: var(--morad); }
+        .arc-step-title {
+            font-size: 10.5px; color: var(--muted);
+            line-height: 1.35;
+        }
+        .arc-step-aport {
+            font-size: 10px; color: var(--faint);
+            line-height: 1.3; font-style: italic;
+        }
+        .arc-here {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 8px; font-weight: 600;
+            color: var(--morad);
+            letter-spacing: .8px;
+            text-transform: uppercase;
+            background: white;
+            border: 1px solid rgba(124,58,237,0.3);
+            border-radius: 100px;
+            padding: 1px 6px;
+            display: inline-block;
+            margin-top: 2px;
+        }
+        .arc-connector {
+            display: flex;
+            align-items: center;
+            padding: 0 4px;
+            color: var(--faint);
+            font-size: 14px;
+            flex-shrink: 0;
+            padding-bottom: 24px;
+        }
+
+        /* ── TOC ── */
+        .toc {
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 14px 18px;
+            margin-bottom: 44px;
+        }
+        .toc-label {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 9px; color: var(--faint);
+            letter-spacing: 1.5px; text-transform: uppercase;
+            margin-bottom: 10px;
+        }
+        .toc-links { display: flex; flex-wrap: wrap; gap: 6px; }
+        .toc-links a {
+            font-size: 12px; color: var(--muted); text-decoration: none;
+            padding: 4px 10px; border-radius: 6px; border: 1px solid var(--border);
+            transition: border-color .15s, color .15s, background .15s; white-space: nowrap;
+        }
+        .toc-links a:hover { border-color: var(--morad); color: var(--morad); background: var(--morad-d); }
+
+        /* ── SECTIONS ── */
+        .section { margin-bottom: 52px; scroll-margin-top: 32px; }
+        .section-num {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 10px; color: var(--morad);
+            font-weight: 600; letter-spacing: 1px; margin-bottom: 8px;
+        }
+        .section h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: 22px; font-weight: 700;
+            line-height: 1.3; margin-bottom: 16px;
+        }
+        .section p { color: var(--text); margin-bottom: 14px; font-size: 14.5px; }
+        .section p:last-child { margin-bottom: 0; }
+        .section-sub {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 9px; font-weight: 600;
+            color: var(--morad); letter-spacing: 1.2px;
+            text-transform: uppercase; margin: 28px 0 12px;
+        }
+        .section-sub.amber {
+            color: var(--amber);
+        }
+
+        /* ── CALLOUT ── */
+        .callout {
+            border-left: 3px solid var(--amber);
+            background: var(--amber-dim);
+            border-radius: 0 8px 8px 0;
+            padding: 13px 16px; margin: 18px 0;
+        }
+        .callout.morad { border-left-color: var(--morad); background: var(--morad-d); }
+        .callout.verde { border-left-color: var(--verde); background: var(--verde-d); }
+        .callout.azul  { border-left-color: var(--azul);  background: var(--azul-d); }
+        .callout-label {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 9px; font-weight: 600;
+            color: var(--amber); letter-spacing: 1.2px;
+            text-transform: uppercase; margin-bottom: 5px;
+        }
+        .callout.morad .callout-label { color: var(--morad); }
+        .callout.verde .callout-label { color: var(--verde); }
+        .callout.azul  .callout-label { color: var(--azul); }
+        .callout p { font-size: 13.5px; color: var(--text); margin: 0; line-height: 1.6; }
+        .callout p a { color: var(--morad); text-decoration: underline; text-underline-offset: 2px; }
+
+        /* ── GOLD QUOTE ── */
+        .gold-quote {
+            background: linear-gradient(135deg, var(--morad-d) 0%, rgba(124,58,237,0.03) 100%);
+            border: 1.5px solid rgba(124,58,237,0.2);
+            border-radius: 12px;
+            padding: 22px 28px 20px;
+            margin: 24px 0;
+            text-align: center;
+            position: relative;
+        }
+        .gold-quote::before { content: '"'; position: absolute; top: 2px; left: 16px; font-family: 'Playfair Display', serif; font-size: 52px; line-height: 1; color: rgba(124,58,237,0.12); }
+        .gold-quote-text { font-family: 'Playfair Display', serif; font-size: 17px; font-weight: 700; line-height: 1.5; color: var(--text); padding: 0 8px; }
+        .gold-quote-text em { color: var(--morad); font-style: normal; }
+
+        /* ── SYSTEM STATS ── */
+        .system-stats {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 8px;
+            margin: 20px 0;
+        }
+        .system-stat {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 14px 10px;
+            text-align: center;
+        }
+        .system-stat-num {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 22px; font-weight: 700;
+            color: var(--morad);
+            display: block; margin-bottom: 4px; line-height: 1;
+        }
+        .system-stat-label {
+            font-size: 11px; color: var(--muted); line-height: 1.4;
+        }
+
+        /* ── CIRCUIT FLOW ── */
+        .circuit-flow {
+            display: flex;
+            flex-direction: column;
+            border: 1px solid rgba(124,58,237,0.2);
+            border-radius: 12px;
+            overflow: hidden;
+            margin: 20px 0;
+        }
+        .circuit-step {
+            display: flex;
+            align-items: flex-start;
+            gap: 16px;
+            padding: 16px 20px;
+            background: var(--surface);
+            border-bottom: 1px solid var(--border);
+        }
+        .circuit-step:last-child { border-bottom: none; }
+        .circuit-step-num {
+            width: 28px; height: 28px;
+            border-radius: 50%;
+            background: var(--morad-d);
+            border: 1.5px solid rgba(124,58,237,0.3);
+            display: flex; align-items: center; justify-content: center;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 11px; font-weight: 700;
+            color: var(--morad);
+            flex-shrink: 0; margin-top: 1px;
+        }
+        .circuit-step-body { flex: 1; }
+        .circuit-step-title { font-size: 14px; font-weight: 600; color: var(--text); margin-bottom: 4px; }
+        .circuit-step-desc { font-size: 13px; color: var(--muted); line-height: 1.55; }
+        .circuit-step-badge {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 9px; font-weight: 600;
+            background: var(--morad-d);
+            color: var(--morad);
+            border: 1px solid rgba(124,58,237,0.25);
+            padding: 2px 8px; border-radius: 100px;
+            white-space: nowrap; flex-shrink: 0; margin-top: 3px;
+        }
+        .circuit-step-badge.humano {
+            background: var(--amber-dim);
+            color: var(--amber);
+            border-color: rgba(180,83,9,0.2);
+        }
+
+        /* ── SKILL KIT ── */
+        .skill-kit {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin: 12px 0 20px;
+        }
+        .skill-kit-row {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 14px 16px;
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            transition: border-color .15s;
+        }
+        .skill-kit-row:hover { border-color: rgba(124,58,237,0.3); }
+        .skill-kit-row.custom { border-color: rgba(180,83,9,0.25); background: var(--amber-dim); }
+        .skill-kit-row.custom:hover { border-color: var(--amber); }
+        .skill-kit-icon {
+            width: 34px; height: 34px;
+            border-radius: 8px;
+            background: var(--morad-d);
+            border: 1px solid rgba(124,58,237,0.18);
+            display: flex; align-items: center; justify-content: center;
+            flex-shrink: 0;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 12px; color: var(--morad); font-weight: 700;
+        }
+        .skill-kit-icon.custom {
+            background: var(--amber-dim);
+            border-color: rgba(180,83,9,0.25);
+            color: var(--amber);
+        }
+        .skill-kit-body { flex: 1; }
+        .skill-kit-name {
+            font-size: 13.5px; font-weight: 700; color: var(--text);
+            margin-bottom: 3px; display: flex; align-items: center; gap: 7px; flex-wrap: wrap;
+        }
+        .origin-badge {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 8px; font-weight: 600;
+            padding: 2px 7px; border-radius: 100px;
+            letter-spacing: .5px;
+        }
+        .origin-badge.marketplace { background: var(--azul-d); color: var(--azul); border: 1px solid rgba(37,99,235,0.2); }
+        .origin-badge.github { background: var(--verde-d); color: var(--verde); border: 1px solid rgba(5,150,105,0.2); }
+        .origin-badge.custom { background: var(--amber-dim); color: var(--amber); border: 1px solid rgba(180,83,9,0.25); }
+        .skill-kit-use { font-size: 12.5px; color: var(--muted); line-height: 1.5; margin-bottom: 4px; }
+        .skill-kit-replaces { font-size: 11px; color: var(--faint); font-style: italic; line-height: 1.4; }
+
+        /* ── BRAIN BOX ── */
+        .brain-box {
+            background: linear-gradient(135deg, var(--morad-d) 0%, rgba(124,58,237,0.03) 100%);
+            border: 2px solid rgba(124,58,237,0.25);
+            border-radius: 12px;
+            padding: 22px 24px;
+            margin: 20px 0;
+        }
+        .brain-box-label {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 9px; font-weight: 600;
+            color: var(--morad); letter-spacing: 1.4px;
+            text-transform: uppercase; margin-bottom: 10px;
+            display: flex; align-items: center; gap: 8px;
+        }
+        .brain-box-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 18px; font-weight: 700;
+            color: var(--text); margin-bottom: 8px; line-height: 1.3;
+        }
+        .brain-box-desc { font-size: 13.5px; color: var(--muted); line-height: 1.6; }
+        .brain-box-desc strong { color: var(--text); font-weight: 600; }
+
+        /* ── TEAM COMPARE ── */
+        .team-compare {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin: 20px 0;
+        }
+        .team-col-label {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 9px; font-weight: 600;
+            letter-spacing: 1.2px; text-transform: uppercase;
+            padding: 3px 10px; border-radius: 100px;
+            display: inline-block; margin-bottom: 10px;
+        }
+        .team-col-label.sin { background: var(--rojo-d); color: #DC2626; border: 1px solid rgba(220,38,38,0.2); }
+        .team-col-label.con { background: var(--verde-d); color: var(--verde); border: 1px solid rgba(5,150,105,0.2); }
+        .team-role {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 9px 11px;
+            margin-bottom: 6px;
+            font-size: 12.5px;
+            color: var(--text);
+            line-height: 1.4;
+        }
+        .team-role:last-child { margin-bottom: 0; }
+        .team-role-note { font-size: 10.5px; color: var(--faint); margin-top: 2px; }
+        .team-skill {
+            background: var(--morad-d);
+            border: 1px solid rgba(124,58,237,0.18);
+            border-radius: 8px;
+            padding: 9px 11px;
+            margin-bottom: 6px;
+            font-size: 12px;
+            color: var(--morad); font-weight: 600;
+            line-height: 1.4;
+            font-family: 'JetBrains Mono', monospace;
+        }
+        .team-skill.custom-s {
+            background: var(--amber-dim);
+            border-color: rgba(180,83,9,0.2);
+            color: var(--amber);
+        }
+        .team-skill:last-child { margin-bottom: 0; }
+
+        /* ── LIVE STATUS BOX ── */
+        .live-status-box {
+            background: var(--surface);
+            border: 1.5px solid rgba(124,58,237,0.25);
+            border-radius: 14px;
+            padding: 22px 24px;
+            margin: 20px 0;
+        }
+        .live-status-header {
+            display: flex; align-items: center; justify-content: space-between;
+            margin-bottom: 16px; flex-wrap: wrap; gap: 8px;
+        }
+        .live-status-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 17px; font-weight: 700; color: var(--text);
+        }
+        .live-status-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+        }
+        .live-stat {
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 12px 14px;
+        }
+        .live-stat-label {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 9px; color: var(--faint);
+            letter-spacing: 1px; text-transform: uppercase; margin-bottom: 4px;
+        }
+        .live-stat-value {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 16px; font-weight: 700; color: var(--morad);
+        }
+        .live-stat-note { font-size: 11px; color: var(--faint); margin-top: 2px; }
+
+        /* ── NIVEL 3 HOOK ── */
+        .nivel3-hook {
+            background: linear-gradient(135deg, var(--morad-d) 0%, rgba(124,58,237,0.04) 100%);
+            border: 1.5px solid rgba(124,58,237,0.3);
+            border-radius: 14px;
+            padding: 28px 26px;
+            margin: 28px 0 0;
+            text-align: center;
+        }
+        .nivel3-hook-tag {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 9px; font-weight: 600;
+            color: var(--morad); letter-spacing: 1.4px;
+            text-transform: uppercase; margin-bottom: 14px;
+        }
+        .nivel3-hook-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 20px; font-weight: 700;
+            color: var(--text); line-height: 1.35; margin-bottom: 10px;
+        }
+        .nivel3-hook-sub {
+            font-size: 13.5px; color: var(--muted);
+            line-height: 1.65; max-width: 480px; margin: 0 auto 18px;
+        }
+        .nivel3-hook-badge {
+            display: inline-block;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 10px; font-weight: 600;
+            background: var(--morad);
+            color: white;
+            padding: 6px 16px; border-radius: 100px;
+        }
+
+        /* ── CHECKLIST ── */
+        .checklist-section {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 22px 24px;
+            margin-bottom: 48px;
+        }
+        .checklist-title {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 10px; color: var(--amber);
+            font-weight: 600; letter-spacing: 1px;
+            text-transform: uppercase; margin-bottom: 14px;
+        }
+        .checklist-items { list-style: none; display: flex; flex-direction: column; gap: 10px; }
+        .checklist-items li {
+            display: flex; align-items: flex-start; gap: 10px;
+            font-size: 13px; color: var(--text); line-height: 1.5; cursor: pointer;
+        }
+        .check-box {
+            width: 17px; height: 17px;
+            border: 1.5px solid var(--border);
+            border-radius: 4px; flex-shrink: 0; margin-top: 1px;
+            transition: border-color .15s, background .15s;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 10px; color: white;
+        }
+        .checklist-items li.done .check-box { background: var(--morad); border-color: var(--morad); }
+        .checklist-items li.done .check-text { text-decoration: line-through; color: var(--muted); }
+
+        /* ── FOOTER ── */
+        .resource-footer {
+            border-top: 1px solid var(--border);
+            padding: 28px 0 52px;
+            display: flex; align-items: center; justify-content: space-between;
+            gap: 16px; flex-wrap: wrap;
+        }
+        .footer-back {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 12px; color: var(--muted); text-decoration: none;
+            display: flex; align-items: center; gap: 6px; transition: color .15s;
+        }
+        .footer-back:hover { color: var(--amber); }
+        .footer-lib {
+            font-size: 13px; font-weight: 500; color: var(--amber);
+            text-decoration: none; display: flex; align-items: center;
+            gap: 6px; transition: gap .15s;
+        }
+        .footer-lib:hover { gap: 10px; }
+
+        @media (max-width: 600px) {
+            .wrap { padding: 0 16px; }
+            .resource-title { font-size: 22px; }
+            .system-stats { grid-template-columns: repeat(2, 1fr); }
+            .team-compare { grid-template-columns: 1fr; }
+            .live-status-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+<div class="wrap">
+
+    <!-- NAV -->
+    <nav class="top-nav">
+        <a href="../index.html">alex.decode</a>
+        <span class="sep">/</span>
+        <span>Biblioteca</span>
+        <span class="sep">/</span>
+        <span>Nivel 2</span>
+        <span class="sep">/</span>
+        <span>Sistema completo</span>
+        <a href="../index.html" class="nav-owl" aria-label="Volver a la biblioteca">
+            <svg width="28" height="32" viewBox="0 0 140 160" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <polygon points="44,32 36,6 52,26" fill="#92400E"/>
+                <polygon points="96,32 104,6 88,26" fill="#92400E"/>
+                <circle cx="70" cy="56" r="38" fill="#B45309"/>
+                <ellipse cx="70" cy="58" rx="26" ry="24" fill="#D97706" opacity="0.28"/>
+                <circle cx="56" cy="52" r="13" fill="#FEF3C7"/>
+                <circle cx="84" cy="52" r="13" fill="#FEF3C7"/>
+                <circle cx="56" cy="52" r="6.5" fill="#1C1917"/>
+                <circle cx="84" cy="52" r="6.5" fill="#1C1917"/>
+                <circle cx="59" cy="49" r="2.2" fill="white"/>
+                <circle cx="87" cy="49" r="2.2" fill="white"/>
+                <polygon points="63,64 77,64 70,75" fill="#D97706"/>
+                <ellipse cx="70" cy="120" rx="34" ry="36" fill="#B45309"/>
+                <ellipse cx="70" cy="126" rx="20" ry="24" fill="#D97706" opacity="0.22"/>
+            </svg>
+        </a>
+    </nav>
+
+    <!-- ═══════════════════════════════════════════
+         COVER SVG — La biblioteca completa
+    ═══════════════════════════════════════════ -->
+    <div class="cover-wrap">
+        <svg viewBox="0 0 800 350" fill="none" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice">
+            <rect width="800" height="350" fill="#FAF5FF"/>
+
+            <!-- Background glow circles -->
+            <circle cx="180" cy="175" r="160" fill="rgba(124,58,237,0.05)"/>
+            <circle cx="590" cy="175" r="220" fill="rgba(124,58,237,0.03)"/>
+
+            <!-- ── TOP LABEL ── -->
+            <text x="400" y="34" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="9" fill="#C4B5FD" letter-spacing="2" font-weight="600">NIVEL 2 · CASO REAL · EL SISTEMA COMPLETO</text>
+
+            <!-- ═══════════════════════════════
+                 PANEL IZQUIERDO — El sistema
+            ═══════════════════════════════ -->
+            <rect x="16" y="48" width="194" height="264" rx="10" fill="white" stroke="#D8B4FE" stroke-width="1.5"/>
+            <text x="113" y="70" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="8" fill="#9F67FA" letter-spacing="1.5" font-weight="600">EL SISTEMA</text>
+            <line x1="28" y1="77" x2="198" y2="77" stroke="#EDE9FE" stroke-width="1"/>
+
+            <!-- Skill 1: ui-ux-pro-max -->
+            <rect x="28" y="86" width="24" height="24" rx="5" fill="#EDE9FE"/>
+            <text x="40" y="102" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="11" fill="#7C3AED" font-weight="700">U</text>
+            <text x="60" y="97" font-family="JetBrains Mono, monospace" font-size="8.5" fill="#1C1917" font-weight="600">ui-ux-pro-max</text>
+            <text x="60" y="109" font-family="Inter, sans-serif" font-size="8" fill="#78716C">Diseño CSS · GitHub · local</text>
+
+            <!-- Skill 2: copywriting -->
+            <rect x="28" y="122" width="24" height="24" rx="5" fill="#EDE9FE"/>
+            <text x="40" y="138" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="11" fill="#7C3AED" font-weight="700">C</text>
+            <text x="60" y="133" font-family="JetBrains Mono, monospace" font-size="8.5" fill="#1C1917" font-weight="600">copywriting</text>
+            <text x="60" y="145" font-family="Inter, sans-serif" font-size="8" fill="#78716C">Contenido · marketplace</text>
+
+            <!-- Skill 3: content-strategy -->
+            <rect x="28" y="158" width="24" height="24" rx="5" fill="#EDE9FE"/>
+            <text x="40" y="174" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="11" fill="#7C3AED" font-weight="700">S</text>
+            <text x="60" y="169" font-family="JetBrains Mono, monospace" font-size="8.5" fill="#1C1917" font-weight="600">content-strategy</text>
+            <text x="60" y="181" font-family="Inter, sans-serif" font-size="8" fill="#78716C">Arco · marketplace</text>
+
+            <!-- Skill 4: prompt-master -->
+            <rect x="28" y="194" width="24" height="24" rx="5" fill="#EDE9FE"/>
+            <text x="40" y="210" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="11" fill="#7C3AED" font-weight="700">P</text>
+            <text x="60" y="205" font-family="JetBrains Mono, monospace" font-size="8.5" fill="#1C1917" font-weight="600">prompt-master</text>
+            <text x="60" y="217" font-family="Inter, sans-serif" font-size="8" fill="#78716C">Contexto · marketplace</text>
+
+            <!-- Separator before custom skill -->
+            <line x1="28" y1="232" x2="198" y2="232" stroke="#FDE68A" stroke-width="1" stroke-dasharray="3,2"/>
+
+            <!-- Skill 5: code-context-reviewer (CUSTOM — amber) -->
+            <rect x="28" y="240" width="24" height="24" rx="5" fill="#FEF3C7"/>
+            <text x="40" y="256" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="11" fill="#B45309" font-weight="700">★</text>
+            <text x="60" y="251" font-family="JetBrains Mono, monospace" font-size="7.5" fill="#B45309" font-weight="700">code-ctx-reviewer</text>
+            <text x="60" y="263" font-family="Inter, sans-serif" font-size="8" fill="#92400E">Memoria · construida por mí</text>
+            <!-- Custom badge -->
+            <rect x="155" y="243" width="42" height="14" rx="7" fill="#FEF3C7" stroke="#FDE68A" stroke-width="1"/>
+            <text x="176" y="253" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="7" fill="#B45309" font-weight="700">CUSTOM</text>
+
+            <!-- ═══════════════════════════════
+                 ARROW entre sistema y biblioteca
+            ═══════════════════════════════ -->
+            <defs>
+                <marker id="arr-m" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+                    <path d="M0,0 L0,6 L8,3 z" fill="#9F67FA"/>
+                </marker>
+            </defs>
+            <line x1="213" y1="175" x2="256" y2="175" stroke="#9F67FA" stroke-width="2" stroke-dasharray="5,3" marker-end="url(#arr-m)"/>
+            <!-- Brief label on arrow -->
+            <text x="234" y="168" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="7" fill="#C4B5FD">brief</text>
+            <text x="234" y="188" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="7" fill="#C4B5FD">+ctx</text>
+
+            <!-- ═══════════════════════════════
+                 PANEL DERECHO — La biblioteca (grid 5×3)
+            ═══════════════════════════════ -->
+
+            <!-- Section label -->
+            <text x="522" y="47" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="9" fill="#9F67FA" letter-spacing="1.5" font-weight="600">LA BIBLIOTECA</text>
+
+            <!-- ROW 0 — Nivel 0 -->
+            <!-- Col positions: 265, 363, 461, 559, 657 (gap 6px, card w=92px) -->
+
+            <!-- 0.1 rojo -->
+            <rect x="265" y="58" width="92" height="62" rx="6" fill="#FEF2F2" stroke="#FECACA" stroke-width="1"/>
+            <rect x="265" y="58" width="92" height="5" rx="3" fill="#DC2626"/>
+            <text x="311" y="87" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="11" fill="#DC2626" font-weight="700">0.1</text>
+            <text x="311" y="103" text-anchor="middle" font-family="Inter, sans-serif" font-size="8" fill="#78716C">Mito del trabajo</text>
+
+            <!-- 0.2 azul -->
+            <rect x="363" y="58" width="92" height="62" rx="6" fill="#EFF6FF" stroke="#BFDBFE" stroke-width="1"/>
+            <rect x="363" y="58" width="92" height="5" rx="3" fill="#2563EB"/>
+            <text x="409" y="87" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="11" fill="#2563EB" font-weight="700">0.2</text>
+            <text x="409" y="103" text-anchor="middle" font-family="Inter, sans-serif" font-size="8" fill="#78716C">No preguntes</text>
+
+            <!-- 0.3 verde -->
+            <rect x="461" y="58" width="92" height="62" rx="6" fill="#ECFDF5" stroke="#A7F3D0" stroke-width="1"/>
+            <rect x="461" y="58" width="92" height="5" rx="3" fill="#059669"/>
+            <text x="507" y="87" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="11" fill="#059669" font-weight="700">0.3</text>
+            <text x="507" y="103" text-anchor="middle" font-family="Inter, sans-serif" font-size="8" fill="#78716C">Prompt Master</text>
+
+            <!-- 0.4 amar -->
+            <rect x="559" y="58" width="92" height="62" rx="6" fill="#FFFBEB" stroke="#FDE68A" stroke-width="1"/>
+            <rect x="559" y="58" width="92" height="5" rx="3" fill="#D97706"/>
+            <text x="605" y="87" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="11" fill="#D97706" font-weight="700">0.4</text>
+            <text x="605" y="103" text-anchor="middle" font-family="Inter, sans-serif" font-size="8" fill="#78716C">Tu manual</text>
+
+            <!-- 0.5 morad -->
+            <rect x="657" y="58" width="92" height="62" rx="6" fill="#FAF5FF" stroke="#E9D5FF" stroke-width="1"/>
+            <rect x="657" y="58" width="92" height="5" rx="3" fill="#7C3AED"/>
+            <text x="703" y="87" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="11" fill="#7C3AED" font-weight="700">0.5</text>
+            <text x="703" y="103" text-anchor="middle" font-family="Inter, sans-serif" font-size="8" fill="#78716C">30 días</text>
+
+            <!-- Nivel label -->
+            <text x="258" y="93" text-anchor="end" font-family="JetBrains Mono, monospace" font-size="7" fill="#B0A89E" font-weight="600">N0</text>
+
+            <!-- ROW 1 — Nivel 1 (y: 58+62+6=126) -->
+
+            <!-- 1.1 rojo -->
+            <rect x="265" y="126" width="92" height="62" rx="6" fill="#FEF2F2" stroke="#FECACA" stroke-width="1"/>
+            <rect x="265" y="126" width="92" height="5" rx="3" fill="#DC2626"/>
+            <text x="311" y="155" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="11" fill="#DC2626" font-weight="700">1.1</text>
+            <text x="311" y="171" text-anchor="middle" font-family="Inter, sans-serif" font-size="8" fill="#78716C">Gratis vs pago</text>
+
+            <!-- 1.2 azul -->
+            <rect x="363" y="126" width="92" height="62" rx="6" fill="#EFF6FF" stroke="#BFDBFE" stroke-width="1"/>
+            <rect x="363" y="126" width="92" height="5" rx="3" fill="#2563EB"/>
+            <text x="409" y="155" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="11" fill="#2563EB" font-weight="700">1.2</text>
+            <text x="409" y="171" text-anchor="middle" font-family="Inter, sans-serif" font-size="8" fill="#78716C">Conceptos base</text>
+
+            <!-- 1.3 verde -->
+            <rect x="461" y="126" width="92" height="62" rx="6" fill="#ECFDF5" stroke="#A7F3D0" stroke-width="1"/>
+            <rect x="461" y="126" width="92" height="5" rx="3" fill="#059669"/>
+            <text x="507" y="155" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="11" fill="#059669" font-weight="700">1.3</text>
+            <text x="507" y="171" text-anchor="middle" font-family="Inter, sans-serif" font-size="8" fill="#78716C">Antigravity</text>
+
+            <!-- 1.4 amar -->
+            <rect x="559" y="126" width="92" height="62" rx="6" fill="#FFFBEB" stroke="#FDE68A" stroke-width="1"/>
+            <rect x="559" y="126" width="92" height="5" rx="3" fill="#D97706"/>
+            <text x="605" y="155" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="11" fill="#D97706" font-weight="700">1.4</text>
+            <text x="605" y="171" text-anchor="middle" font-family="Inter, sans-serif" font-size="8" fill="#78716C">Construye primero</text>
+
+            <!-- 1.5 morad -->
+            <rect x="657" y="126" width="92" height="62" rx="6" fill="#FAF5FF" stroke="#E9D5FF" stroke-width="1"/>
+            <rect x="657" y="126" width="92" height="5" rx="3" fill="#7C3AED"/>
+            <text x="703" y="155" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="11" fill="#7C3AED" font-weight="700">1.5</text>
+            <text x="703" y="171" text-anchor="middle" font-family="Inter, sans-serif" font-size="8" fill="#78716C">App sin código</text>
+
+            <!-- Nivel label -->
+            <text x="258" y="161" text-anchor="end" font-family="JetBrains Mono, monospace" font-size="7" fill="#B0A89E" font-weight="600">N1</text>
+
+            <!-- ROW 2 — Nivel 2 (y: 126+62+6=194) -->
+
+            <!-- 2.1 rojo -->
+            <rect x="265" y="194" width="92" height="62" rx="6" fill="#FEF2F2" stroke="#FECACA" stroke-width="1"/>
+            <rect x="265" y="194" width="92" height="5" rx="3" fill="#DC2626"/>
+            <text x="311" y="223" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="11" fill="#DC2626" font-weight="700">2.1</text>
+            <text x="311" y="239" text-anchor="middle" font-family="Inter, sans-serif" font-size="8" fill="#78716C">Parálisis</text>
+
+            <!-- 2.2 azul -->
+            <rect x="363" y="194" width="92" height="62" rx="6" fill="#EFF6FF" stroke="#BFDBFE" stroke-width="1"/>
+            <rect x="363" y="194" width="92" height="5" rx="3" fill="#2563EB"/>
+            <text x="409" y="223" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="11" fill="#2563EB" font-weight="700">2.2</text>
+            <text x="409" y="239" text-anchor="middle" font-family="Inter, sans-serif" font-size="8" fill="#78716C">Lógica sistemas</text>
+
+            <!-- 2.3 verde -->
+            <rect x="461" y="194" width="92" height="62" rx="6" fill="#ECFDF5" stroke="#A7F3D0" stroke-width="1"/>
+            <rect x="461" y="194" width="92" height="5" rx="3" fill="#059669"/>
+            <text x="507" y="223" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="11" fill="#059669" font-weight="700">2.3</text>
+            <text x="507" y="239" text-anchor="middle" font-family="Inter, sans-serif" font-size="8" fill="#78716C">Stack $77/mes</text>
+
+            <!-- 2.4 amar -->
+            <rect x="559" y="194" width="92" height="62" rx="6" fill="#FFFBEB" stroke="#FDE68A" stroke-width="1"/>
+            <rect x="559" y="194" width="92" height="5" rx="3" fill="#D97706"/>
+            <text x="605" y="223" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="11" fill="#D97706" font-weight="700">2.4</text>
+            <text x="605" y="239" text-anchor="middle" font-family="Inter, sans-serif" font-size="8" fill="#78716C">Skill Creator</text>
+
+            <!-- 2.5 morad — DESTACADO (glow effect) -->
+            <rect x="654" y="191" width="98" height="68" rx="8" fill="rgba(124,58,237,0.12)"/>
+            <rect x="657" y="194" width="92" height="62" rx="6" fill="#F3E8FF" stroke="#7C3AED" stroke-width="2"/>
+            <rect x="657" y="194" width="92" height="5" rx="3" fill="#7C3AED"/>
+            <text x="703" y="223" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="11" fill="#7C3AED" font-weight="700">2.5</text>
+            <text x="703" y="237" text-anchor="middle" font-family="Inter, sans-serif" font-size="8" fill="#7C3AED" font-weight="600">Este sistema</text>
+            <!-- "Estás aquí" pointer -->
+            <rect x="665" y="248" width="72" height="13" rx="6" fill="#7C3AED"/>
+            <text x="701" y="258" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="7.5" fill="white" font-weight="700">ESTÁS AQUÍ</text>
+
+            <!-- Nivel label -->
+            <text x="258" y="229" text-anchor="end" font-family="JetBrains Mono, monospace" font-size="7" fill="#B0A89E" font-weight="600">N2</text>
+
+            <!-- ═══════════════════════════════
+                 BOTTOM RECOGNITION BAND
+            ═══════════════════════════════ -->
+            <rect x="140" y="296" width="520" height="28" rx="8" fill="white" stroke="#D8B4FE" stroke-width="1.2"/>
+            <text x="400" y="315" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="9.5" fill="#7C3AED" letter-spacing="0.2">Estás leyendo el resultado de este sistema. Y tú también puedes construir el tuyo.</text>
+        </svg>
+    </div>
+
+    <!-- HEADER -->
+    <header class="resource-header">
+        <div class="tag morad"><span class="dot"></span>Caso real</div>
+        <h1 class="resource-title">Una persona, cuatro skills — y esto también lo puedes hacer tú</h1>
+        <div class="resource-meta">
+            <span>12 min de lectura</span>
+            <span class="meta-dot"></span>
+            <span>Nivel 2 — Crear</span>
+            <span class="meta-dot"></span>
+            <div class="update-live"><span class="update-live-dot"></span>Actualizado 13 may 2026</div>
+        </div>
+    </header>
+
+    <!-- LEARN BOX -->
+    <div class="learn-box">
+        <div class="learn-label">Lo que vas a ver</div>
+        <ul class="learn-list">
+            <li><span class="learn-dot"></span>Cómo 5 recursos del Nivel 2 construyeron el sistema que ahora estás leyendo</li>
+            <li><span class="learn-dot"></span>Las 5 skills activas (4 descargadas + 1 construida por mí), de dónde vienen y qué hace cada una</li>
+            <li><span class="learn-dot"></span>El circuito completo de producción — de principio a fin</li>
+            <li><span class="learn-dot"></span>Cómo replicar este modelo en tu propio proyecto — sin copiar el mío</li>
+        </ul>
+    </div>
+
+    <!-- PREREQ -->
+    <div class="prereq-box">
+        <span class="prereq-icon">→</span>
+        <p class="prereq-text">Este recurso cierra el Nivel 2. Funciona como caso real independiente, pero tiene más sentido si pasaste por <a href="2-3.html">2.3</a> (el stack) y <a href="2-4.html">2.4</a> (cómo construir skills). Si llegaste directamente, adelante — el sistema se explica solo.</p>
+    </div>
+
+    <!-- ── MODO MARVEL — El arco del Nivel 2 ── -->
+    <div class="arc-n2-wrap">
+        <div class="arc-n2-label">El arco del Nivel 2 — cómo llegaste hasta aquí</div>
+        <div class="arc-n2">
+            <a href="2-1.html" class="arc-step" title="2.1 — Parálisis por análisis">
+                <div class="arc-step-inner">
+                    <div class="arc-step-strip rojo"></div>
+                    <div class="arc-step-num">2.1</div>
+                    <div class="arc-step-title">Parálisis</div>
+                    <div class="arc-step-aport">Rompiste el bucle de analizar sin construir</div>
+                </div>
+            </a>
+            <div class="arc-connector">→</div>
+            <a href="2-2.html" class="arc-step" title="2.2 — La lógica de los sistemas">
+                <div class="arc-step-inner">
+                    <div class="arc-step-strip azul"></div>
+                    <div class="arc-step-num">2.2</div>
+                    <div class="arc-step-title">Sistemas</div>
+                    <div class="arc-step-aport">Aprendiste a pensar antes de conectar</div>
+                </div>
+            </a>
+            <div class="arc-connector">→</div>
+            <a href="2-3.html" class="arc-step" title="2.3 — Las herramientas">
+                <div class="arc-step-inner">
+                    <div class="arc-step-strip verde"></div>
+                    <div class="arc-step-num">2.3</div>
+                    <div class="arc-step-title">Stack</div>
+                    <div class="arc-step-aport">Elegiste tus herramientas con criterio real</div>
+                </div>
+            </a>
+            <div class="arc-connector">→</div>
+            <a href="2-4.html" class="arc-step" title="2.4 — Skill Creator">
+                <div class="arc-step-inner">
+                    <div class="arc-step-strip amar"></div>
+                    <div class="arc-step-num">2.4</div>
+                    <div class="arc-step-title">Skills</div>
+                    <div class="arc-step-aport">Construiste tu primera skill propia</div>
+                </div>
+            </a>
+            <div class="arc-connector">→</div>
+            <div class="arc-step active">
+                <div class="arc-step-inner">
+                    <div class="arc-step-strip morad"></div>
+                    <div class="arc-step-num">2.5</div>
+                    <div class="arc-step-title">Sistema</div>
+                    <div class="arc-step-aport">Todo junto en un caso real replicable</div>
+                    <div class="arc-here">estás aquí</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- TOC -->
+    <nav class="toc" aria-label="Contenido">
+        <div class="toc-label">En este recurso</div>
+        <div class="toc-links">
+            <a href="#s01">01 El sistema</a>
+            <a href="#s02">02 El circuito</a>
+            <a href="#s03">03 El kit</a>
+            <a href="#s04">04 Sin el sistema</a>
+            <a href="#s05">05 Replica el tuyo</a>
+            <a href="#checklist">Checklist</a>
+        </div>
+    </nav>
+
+    <!-- ── SECCIÓN 01 ── -->
+    <section class="section" id="s01">
+        <div class="section-num">01</div>
+        <h2>El sistema en una frase</h2>
+
+        <p>Un conjunto de skills coordinadas que saben qué hacer, cuándo hacerlo y cómo encajar entre ellas. No herramientas sueltas — un equipo que funciona cada vez que lo necesitas.</p>
+
+        <p>Lo que hace diferente a este caso real es que <strong>estás leyendo el resultado.</strong> Esta biblioteca — los 15 recursos, el diseño, los SVG, el arco de niveles, los textos — fue producida por este sistema. No hay ningún "imagina que funciona así". Lo tienes delante.</p>
+
+        <div class="gold-quote">
+            <div class="gold-quote-text">La mejor demostración de que algo funciona<br>es el <em>propio resultado que estás consumiendo</em>.</div>
+        </div>
+
+        <div class="system-stats">
+            <div class="system-stat">
+                <span class="system-stat-num">15</span>
+                <span class="system-stat-label">recursos producidos</span>
+            </div>
+            <div class="system-stat">
+                <span class="system-stat-num">5</span>
+                <span class="system-stat-label">skills activas</span>
+            </div>
+            <div class="system-stat">
+                <span class="system-stat-num">~2h</span>
+                <span class="system-stat-label">por recurso</span>
+            </div>
+            <div class="system-stat">
+                <span class="system-stat-num">$77</span>
+                <span class="system-stat-label">al mes (stack)</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- ── SECCIÓN 02 ── -->
+    <section class="section" id="s02">
+        <div class="section-num">02</div>
+        <h2>El circuito de producción</h2>
+
+        <p>Cada recurso de esta biblioteca sigue el mismo proceso. Sin excepciones. Lo que cambia es el contenido que entra — el circuito siempre es el mismo.</p>
+
+        <div class="circuit-flow">
+            <div class="circuit-step">
+                <div class="circuit-step-num">1</div>
+                <div class="circuit-step-body">
+                    <div class="circuit-step-title">Brief del recurso</div>
+                    <div class="circuit-step-desc">Se define el ángulo, el tag (mito/concepto/herramienta/acción/caso real), el arco narrativo y lo que tiene que quedar claro al lector. Sin brief, no hay recurso.</div>
+                </div>
+                <div class="circuit-step-badge humano">Humano</div>
+            </div>
+            <div class="circuit-step">
+                <div class="circuit-step-num">2</div>
+                <div class="circuit-step-body">
+                    <div class="circuit-step-title">Skill activa según la tarea</div>
+                    <div class="circuit-step-desc">Claude Code lee el CLAUDE.md del proyecto y activa la skill correcta según el trabajo: diseño, contenido, estrategia, contexto. Cada skill sabe su rol exacto sin que tengas que decírselo en cada sesión.</div>
+                </div>
+                <div class="circuit-step-badge">Sistema</div>
+            </div>
+            <div class="circuit-step">
+                <div class="circuit-step-num">3</div>
+                <div class="circuit-step-body">
+                    <div class="circuit-step-title">Build del recurso HTML</div>
+                    <div class="circuit-step-desc">Se genera el recurso completo: cover SVG, secciones, componentes visuales, checklist, navegación. El sistema mantiene coherencia visual con todos los recursos anteriores de forma automática.</div>
+                </div>
+                <div class="circuit-step-badge">Sistema</div>
+            </div>
+            <div class="circuit-step">
+                <div class="circuit-step-num">4</div>
+                <div class="circuit-step-body">
+                    <div class="circuit-step-title">Doble revisión</div>
+                    <div class="circuit-step-desc">Dos checks siempre: veracidad (todo lo que se afirma debe ser verificable) y SEO (meta description, keywords, legibilidad). Si algo no pasa el check, se corrige antes de continuar.</div>
+                </div>
+                <div class="circuit-step-badge humano">Humano</div>
+            </div>
+            <div class="circuit-step">
+                <div class="circuit-step-num">5</div>
+                <div class="circuit-step-body">
+                    <div class="circuit-step-title">Deploy y enlace</div>
+                    <div class="circuit-step-desc">El recurso se añade al catálogo del índice y se actualizan los enlaces de navegación. La biblioteca crece de forma ordenada, sin que tengas que rastrear manualmente qué apunta a qué.</div>
+                </div>
+                <div class="circuit-step-badge">Sistema</div>
+            </div>
+        </div>
+
+        <div class="callout morad">
+            <div class="callout-label">Lo que el humano hace — y no hace</div>
+            <p>El brief, la revisión de veracidad y las decisiones de ángulo son humanas. El diseño, el CSS, los SVG, la redacción, el SEO, la coherencia global — lo gestiona el sistema. El sistema no elimina el criterio. Lo amplifica.</p>
+        </div>
+    </section>
+
+    <!-- ── SECCIÓN 03 ── -->
+    <section class="section" id="s03">
+        <div class="section-num">03</div>
+        <h2>El kit — 5 skills, 2 orígenes</h2>
+
+        <p>Estas son las skills activas en este proyecto ahora mismo. Cuatro vienen de fuera — del marketplace o de GitHub. Una la construí yo. Ese equilibrio es el modelo híbrido: descargas lo que ya existe bien hecho, construyes lo que necesitas y no encuentras.</p>
+
+        <div class="section-sub">Descargadas — marketplace y GitHub</div>
+
+        <div class="skill-kit">
+            <div class="skill-kit-row">
+                <div class="skill-kit-icon">U</div>
+                <div class="skill-kit-body">
+                    <div class="skill-kit-name">
+                        ui-ux-pro-max
+                        <span class="origin-badge github">GitHub · local</span>
+                    </div>
+                    <div class="skill-kit-use">Gestiona el diseño de cada recurso: paleta de colores, tipografía, componentes CSS, SVG, estructura visual. Instalada localmente en el proyecto para que sus reglas apliquen solo aquí.</div>
+                    <div class="skill-kit-replaces">Sin ella: diseñador o días de prueba-error para que 15 páginas sean coherentes.</div>
+                </div>
+            </div>
+            <div class="skill-kit-row">
+                <div class="skill-kit-icon">C</div>
+                <div class="skill-kit-body">
+                    <div class="skill-kit-name">
+                        copywriting
+                        <span class="origin-badge marketplace">Marketplace · global</span>
+                    </div>
+                    <div class="skill-kit-use">Estructura el contenido de cada recurso para que sea útil, directo y fácil de leer. Redacta con el tono de alex.decode: anti-hype, sin relleno, números reales.</div>
+                    <div class="skill-kit-replaces">Sin ella: copywriter o 5+ borradores para que el texto no suene a IA genérica.</div>
+                </div>
+            </div>
+            <div class="skill-kit-row">
+                <div class="skill-kit-icon">S</div>
+                <div class="skill-kit-body">
+                    <div class="skill-kit-name">
+                        content-strategy
+                        <span class="origin-badge marketplace">Marketplace · global</span>
+                    </div>
+                    <div class="skill-kit-use">Mantiene la coherencia del arco entre niveles. Se asegura de que cada recurso encaje en su nivel y que el conjunto tenga sentido de principio a fin.</div>
+                    <div class="skill-kit-replaces">Sin ella: estratega de contenido o una hoja de cálculo siempre desactualizada.</div>
+                </div>
+            </div>
+            <div class="skill-kit-row">
+                <div class="skill-kit-icon">P</div>
+                <div class="skill-kit-body">
+                    <div class="skill-kit-name">
+                        prompt-master
+                        <span class="origin-badge marketplace">Marketplace · global</span>
+                    </div>
+                    <div class="skill-kit-use">Construye y mantiene el contexto del agente. En este proyecto ese contexto vive en el CLAUDE.md — el archivo que le dice al sistema quién es alex.decode, qué construye y cómo opera.</div>
+                    <div class="skill-kit-replaces">Sin él: brief completo repetido en cada sesión, o un agente sin memoria que no sabe quién eres.</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="section-sub amber">Construida por mí — skill personalizada</div>
+
+        <div class="skill-kit">
+            <div class="skill-kit-row custom">
+                <div class="skill-kit-icon custom">★</div>
+                <div class="skill-kit-body">
+                    <div class="skill-kit-name">
+                        code-context-reviewer
+                        <span class="origin-badge custom">Construida · Skill Creator</span>
+                    </div>
+                    <div class="skill-kit-use">Analiza el contexto acumulado en la sesión y limpia lo que ya no aporta información nueva. Un proyecto con 15 recursos, memoria persistente y decisiones acumuladas puede contaminar las respuestas del agente si el contexto no se gestiona. Esta skill lo revisa y lo ajusta para que el sistema siga operando con precisión.</div>
+                    <div class="skill-kit-replaces">Sin ella: respuestas inconsistentes conforme avanza el proyecto, o sesiones que empiezan desde cero porque el contexto es demasiado pesado.</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="callout verde">
+            <div class="callout-label">Por qué una skill construida y no descargada</div>
+            <p>No existe una skill en el marketplace que gestione específicamente el contexto de <em>este</em> proyecto con su estructura de memoria, su CLAUDE.md y sus 15 recursos. Las skills genéricas de gestión de contexto no saben lo que sabe esta. Eso es exactamente lo que viste en <a href="2-4.html">2.4</a>: cuando no existe lo que necesitas, lo construyes.</p>
+        </div>
+
+        <div class="brain-box">
+            <div class="brain-box-label">
+                <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>
+                Lo que no es una skill — y es lo más importante
+            </div>
+            <div class="brain-box-title">CLAUDE.md + memoria del proyecto</div>
+            <div class="brain-box-desc">
+                Las skills saben <em>cómo</em> hacer las cosas. El CLAUDE.md les dice <em>qué</em> construyen y <em>para quién</em>. Sin él, cada skill opera en genérico. Con él, saben que trabajan para alex.decode, que el tono es anti-hype, que el ratio es 60/40, que el stripe superior es morado para casos reales.<br><br>
+                <strong>La memoria del proyecto</strong> añade continuidad: decisiones tomadas, estado de cada recurso, componentes CSS existentes. El sistema recuerda lo que se ha construido sin que tengas que repetirlo cada vez.
+            </div>
+        </div>
+    </section>
+
+    <!-- ── SECCIÓN 04 ── -->
+    <section class="section" id="s04">
+        <div class="section-num">04</div>
+        <h2>Sin el sistema — lo que reemplaza</h2>
+
+        <p>Esta biblioteca tiene 15 recursos. Cada uno con diseño propio, SVG, contenido estructurado, SEO, coherencia. Sin el sistema, producir esto requeriría un equipo o semanas de trabajo en solitario.</p>
+
+        <div class="team-compare">
+            <div class="team-col">
+                <div class="team-col-label sin">Sin el sistema</div>
+                <div class="team-role">
+                    Diseñador web
+                    <div class="team-role-note">CSS, SVG, componentes, coherencia visual</div>
+                </div>
+                <div class="team-role">
+                    Copywriter
+                    <div class="team-role-note">Redacción, tono, estructura del contenido</div>
+                </div>
+                <div class="team-role">
+                    Estratega de contenido
+                    <div class="team-role-note">Arco de niveles, coherencia entre recursos</div>
+                </div>
+                <div class="team-role">
+                    Gestor de proyecto
+                    <div class="team-role-note">Contexto, decisiones, memoria acumulada</div>
+                </div>
+                <div class="team-role">
+                    Tú mismo
+                    <div class="team-role-note">Haciendo todo lo anterior, más lento</div>
+                </div>
+            </div>
+            <div class="team-col">
+                <div class="team-col-label con">Con el sistema</div>
+                <div class="team-skill">ui-ux-pro-max</div>
+                <div class="team-skill">copywriting</div>
+                <div class="team-skill">content-strategy</div>
+                <div class="team-skill">prompt-master</div>
+                <div class="team-skill custom-s">★ code-ctx-reviewer</div>
+            </div>
+        </div>
+
+        <div class="callout verde">
+            <div class="callout-label">Los números reales</div>
+            <p>15 recursos · ~2h cada uno · $77/mes de stack. Sin el sistema, estimación conservadora: 1-2 días por recurso si sabes lo que haces, semanas si no. El sistema no es un atajo — es hacer más con el mismo criterio.</p>
+        </div>
+
+        <div class="callout">
+            <div class="callout-label">Lo que no significa</div>
+            <p>El sistema no elimina el pensamiento humano — lo amplifica. Alguien tiene que definir el brief, decidir el ángulo y verificar la veracidad. Lo que el sistema elimina es el tiempo de ejecución. Esa es la diferencia entre automatizar trabajo y delegar el criterio.</p>
+        </div>
+    </section>
+
+    <!-- ── SECCIÓN 05 ── -->
+    <section class="section" id="s05">
+        <div class="section-num">05</div>
+        <h2>Cómo replicarlo — sin copiar el mío</h2>
+
+        <p>Un sistema de skills no se copia — se construye para lo que tú produces. El de alex.decode funciona para una biblioteca de recursos HTML. El tuyo tiene que encajar con tu flujo real.</p>
+
+        <p>El proceso es el mismo que has visto en este nivel: identifica las tareas que repites, busca si existe una skill en el marketplace para cada una, instala las que encajan, construye las que no existen con Skill Creator, y define tu CLAUDE.md como cerebro del proyecto.</p>
+
+        <div class="callout azul">
+            <div class="callout-label">La pregunta que tienes que responder</div>
+            <p>¿Qué haces tú que se repite semana a semana y podría tener una skill asignada? Esa es la primera skill de tu kit. Una sola. Empieza ahí, no con cinco a la vez.</p>
+        </div>
+
+        <div class="live-status-box">
+            <div class="live-status-header">
+                <div class="live-status-title">Estado actual del sistema</div>
+                <div class="update-live"><span class="update-live-dot"></span>13 may 2026</div>
+            </div>
+            <div class="live-status-grid">
+                <div class="live-stat">
+                    <div class="live-stat-label">Recursos producidos</div>
+                    <div class="live-stat-value">15</div>
+                    <div class="live-stat-note">Niveles 0, 1 y 2 completos</div>
+                </div>
+                <div class="live-stat">
+                    <div class="live-stat-label">Skills activas</div>
+                    <div class="live-stat-value">4+1</div>
+                    <div class="live-stat-note">4 descargadas · 1 construida</div>
+                </div>
+                <div class="live-stat">
+                    <div class="live-stat-label">Stack mensual</div>
+                    <div class="live-stat-value">$77</div>
+                    <div class="live-stat-note">Claude Pro + Google AI + Higgsfield</div>
+                </div>
+                <div class="live-stat">
+                    <div class="live-stat-label">Tiempo por recurso</div>
+                    <div class="live-stat-value">~2h</div>
+                    <div class="live-stat-note">Brief + build + revisión + deploy</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="nivel3-hook">
+            <div class="nivel3-hook-tag">Lo que viene — Nivel 3 · Automatizar</div>
+            <div class="nivel3-hook-title">Ya sabes construir sistemas con skills.<br>Ahora los sistemas se gestionan solos.</div>
+            <div class="nivel3-hook-sub">En el Nivel 2 definiste el sistema y lo construiste. En el Nivel 3 das el paso siguiente: conectas las piezas para que el sistema se ejecute solo una vez puesto en marcha. De construir con criterio a operar en piloto automático.</div>
+            <div class="nivel3-hook-badge">Nivel 3 — próximamente</div>
+        </div>
+    </section>
+
+    <!-- CHECKLIST -->
+    <div class="checklist-section" id="checklist">
+        <div class="checklist-title">Cierre del Nivel 2 — compruébalo</div>
+        <ul class="checklist-items" id="checklistItems">
+            <li onclick="toggleCheck(this)"><span class="check-box"></span><span class="check-text">Entiendo qué hace cada una de las 5 skills y por qué ninguna hace lo mismo que otra.</span></li>
+            <li onclick="toggleCheck(this)"><span class="check-box"></span><span class="check-text">Tengo claro que el CLAUDE.md no es una skill — es el contexto que le da dirección a todas ellas.</span></li>
+            <li onclick="toggleCheck(this)"><span class="check-box"></span><span class="check-text">Sé identificar qué tarea de mi trabajo se repite y podría tener una skill asignada.</span></li>
+            <li onclick="toggleCheck(this)"><span class="check-box"></span><span class="check-text">Entiendo el modelo híbrido: descargo lo que ya existe bien hecho, construyo lo que no encuentro.</span></li>
+            <li onclick="toggleCheck(this)"><span class="check-box"></span><span class="check-text">He pasado por los cinco recursos del Nivel 2. Sé construir con criterio. El Nivel 3 es el siguiente paso.</span></li>
+        </ul>
+    </div>
+
+    <!-- FOOTER -->
+    <footer class="resource-footer">
+        <a href="2-4.html" class="footer-back">
+            <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+            Nivel 2 · Acción
+        </a>
+        <a href="../index.html" class="footer-lib">
+            Volver a la Biblioteca
+            <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </a>
+    </footer>
+
+</div>
+
+<canvas id="confettiCanvas" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:9999;"></canvas>
+
+<script>
+function toggleCheck(li) {
+    li.classList.toggle('done');
+    li.querySelector('.check-box').textContent = li.classList.contains('done') ? '✓' : '';
+    const items = document.querySelectorAll('#checklistItems li');
+    if ([...items].every(i => i.classList.contains('done'))) launchConfetti();
+}
+
+function launchConfetti() {
+    const canvas = document.getElementById('confettiCanvas');
+    if (!canvas) return;
+    canvas.style.display = 'block';
+    const ctx = canvas.getContext('2d');
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+    const colors = ['#7C3AED','#9F67FA','#C4B5FD','#B45309','#D97706','#059669','#2563EB','#F59E0B','#DC2626','#10B981'];
+    const pieces = Array.from({length: 180}, () => ({
+        x: Math.random() * canvas.width,
+        y: -10 - Math.random() * canvas.height * 0.6,
+        w: Math.random() * 11 + 5,
+        h: Math.random() * 6 + 3,
+        color: colors[Math.floor(Math.random() * colors.length)],
+        vx: (Math.random() - 0.5) * 4,
+        vy: Math.random() * 3 + 1.5,
+        rot: Math.random() * 360,
+        vrot: (Math.random() - 0.5) * 10,
+        alpha: 1,
+        shape: Math.random() > 0.5 ? 'rect' : 'circle'
+    }));
+    let frame = 0;
+    (function animate() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        pieces.forEach(p => {
+            p.x += p.vx; p.y += p.vy; p.rot += p.vrot; p.vy += 0.06;
+            if (frame > 90) p.alpha = Math.max(0, p.alpha - 0.012);
+            ctx.save();
+            ctx.globalAlpha = p.alpha;
+            ctx.translate(p.x + p.w / 2, p.y + p.h / 2);
+            ctx.rotate(p.rot * Math.PI / 180);
+            ctx.fillStyle = p.color;
+            if (p.shape === 'circle') {
+                ctx.beginPath(); ctx.arc(0, 0, p.w / 2, 0, Math.PI * 2); ctx.fill();
+            } else {
+                ctx.fillRect(-p.w / 2, -p.h / 2, p.w, p.h);
+            }
+            ctx.restore();
+        });
+        frame++;
+        if (frame < 190) requestAnimationFrame(animate);
+        else canvas.style.display = 'none';
+    })();
+}
+</script>
+</body>
+</html>

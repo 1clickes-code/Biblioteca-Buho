@@ -1,0 +1,945 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Construye tu primer sistema con criterio propio — alex.decode</title>
+    <meta name="description" content="Instala Skill Creator, define tu primera skill con 3 preguntas y tenla funcionando en Claude Code. Guía práctica con comandos exactos y ejemplo real.">
+    <meta name="keywords" content="Skill Creator Claude Code, instalar Skill Creator, primera skill IA, construir sistema IA, kit de skills Claude, skills personalizadas Claude Code 2026">
+    <link rel="icon" type="image/svg+xml" href="../favicon.svg">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        :root {
+            --bg:        #FAFAF7;
+            --surface:   #FFFFFF;
+            --border:    #E8E2D9;
+            --text:      #1C1917;
+            --muted:     #78716C;
+            --faint:     #B0A89E;
+            --amber:     #B45309;
+            --amber-mid: #D97706;
+            --amber-dim: rgba(180,83,9,0.07);
+            --rojo:  #DC2626; --rojo-d:  rgba(220,38,38,0.07);
+            --amar:  #D97706; --amar-d:  rgba(217,119,6,0.07);
+            --azul:  #2563EB; --azul-d:  rgba(37,99,235,0.07);
+            --verde: #059669; --verde-d: rgba(5,150,105,0.07);
+            --morad: #7C3AED; --morad-d: rgba(124,58,237,0.07);
+        }
+
+        html { scroll-behavior: smooth; }
+        body {
+            background: var(--bg);
+            color: var(--text);
+            font-family: 'Inter', system-ui, sans-serif;
+            font-size: 15px;
+            line-height: 1.7;
+            min-height: 100vh;
+        }
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0; left: 0; right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, #92400E 0%, #D97706 50%, #92400E 100%);
+            z-index: 100;
+        }
+
+        .wrap { max-width: 720px; margin: 0 auto; padding: 0 24px; }
+
+        /* ── NAV ── */
+        .top-nav {
+            padding: 28px 0 0;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 11px;
+            color: var(--faint);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
+        .top-nav a { color: var(--amber); text-decoration: none; transition: opacity .15s; }
+        .top-nav a:hover { opacity: .7; }
+        .top-nav .sep { color: var(--faint); }
+        .nav-owl {
+            margin-left: auto;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            color: var(--faint);
+            text-decoration: none;
+            font-size: 10px;
+            letter-spacing: .5px;
+            transition: opacity .15s;
+            animation: owlFloat 5s ease-in-out 1s infinite;
+        }
+        .nav-owl:hover { opacity: .7; color: var(--amber); }
+        @keyframes owlFloat { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-4px)} }
+
+        /* ── COVER ── */
+        .cover-wrap { margin: 28px 0 0; border-radius: 12px; overflow: hidden; border: 1px solid var(--border); }
+        .cover-wrap svg { display: block; width: 100%; height: auto; }
+
+        /* ── HEADER ── */
+        .resource-header { padding: 28px 0; border-bottom: 1px solid var(--border); margin-bottom: 28px; }
+        .tag {
+            display: inline-flex; align-items: center; gap: 5px;
+            font-size: 10px; font-weight: 600; padding: 3px 10px;
+            border-radius: 100px; margin-bottom: 16px;
+        }
+        .tag .dot { width: 5px; height: 5px; border-radius: 50%; flex-shrink: 0; }
+        .tag.amar { background: var(--amar-d); color: var(--amar); }
+        .tag.amar .dot { background: var(--amar); }
+        .resource-title {
+            font-family: 'Playfair Display', Georgia, serif;
+            font-size: clamp(24px, 4vw, 34px);
+            font-weight: 700;
+            line-height: 1.18;
+            letter-spacing: -.3px;
+            margin-bottom: 14px;
+        }
+        .resource-sub { font-size: 15px; color: var(--muted); line-height: 1.6; margin-bottom: 18px; max-width: 560px; }
+        .resource-meta {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 11px;
+            color: var(--faint);
+            display: flex;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+        .resource-meta span { display: flex; align-items: center; gap: 5px; }
+        .meta-dot { width: 3px; height: 3px; border-radius: 50%; background: var(--faint); }
+
+        /* ── LEARN BOX ── */
+        .learn-box { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 18px 22px; margin-bottom: 28px; }
+        .learn-box-title { font-family: 'JetBrains Mono', monospace; font-size: 9px; color: var(--faint); letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 12px; }
+        .learn-list { list-style: none; display: flex; flex-direction: column; gap: 8px; }
+        .learn-item { display: flex; align-items: flex-start; gap: 8px; font-size: 13px; color: var(--text); line-height: 1.45; }
+        .learn-item::before { content: '→'; color: var(--amar); font-family: 'JetBrains Mono', monospace; font-size: 11px; flex-shrink: 0; margin-top: 1px; }
+
+        /* ── TOC ── */
+        .toc { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 16px 20px; margin-bottom: 48px; }
+        .toc-label { font-family: 'JetBrains Mono', monospace; font-size: 9px; color: var(--faint); letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 10px; }
+        .toc-links { display: flex; flex-wrap: wrap; gap: 6px; }
+        .toc-links a {
+            font-size: 12px; color: var(--muted); text-decoration: none;
+            padding: 4px 10px; border-radius: 6px; border: 1px solid var(--border);
+            transition: border-color .15s, color .15s, background .15s; white-space: nowrap;
+        }
+        .toc-links a:hover { border-color: var(--amar); color: var(--amar); background: var(--amar-d); }
+
+        /* ── SECTIONS ── */
+        .section { margin-bottom: 52px; scroll-margin-top: 32px; }
+        .section-num { font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--amar); font-weight: 600; letter-spacing: 1px; margin-bottom: 8px; }
+        .section h2 { font-family: 'Playfair Display', serif; font-size: 22px; font-weight: 700; line-height: 1.3; margin-bottom: 16px; }
+        .section p { color: var(--text); margin-bottom: 14px; }
+        .section p:last-child { margin-bottom: 0; }
+        .section-sub { font-family: 'JetBrains Mono', monospace; font-size: 9px; font-weight: 600; color: var(--amar); letter-spacing: 1.2px; text-transform: uppercase; margin: 28px 0 10px; }
+
+        /* ── CALLOUT ── */
+        .callout { border-left: 3px solid var(--amber); background: var(--amber-dim); border-radius: 0 8px 8px 0; padding: 14px 18px; margin: 20px 0; }
+        .callout-label { font-family: 'JetBrains Mono', monospace; font-size: 9px; font-weight: 600; color: var(--amber); letter-spacing: 1.2px; text-transform: uppercase; margin-bottom: 6px; }
+        .callout p { font-size: 14px; color: var(--text); margin: 0; }
+        .callout.verde { border-left-color: var(--verde); background: var(--verde-d); }
+        .callout.verde .callout-label { color: var(--verde); }
+        .callout.azul { border-left-color: var(--azul); background: var(--azul-d); }
+        .callout.azul .callout-label { color: var(--azul); }
+        .callout.rojo { border-left-color: var(--rojo); background: var(--rojo-d); }
+        .callout.rojo .callout-label { color: var(--rojo); }
+
+        /* ── GOLD QUOTE ── */
+        .gold-quote {
+            background: linear-gradient(135deg, var(--amber-dim) 0%, rgba(217,119,6,0.04) 100%);
+            border: 1.5px solid rgba(180,83,9,0.2);
+            border-radius: 12px;
+            padding: 22px 28px 20px;
+            margin: 24px 0;
+            text-align: center;
+            position: relative;
+        }
+        .gold-quote::before { content: '"'; position: absolute; top: 2px; left: 16px; font-family: 'Playfair Display', serif; font-size: 52px; line-height: 1; color: rgba(180,83,9,0.12); }
+        .gold-quote-text { font-family: 'Playfair Display', serif; font-size: 17px; font-weight: 700; line-height: 1.5; color: var(--text); padding: 0 8px; }
+        .gold-quote-text em { color: var(--amber); font-style: normal; }
+
+        /* ── ENV COMPARE (Claude Code vs chat) ── */
+        .env-compare {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin: 20px 0;
+        }
+        .env-card {
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 16px 18px;
+            background: var(--surface);
+        }
+        .env-card.highlight {
+            border-color: var(--amar);
+            background: var(--amar-d);
+        }
+        .env-card-label {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 9px;
+            font-weight: 600;
+            color: var(--faint);
+            letter-spacing: 1.2px;
+            text-transform: uppercase;
+            margin-bottom: 6px;
+        }
+        .env-card.highlight .env-card-label { color: var(--amar); }
+        .env-card-name {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--text);
+            margin-bottom: 8px;
+            line-height: 1.3;
+        }
+        .env-card-use {
+            font-size: 12.5px;
+            color: var(--muted);
+            line-height: 1.55;
+        }
+        .env-card-badge {
+            display: inline-block;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 9px;
+            font-weight: 600;
+            background: rgba(217,119,6,0.15);
+            color: var(--amar);
+            border: 1px solid rgba(217,119,6,0.3);
+            padding: 2px 8px;
+            border-radius: 100px;
+            margin-top: 10px;
+        }
+
+        /* ── TOOL BANNER (Skill Creator) ── */
+        .tool-banner-wrap {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 18px 20px;
+            margin: 20px 0;
+            display: flex;
+            align-items: flex-start;
+            gap: 16px;
+            transition: border-color .15s;
+        }
+        .tool-banner-wrap:hover { border-color: var(--amar); }
+        .tool-banner-icon {
+            width: 42px; height: 42px;
+            border-radius: 10px;
+            background: var(--amar-d);
+            border: 1px solid rgba(217,119,6,0.2);
+            display: flex; align-items: center; justify-content: center;
+            flex-shrink: 0;
+            color: var(--amar);
+        }
+        .tool-banner-body { flex: 1; }
+        .tool-banner-name { font-size: 15px; font-weight: 700; color: var(--text); margin-bottom: 4px; }
+        .tool-banner-desc { font-size: 13px; color: var(--muted); line-height: 1.5; margin-bottom: 12px; }
+        .tool-github-tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 10px;
+            font-weight: 600;
+            color: var(--amar);
+            text-decoration: none;
+            border: 1px solid rgba(217,119,6,0.3);
+            border-radius: 100px;
+            padding: 5px 12px;
+            transition: background .15s;
+        }
+        .tool-github-tag:hover { background: var(--amar-d); }
+
+        /* ── SKILL STEPS ── */
+        .skill-steps {
+            display: flex;
+            flex-direction: column;
+            margin: 20px 0;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        .skill-step {
+            display: flex;
+            gap: 16px;
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--border);
+            background: var(--surface);
+        }
+        .skill-step:last-child { border-bottom: none; }
+        .skill-step-num {
+            width: 26px; height: 26px;
+            border-radius: 50%;
+            background: var(--amar-d);
+            border: 1.5px solid rgba(217,119,6,0.3);
+            display: flex; align-items: center; justify-content: center;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 11px; font-weight: 700;
+            color: var(--amar);
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
+        .skill-step-body { flex: 1; }
+        .skill-step-title { font-size: 14px; font-weight: 600; color: var(--text); margin-bottom: 4px; line-height: 1.3; }
+        .skill-step-desc { font-size: 13px; color: var(--muted); line-height: 1.55; }
+
+        /* ── CODE BLOCK ── */
+        .code-block {
+            background: #1C1917;
+            border-radius: 8px;
+            padding: 14px 18px;
+            margin: 10px 0;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 12.5px;
+            color: #D4C5A9;
+            overflow-x: auto;
+            line-height: 1.65;
+        }
+        .code-block .prompt { color: #059669; user-select: none; margin-right: 6px; }
+        .code-block .comment { color: #6B7280; }
+        .code-block .slash { color: #D97706; font-weight: 700; }
+
+        /* ── CMD BADGES ── */
+        .cmd-badges { display: flex; flex-wrap: wrap; gap: 8px; margin: 14px 0; }
+        .cmd-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 11.5px;
+            font-weight: 600;
+            background: #1C1917;
+            color: #D4C5A9;
+            padding: 6px 13px;
+            border-radius: 8px;
+        }
+        .cmd-badge .slash { color: #D97706; }
+        .cmd-badge .quote { color: #A78BFA; }
+
+        /* ── DESIGN CARD ── */
+        .design-card {
+            background: var(--surface);
+            border: 2px solid var(--amar);
+            border-radius: 12px;
+            padding: 22px 24px;
+            margin: 24px 0;
+        }
+        .design-card-title {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 9px;
+            font-weight: 600;
+            color: var(--amar);
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            margin-bottom: 20px;
+        }
+        .design-row { margin-bottom: 18px; }
+        .design-row:last-child { margin-bottom: 0; }
+        .design-label {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 10px;
+            font-weight: 600;
+            color: var(--amar);
+            letter-spacing: .8px;
+            text-transform: uppercase;
+            margin-bottom: 4px;
+        }
+        .design-hint { font-size: 11px; color: var(--faint); font-style: italic; margin-bottom: 6px; }
+        .design-input {
+            width: 100%;
+            border: none;
+            border-bottom: 1.5px solid var(--border);
+            background: transparent;
+            color: var(--text);
+            font-family: 'Inter', sans-serif;
+            font-size: 14px;
+            padding: 8px 0;
+            outline: none;
+            transition: border-color .15s;
+        }
+        .design-input:focus { border-bottom-color: var(--amar); }
+        .design-input::placeholder { color: var(--faint); font-style: italic; }
+
+        /* ── PROMPT COMPARE ── */
+        .prompt-compare {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin: 20px 0;
+        }
+        .prompt-col {
+            border-radius: 8px;
+            padding: 14px 16px;
+        }
+        .prompt-col.malo {
+            background: var(--rojo-d);
+            border: 1px solid rgba(220,38,38,0.2);
+        }
+        .prompt-col.bueno {
+            background: var(--verde-d);
+            border: 1px solid rgba(5,150,105,0.2);
+        }
+        .prompt-col-label {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 9px;
+            font-weight: 600;
+            letter-spacing: 1.2px;
+            text-transform: uppercase;
+            margin-bottom: 8px;
+        }
+        .prompt-col.malo .prompt-col-label { color: var(--rojo); }
+        .prompt-col.bueno .prompt-col-label { color: var(--verde); }
+        .prompt-col p { font-size: 13px; color: var(--text); line-height: 1.55; margin: 0; font-style: italic; }
+
+        /* ── COMPARE VISUAL (antes/después) ── */
+        .compare-wrap {
+            display: grid;
+            grid-template-columns: 1fr 28px 1fr;
+            gap: 12px;
+            align-items: center;
+            margin: 24px 0;
+        }
+        .compare-col { }
+        .compare-label {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 9px;
+            font-weight: 600;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            padding: 3px 10px;
+            border-radius: 100px;
+            display: inline-block;
+            margin-bottom: 8px;
+        }
+        .compare-label.antes { background: var(--rojo-d); color: var(--rojo); }
+        .compare-label.despues { background: var(--verde-d); color: var(--verde); }
+        .compare-img {
+            width: 100%;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            display: block;
+        }
+        .compare-arrow { text-align: center; font-size: 22px; color: var(--amar); font-weight: 700; }
+        .compare-caption { font-size: 11px; color: var(--faint); margin-top: 6px; line-height: 1.4; font-style: italic; text-align: center; }
+
+        /* ── SKILL EXAMPLE CARD ── */
+        .skill-example {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 20px 22px;
+            margin: 20px 0;
+        }
+        .skill-example-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 12px;
+            flex-wrap: wrap;
+        }
+        .skill-example-badge {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 9px;
+            font-weight: 600;
+            background: var(--amar-d);
+            color: var(--amar);
+            border: 1px solid rgba(217,119,6,0.3);
+            padding: 3px 9px;
+            border-radius: 100px;
+            letter-spacing: .8px;
+            text-transform: uppercase;
+        }
+        .skill-example-name { font-size: 15px; font-weight: 700; color: var(--text); }
+        .skill-example-desc { font-size: 13.5px; color: var(--muted); line-height: 1.6; margin-bottom: 0; }
+
+        /* ── NEXT HOOK (amber) ── */
+        .next-hook {
+            display: flex; align-items: center; gap: 12px;
+            background: var(--amar-d);
+            border: 1px solid rgba(217,119,6,0.18);
+            border-radius: 10px;
+            padding: 16px 20px;
+            margin: 28px 0 0;
+            text-decoration: none;
+            transition: background .15s, gap .15s;
+        }
+        .next-hook:hover { background: rgba(217,119,6,0.12); gap: 16px; }
+        .next-hook-arrow { width: 32px; height: 32px; border-radius: 50%; background: var(--amar); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+        .next-hook-text { flex: 1; }
+        .next-hook-label { font-family: 'JetBrains Mono', monospace; font-size: 9px; color: var(--amar); letter-spacing: 1.2px; text-transform: uppercase; margin-bottom: 3px; }
+        .next-hook-title { font-size: 13.5px; font-weight: 600; color: var(--text); line-height: 1.3; }
+
+        /* ── CHECKLIST ── */
+        .checklist-section { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 24px 26px; margin-bottom: 52px; }
+        .checklist-title { font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--amber); font-weight: 600; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 16px; }
+        .checklist-items { list-style: none; display: flex; flex-direction: column; gap: 10px; }
+        .checklist-items li { display: flex; align-items: flex-start; gap: 10px; font-size: 13.5px; color: var(--text); line-height: 1.5; cursor: pointer; }
+        .check-box { width: 17px; height: 17px; border: 1.5px solid var(--border); border-radius: 4px; flex-shrink: 0; margin-top: 1px; transition: border-color .15s, background .15s; display: flex; align-items: center; justify-content: center; font-size: 10px; color: white; }
+        .checklist-items li.done .check-box { background: var(--amar); border-color: var(--amar); }
+        .checklist-items li.done .check-text { text-decoration: line-through; color: var(--muted); }
+
+        /* ── FOOTER ── */
+        .resource-footer { border-top: 1px solid var(--border); padding: 32px 0 56px; display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
+        .footer-back { font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--muted); text-decoration: none; display: flex; align-items: center; gap: 6px; transition: color .15s; }
+        .footer-back:hover { color: var(--amber); }
+        .footer-next { font-size: 13px; font-weight: 500; color: var(--amber); text-decoration: none; display: flex; align-items: center; gap: 6px; transition: gap .15s; }
+        .footer-next:hover { gap: 10px; }
+
+        /* ── RESPONSIVE ── */
+        @media (max-width: 600px) {
+            .wrap { padding: 0 16px; }
+            .resource-title { font-size: 22px; }
+            .env-compare { grid-template-columns: 1fr; }
+            .prompt-compare { grid-template-columns: 1fr; }
+            .compare-wrap { grid-template-columns: 1fr; }
+            .compare-arrow { display: none; }
+        }
+    </style>
+</head>
+<body>
+<div class="wrap">
+
+    <!-- NAV -->
+    <nav class="top-nav">
+        <a href="../index.html">alex.decode</a>
+        <span class="sep">/</span>
+        <span>Biblioteca</span>
+        <span class="sep">/</span>
+        <span>Nivel 2</span>
+        <span class="sep">/</span>
+        <span>Acción</span>
+        <a href="../index.html" class="nav-owl" aria-label="Volver a la biblioteca">
+            <svg width="28" height="32" viewBox="0 0 140 160" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <polygon points="44,32 36,6 52,26" fill="#92400E"/>
+                <polygon points="96,32 104,6 88,26" fill="#92400E"/>
+                <circle cx="70" cy="56" r="38" fill="#B45309"/>
+                <ellipse cx="70" cy="58" rx="26" ry="24" fill="#D97706" opacity="0.28"/>
+                <circle cx="56" cy="52" r="13" fill="#FEF3C7"/>
+                <circle cx="84" cy="52" r="13" fill="#FEF3C7"/>
+                <circle cx="56" cy="52" r="6.5" fill="#1C1917"/>
+                <circle cx="84" cy="52" r="6.5" fill="#1C1917"/>
+                <circle cx="59" cy="49" r="2.2" fill="white"/>
+                <circle cx="87" cy="49" r="2.2" fill="white"/>
+                <polygon points="63,64 77,64 70,75" fill="#D97706"/>
+                <ellipse cx="70" cy="120" rx="34" ry="36" fill="#B45309"/>
+                <ellipse cx="70" cy="126" rx="20" ry="24" fill="#D97706" opacity="0.22"/>
+            </svg>
+        </a>
+    </nav>
+
+    <!-- COVER SVG -->
+    <div class="cover-wrap">
+        <svg viewBox="0 0 800 350" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <!-- Background -->
+            <rect width="800" height="350" fill="#F5F4F0"/>
+
+            <!-- Subtle grid dots -->
+            <circle cx="68" cy="68" r="1.8" fill="#E8E2D9"/>
+            <circle cx="200" cy="68" r="1.8" fill="#E8E2D9"/>
+            <circle cx="332" cy="68" r="1.8" fill="#E8E2D9"/>
+            <circle cx="468" cy="68" r="1.8" fill="#E8E2D9"/>
+            <circle cx="600" cy="68" r="1.8" fill="#E8E2D9"/>
+            <circle cx="732" cy="68" r="1.8" fill="#E8E2D9"/>
+            <circle cx="68" cy="282" r="1.8" fill="#E8E2D9"/>
+            <circle cx="200" cy="282" r="1.8" fill="#E8E2D9"/>
+            <circle cx="600" cy="282" r="1.8" fill="#E8E2D9"/>
+            <circle cx="732" cy="282" r="1.8" fill="#E8E2D9"/>
+
+            <!-- Top label -->
+            <text x="400" y="38" text-anchor="middle" font-family="system-ui,sans-serif" font-size="9" fill="#A8A29E" letter-spacing="2" font-weight="700">NIVEL 2 · ACCIÓN</text>
+
+            <!-- TRIGGER block -->
+            <rect x="58" y="128" width="170" height="94" rx="10" fill="white" stroke="#E8E2D9" stroke-width="1.5"/>
+            <text x="143" y="161" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="8" fill="#B0A89E" letter-spacing="1.5" font-weight="600">DISPARADOR</text>
+            <text x="143" y="186" text-anchor="middle" font-family="Georgia,serif" font-size="19" fill="#1C1917" font-weight="700">Trigger</text>
+            <text x="143" y="205" text-anchor="middle" font-family="system-ui,sans-serif" font-size="10" fill="#B0A89E">Lo que lo activa</text>
+
+            <!-- Arrow 1 (dashed amber) -->
+            <line x1="232" y1="175" x2="312" y2="175" stroke="#D97706" stroke-width="2" stroke-dasharray="5,4"/>
+            <polygon points="310,169 324,175 310,181" fill="#D97706"/>
+
+            <!-- SKILL block (center, amber) -->
+            <rect x="324" y="108" width="152" height="134" rx="10" fill="#FFFBEB" stroke="#D97706" stroke-width="2"/>
+            <!-- ×1 badge -->
+            <circle cx="476" cy="108" r="15" fill="#D97706"/>
+            <text x="476" y="113" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="10" fill="white" font-weight="700">×1</text>
+            <text x="400" y="146" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="8" fill="#92400E" letter-spacing="1.5" font-weight="600">TU SKILL</text>
+            <text x="400" y="175" text-anchor="middle" font-family="Georgia,serif" font-size="22" fill="#B45309" font-weight="700">Acción</text>
+            <text x="400" y="197" text-anchor="middle" font-family="system-ui,sans-serif" font-size="10" fill="#92400E">Lo que construiste</text>
+            <text x="400" y="218" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="8" fill="#D97706" letter-spacing=".5">Skill Creator</text>
+
+            <!-- Arrow 2 (dashed amber) -->
+            <line x1="476" y1="175" x2="556" y2="175" stroke="#D97706" stroke-width="2" stroke-dasharray="5,4"/>
+            <polygon points="554,169 568,175 554,181" fill="#D97706"/>
+
+            <!-- RESULTADO block -->
+            <rect x="568" y="128" width="170" height="94" rx="10" fill="white" stroke="#E8E2D9" stroke-width="1.5"/>
+            <text x="653" y="161" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="8" fill="#B0A89E" letter-spacing="1.5" font-weight="600">ENTREGA</text>
+            <text x="653" y="186" text-anchor="middle" font-family="Georgia,serif" font-size="19" fill="#1C1917" font-weight="700">Resultado</text>
+            <text x="653" y="205" text-anchor="middle" font-family="system-ui,sans-serif" font-size="10" fill="#B0A89E">Lo que produce</text>
+
+            <!-- Bottom badge -->
+            <rect x="280" y="268" width="240" height="26" rx="13" fill="white" stroke="#E8E2D9" stroke-width="1.5"/>
+            <text x="400" y="285" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="9" fill="#B45309" letter-spacing=".8">DISEÑADO · CONSTRUIDO · TUYO</text>
+        </svg>
+    </div>
+
+    <!-- HEADER -->
+    <header class="resource-header">
+        <div class="tag amar"><span class="dot"></span>Acción</div>
+        <h1 class="resource-title">Construye tu primer sistema con criterio propio</h1>
+        <p class="resource-sub">Tienes el mapa mental y las herramientas. Ahora los usas. De la instalación de Skill Creator a tu primera skill funcionando — paso a paso, sin atajos.</p>
+        <div class="resource-meta">
+            <span>15 min de lectura</span>
+            <span class="meta-dot"></span>
+            <span>Nivel 2</span>
+            <span class="meta-dot"></span>
+            <span>Mayo 2026</span>
+        </div>
+    </header>
+
+    <!-- LEARN BOX -->
+    <div class="learn-box">
+        <div class="learn-box-title">Lo que vas a construir</div>
+        <ul class="learn-list">
+            <li class="learn-item">Por qué las skills viven en Claude Code y no en el chat convencional</li>
+            <li class="learn-item">Cómo descargar e instalar Skill Creator — comandos exactos</li>
+            <li class="learn-item">El framework de 3 preguntas para describir bien cualquier skill antes de crearla</li>
+            <li class="learn-item">Cómo verificar qué skills tienes activas y cuál se está usando</li>
+            <li class="learn-item">Lo que puedes construir cuando describes bien lo que quieres (y lo que viene en 2.5)</li>
+        </ul>
+    </div>
+
+    <!-- TOC -->
+    <nav class="toc" aria-label="Contenido">
+        <div class="toc-label">En este recurso</div>
+        <div class="toc-links">
+            <a href="#s01">01 Por qué aquí</a>
+            <a href="#s02">02 Instalar Skill Creator</a>
+            <a href="#s03">03 Describe con criterio</a>
+            <a href="#s04">04 Usa tu skill</a>
+            <a href="#s05">05 Del skill al kit</a>
+            <a href="#checklist">Checklist</a>
+        </div>
+    </nav>
+
+    <!-- ── S01: POR QUÉ AQUÍ ── -->
+    <section class="section" id="s01">
+        <div class="section-num">01</div>
+        <h2>Del mapa a la herramienta</h2>
+        <p>En el 2.1 desmontaste la parálisis. En el 2.2 aprendiste a pensar en sistemas. En el 2.3 viste qué herramientas existen y cuánto cuestan. Ahora usas todo eso.</p>
+        <p>Pero antes de instalar nada, hay una pregunta que tiene que quedar clara: <strong>¿por qué usamos Claude Code para construir skills y no el chat convencional de Claude?</strong></p>
+
+        <div class="env-compare">
+            <div class="env-card">
+                <div class="env-card-label">Chat convencional</div>
+                <div class="env-card-name">claude.ai</div>
+                <div class="env-card-use">Conversación, redacción, ideas. Para preguntas, textos, brainstorming. No tiene acceso a tu sistema de archivos.</div>
+            </div>
+            <div class="env-card highlight">
+                <div class="env-card-label">Para sistemas y skills</div>
+                <div class="env-card-name">Claude Code</div>
+                <div class="env-card-use">Programación, archivos, automatizaciones. Tiene acceso a tu proyecto, ejecuta comandos y lee tus skills instaladas.</div>
+                <span class="env-card-badge">Las skills viven aquí</span>
+            </div>
+        </div>
+
+        <p>La diferencia es simple: <strong>las skills son sistemas</strong> — archivos que Claude Code lee y ejecuta. El chat convencional no tiene acceso a esa capa. Por eso todo lo que hacemos en este recurso ocurre dentro de Claude Code.</p>
+
+        <div class="gold-quote">
+            <div class="gold-quote-text">Una skill no es una conversación. Es un <em>sistema que ejecutas</em> cuando lo necesitas.</div>
+        </div>
+    </section>
+
+    <!-- ── S02: INSTALAR SKILL CREATOR ── -->
+    <section class="section" id="s02">
+        <div class="section-num">02</div>
+        <h2>Descarga e instala Skill Creator</h2>
+        <p>Skill Creator apareció en el 2.3 como el punto de partida para construir tus propias skills. Aquí es donde lo instalas y lo tienes listo para usarlo.</p>
+
+        <div class="tool-banner-wrap">
+            <div class="tool-banner-icon">
+                <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+                    <path d="M8 9l-3 3 3 3M16 9l3 3-3 3M12 7l-2 10"/>
+                </svg>
+            </div>
+            <div class="tool-banner-body">
+                <div class="tool-banner-name">Skill Creator</div>
+                <div class="tool-banner-desc">Herramienta oficial de Anthropic para construir skills personalizadas en Claude Code. Te guía con las preguntas correctas y genera el archivo de la skill automáticamente.</div>
+                <a href="https://github.com/anthropics/skills" target="_blank" rel="noopener" class="tool-github-tag">
+                    <svg width="12" height="12" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
+                    github.com/anthropics/skills
+                </a>
+            </div>
+        </div>
+
+        <div class="skill-steps">
+            <div class="skill-step">
+                <div class="skill-step-num">1</div>
+                <div class="skill-step-body">
+                    <div class="skill-step-title">Clona el repositorio oficial de Anthropic</div>
+                    <div class="skill-step-desc">Descarga el repo completo en tu equipo. Elige dónde guardarlo — en el siguiente paso lo copias a tu carpeta de skills.</div>
+                    <div class="code-block" style="margin-top:10px">
+                        <span class="prompt">$</span>git clone https://github.com/anthropics/skills.git anthropic-skills
+                    </div>
+                </div>
+            </div>
+            <div class="skill-step">
+                <div class="skill-step-num">2</div>
+                <div class="skill-step-body">
+                    <div class="skill-step-title">Copia Skill Creator a tu carpeta de skills</div>
+                    <div class="skill-step-desc">Aquí decides entre global (disponible en todos tus proyectos) o local (solo en el proyecto actual). Mismo criterio que con Prompt Master en el recurso 0.3.</div>
+                    <div class="code-block" style="margin-top:10px">
+                        <span class="comment"># Global — disponible en todos tus proyectos</span><br>
+                        <span class="prompt">$</span>cp -r anthropic-skills/skills/skill-creator ~/.claude/skills/skill-creator<br><br>
+                        <span class="comment"># Local — solo en este proyecto</span><br>
+                        <span class="prompt">$</span>cp -r anthropic-skills/skills/skill-creator .claude/skills/skill-creator
+                    </div>
+                </div>
+            </div>
+            <div class="skill-step">
+                <div class="skill-step-num">3</div>
+                <div class="skill-step-body">
+                    <div class="skill-step-title">Verifica que Claude Code lo reconoce</div>
+                    <div class="skill-step-desc">Usa cualquiera de estos tres métodos dentro de Claude Code para confirmar que Skill Creator está instalado y listo:</div>
+                    <div class="cmd-badges" style="margin-top:10px">
+                        <span class="cmd-badge"><span class="slash">/</span>skills</span>
+                        <span class="cmd-badge"><span class="slash">/</span>manage plugins</span>
+                        <span class="cmd-badge"><span class="quote">"</span>show skills<span class="quote">"</span></span>
+                    </div>
+                    <div class="skill-step-desc" style="margin-top:4px">Los tres muestran las skills activas en el contexto actual. Si ves <code style="font-family:'JetBrains Mono',monospace;font-size:12px">skill-creator</code> en la lista, estás listo.</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="callout azul">
+            <div class="callout-label">Global vs local — la regla rápida</div>
+            <p>Si construyes skills que quieres reutilizar en varios proyectos, global. Si la skill es específica de un proyecto concreto, local. En caso de duda, empieza con global — siempre puedes moverla después.</p>
+        </div>
+    </section>
+
+    <!-- ── S03: DESCRIBE CON CRITERIO ── -->
+    <section class="section" id="s03">
+        <div class="section-num">03</div>
+        <h2>Describe tu skill antes de crearla</h2>
+        <p>El error más común al usar Skill Creator no está en la instalación ni en los comandos. Está en ir directo a crear sin haber pensado primero qué quieres crear exactamente.</p>
+        <p>Skill Creator te hará preguntas. Si no has pensado las respuestas antes, la skill que saldrá será genérica. Si sí las has pensado, será tuya.</p>
+
+        <div class="section-sub">Las 3 preguntas que definen cualquier skill</div>
+
+        <div class="design-card">
+            <div class="design-card-title">Define tu skill aquí antes de abrir Skill Creator</div>
+            <div class="design-row">
+                <div class="design-label">Trigger — ¿qué lo dispara?</div>
+                <div class="design-hint">Ej: "Cuando empiezo a producir un nuevo recurso HTML para la biblioteca"</div>
+                <input class="design-input" type="text" placeholder="¿Cuándo quieres que se active esta skill?" aria-label="Trigger de tu skill">
+            </div>
+            <div class="design-row">
+                <div class="design-label">Acción — ¿qué hace exactamente? (una sola cosa)</div>
+                <div class="design-hint">Ej: "Genera la estructura HTML completa con el template correcto y las secciones del brief"</div>
+                <input class="design-input" type="text" placeholder="¿Qué hace la skill, paso a paso?" aria-label="Acción de tu skill">
+            </div>
+            <div class="design-row">
+                <div class="design-label">Resultado — ¿qué entrega?</div>
+                <div class="design-hint">Ej: "Un archivo HTML listo para revisar y publicar en la biblioteca"</div>
+                <input class="design-input" type="text" placeholder="¿Cuál es el output concreto?" aria-label="Resultado de tu skill">
+            </div>
+        </div>
+
+        <div class="section-sub">La diferencia entre un prompt vago y uno con criterio</div>
+
+        <div class="prompt-compare">
+            <div class="prompt-col malo">
+                <div class="prompt-col-label">Prompt vago</div>
+                <p>"Crea una skill para gestionar mi Instagram"</p>
+            </div>
+            <div class="prompt-col bueno">
+                <div class="prompt-col-label">Prompt con criterio</div>
+                <p>"Quiero una skill que, dado un @handle de Instagram, acceda al perfil, descargue foto, bio y stats, y genere un archivo HTML de web de marca personal con secciones hero, galería y contacto."</p>
+            </div>
+        </div>
+
+        <p>La diferencia no es la longitud — es la precisión. El prompt vago obliga a Skill Creator a interpretar. El prompt con criterio deja poco espacio para ambigüedad.</p>
+
+        <div class="callout">
+            <div class="callout-label">La regla de una responsabilidad</div>
+            <p>Una skill bien construida hace <strong>una sola cosa</strong>. Si necesitas dos cosas, construye dos skills. Las skills que intentan abarcar demasiado fallan con más frecuencia y son más difíciles de mejorar.</p>
+        </div>
+
+        <div class="section-sub">Cómo usas Skill Creator</div>
+        <p>Con tus 3 respuestas listas, abre Claude Code y ejecuta:</p>
+
+        <div class="code-block">
+            <span class="slash">/</span>skill-creator
+        </div>
+
+        <p style="margin-top:12px">Skill Creator te guiará con preguntas — las mismas que acabas de responder, con más detalle. Al terminar genera la carpeta de tu nueva skill dentro de <code style="font-family:'JetBrains Mono',monospace;font-size:12.5px">.claude/skills/</code>, con el <code style="font-family:'JetBrains Mono',monospace;font-size:12.5px">SKILL.md</code> que Claude Code leerá automáticamente desde ese momento.</p>
+    </section>
+
+    <!-- ── S04: USA TU SKILL ── -->
+    <section class="section" id="s04">
+        <div class="section-num">04</div>
+        <h2>Usa la skill que construiste</h2>
+        <p>Una vez generada, tu skill se activa como cualquier otra. Escribe su nombre con la barra al inicio dentro de Claude Code:</p>
+
+        <div class="code-block">
+            <span class="slash">/</span>nombre-de-tu-skill
+        </div>
+
+        <p style="margin-top:12px">Si tienes varias skills activas en el mismo proyecto, puedes verificar cuál se está usando con los mismos comandos de verificación del paso de instalación:</p>
+
+        <div class="cmd-badges">
+            <span class="cmd-badge"><span class="slash">/</span>skills</span>
+            <span class="cmd-badge"><span class="slash">/</span>manage plugins</span>
+            <span class="cmd-badge"><span class="quote">"</span>show skills<span class="quote">"</span></span>
+        </div>
+
+        <div class="callout verde">
+            <div class="callout-label">Qué hacer si el resultado no es el esperado</div>
+            <p>Vuelve a las 3 preguntas, no al código. En la mayoría de los casos el problema está en la definición — la skill hace lo que le dijiste que hiciera. Si el resultado no es el que querías, el trigger, la acción o el resultado no estaban bien definidos. Vuelve al paso 03 y afina.</p>
+        </div>
+
+        <div class="section-sub">Lo que es posible construir</div>
+        <p>Para que tengas una referencia concreta de hasta dónde llega una skill bien descrita, aquí hay un ejemplo real.</p>
+
+        <div class="skill-example">
+            <div class="skill-example-header">
+                <span class="skill-example-badge">Ejemplo real</span>
+                <span class="skill-example-name">Instagram Business Pages</span>
+            </div>
+            <p class="skill-example-desc">Una skill que convierte cualquier @handle de Instagram en una web de marca personal profesional. Accede al perfil, descarga foto, bio, stats y fotos recientes — y genera un archivo HTML completo con hero, galería y sección de contacto.</p>
+        </div>
+
+        <div class="compare-wrap">
+            <div class="compare-col">
+                <div class="compare-label antes">Antes</div>
+                <img src="assets/instagram-antes.png" alt="Perfil de Instagram convencional" class="compare-img">
+                <div class="compare-caption">Un perfil de Instagram. Solo eso.</div>
+            </div>
+            <div class="compare-arrow">→</div>
+            <div class="compare-col">
+                <div class="compare-label despues">Después</div>
+                <img src="assets/instagram-despues.gif" alt="Web de marca personal generada automáticamente" class="compare-img">
+                <div class="compare-caption">Una web de marca personal. Generada automáticamente.</div>
+            </div>
+        </div>
+
+        <div class="callout">
+            <div class="callout-label">Lo que hace posible esto</div>
+            <p>No hay código escrito a mano. Solo una skill bien descrita que sabe exactamente qué disparador espera, qué tiene que hacer y qué tiene que entregar. Eso es construir con criterio propio.</p>
+        </div>
+    </section>
+
+    <!-- ── S05: DEL SKILL AL KIT ── -->
+    <section class="section" id="s05">
+        <div class="section-num">05</div>
+        <h2>De una skill a un kit</h2>
+        <p>Una skill resuelve un problema. Un kit resuelve un workflow completo.</p>
+        <p>Cuando tienes varias skills trabajando juntas — cada una haciendo una cosa bien — empiezas a tener un sistema real. No una colección de herramientas sueltas. Un sistema con criterio, diseñado para cómo tú trabajas.</p>
+
+        <div class="callout verde">
+            <div class="callout-label">Dónde estás ahora</div>
+            <p>Tienes Skill Creator instalado. Tienes el framework para describir cualquier skill. Tienes la primera versión funcionando. El siguiente paso no es optimizarla — es entender cómo encaja en un sistema más grande.</p>
+        </div>
+
+        <a href="2-5.html" class="next-hook">
+            <div class="next-hook-arrow">
+                <svg width="14" height="14" fill="none" stroke="white" stroke-width="2.5" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+            </div>
+            <div class="next-hook-text">
+                <div class="next-hook-label">Siguiente — 2.5 · Casos reales · Sistema completo</div>
+                <div class="next-hook-title">Mi sistema completo — actualización viva semana a semana</div>
+            </div>
+        </a>
+    </section>
+
+    <!-- ── CHECKLIST ── -->
+    <div class="checklist-section" id="checklist">
+        <div class="checklist-title">Lista de comprobación</div>
+        <ul class="checklist-items" id="checklistItems">
+            <li onclick="toggleCheck(this)"><span class="check-box"></span><span class="check-text">Tengo claro por qué las skills se instalan en Claude Code y no en el chat convencional</span></li>
+            <li onclick="toggleCheck(this)"><span class="check-box"></span><span class="check-text">He instalado Skill Creator y Claude lo reconoce — lo verifiqué con uno de los tres comandos</span></li>
+            <li onclick="toggleCheck(this)"><span class="check-box"></span><span class="check-text">He respondido las 3 preguntas (trigger, acción, resultado) antes de abrir Skill Creator</span></li>
+            <li onclick="toggleCheck(this)"><span class="check-box"></span><span class="check-text">Tengo una primera versión de mi skill funcionando — aunque no sea perfecta</span></li>
+            <li onclick="toggleCheck(this)"><span class="check-box"></span><span class="check-text">Sé que si algo falla, el problema está en la definición — no en el código</span></li>
+        </ul>
+    </div>
+
+    <!-- FOOTER -->
+    <footer class="resource-footer">
+        <a href="2-3.html" class="footer-back">
+            <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+            Nivel 2 · Herramientas
+        </a>
+        <a href="2-5.html" class="footer-next">
+            Mi sistema completo
+            <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </a>
+    </footer>
+
+</div>
+
+<script>
+function toggleCheck(li) {
+    li.classList.toggle('done');
+    li.querySelector('.check-box').textContent = li.classList.contains('done') ? '✓' : '';
+    const items = document.querySelectorAll('#checklistItems li');
+    if ([...items].every(i => i.classList.contains('done'))) launchConfetti();
+}
+
+function launchConfetti() {
+    const canvas = document.getElementById('confettiCanvas');
+    if (!canvas) return;
+    canvas.style.display = 'block';
+    const ctx = canvas.getContext('2d');
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+    const colors = ['#B45309','#D97706','#FDE68A','#059669','#7C3AED','#2563EB','#F59E0B','#10B981','#DC2626'];
+    const pieces = Array.from({length: 140}, () => ({
+        x: Math.random() * canvas.width,
+        y: -10 - Math.random() * canvas.height * 0.6,
+        w: Math.random() * 11 + 5,
+        h: Math.random() * 6 + 3,
+        color: colors[Math.floor(Math.random() * colors.length)],
+        vx: (Math.random() - 0.5) * 4,
+        vy: Math.random() * 3 + 1.5,
+        rot: Math.random() * 360,
+        vrot: (Math.random() - 0.5) * 10,
+        alpha: 1,
+        shape: Math.random() > 0.5 ? 'rect' : 'circle'
+    }));
+    let frame = 0;
+    (function animate() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        pieces.forEach(p => {
+            p.x += p.vx; p.y += p.vy; p.rot += p.vrot; p.vy += 0.06;
+            if (frame > 90) p.alpha = Math.max(0, p.alpha - 0.012);
+            ctx.save();
+            ctx.globalAlpha = p.alpha;
+            ctx.translate(p.x + p.w / 2, p.y + p.h / 2);
+            ctx.rotate(p.rot * Math.PI / 180);
+            ctx.fillStyle = p.color;
+            if (p.shape === 'circle') {
+                ctx.beginPath(); ctx.arc(0, 0, p.w / 2, 0, Math.PI * 2); ctx.fill();
+            } else {
+                ctx.fillRect(-p.w / 2, -p.h / 2, p.w, p.h);
+            }
+            ctx.restore();
+        });
+        frame++;
+        if (frame < 170) requestAnimationFrame(animate);
+        else canvas.style.display = 'none';
+    })();
+}
+</script>
+
+<canvas id="confettiCanvas" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:9999;"></canvas>
+</body>
+</html>

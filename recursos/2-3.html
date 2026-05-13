@@ -1,0 +1,840 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Las herramientas que uso para construir (y lo que cuestan de verdad) — alex.decode</title>
+    <meta name="description" content="El stack real de alex.decode con precios exactos: Claude Pro, Google AI Plus e Higgsfield Plus. Cuándo crear tus propias skills y cuándo descargar las que ya existen.">
+    <meta name="keywords" content="herramientas IA 2026, stack IA español, Claude Code herramientas, Skill Creator, skills IA, NotebookLM, Higgsfield, herramientas IA gratis alternativas">
+    <link rel="icon" type="image/svg+xml" href="../favicon.svg">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        :root {
+            --bg:        #FAFAF7;
+            --surface:   #FFFFFF;
+            --border:    #E8E2D9;
+            --text:      #1C1917;
+            --muted:     #78716C;
+            --faint:     #B0A89E;
+            --amber:     #B45309;
+            --amber-mid: #D97706;
+            --amber-dim: rgba(180,83,9,0.07);
+            --rojo:  #DC2626; --rojo-d:  rgba(220,38,38,0.07);
+            --amar:  #D97706; --amar-d:  rgba(217,119,6,0.07);
+            --azul:  #2563EB; --azul-d:  rgba(37,99,235,0.07);
+            --verde: #059669; --verde-d: rgba(5,150,105,0.07);
+            --morad: #7C3AED; --morad-d: rgba(124,58,237,0.07);
+        }
+
+        html { scroll-behavior: smooth; }
+        body {
+            background: var(--bg);
+            color: var(--text);
+            font-family: 'Inter', system-ui, sans-serif;
+            font-size: 15px;
+            line-height: 1.7;
+            min-height: 100vh;
+        }
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0; left: 0; right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, #047857 0%, #059669 50%, #047857 100%);
+            z-index: 100;
+        }
+
+        .wrap { max-width: 720px; margin: 0 auto; padding: 0 24px; }
+
+        /* ── NAV ── */
+        .top-nav {
+            padding: 28px 0 0;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 11px;
+            color: var(--faint);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
+        .top-nav a { color: var(--amber); text-decoration: none; transition: opacity .15s; }
+        .top-nav a:hover { opacity: .7; }
+        .top-nav .sep { color: var(--faint); }
+        .nav-owl {
+            margin-left: auto;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            color: var(--faint);
+            text-decoration: none;
+            font-size: 10px;
+            letter-spacing: .5px;
+            transition: opacity .15s;
+            animation: owlFloat 5s ease-in-out 1s infinite;
+        }
+        .nav-owl:hover { opacity: .7; color: var(--amber); }
+        @keyframes owlFloat { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-4px)} }
+
+        /* ── COVER ── */
+        .cover-wrap { margin: 28px 0 0; border-radius: 12px; overflow: hidden; border: 1px solid var(--border); }
+        .cover-wrap svg { display: block; width: 100%; height: auto; }
+
+        /* ── HEADER ── */
+        .resource-header { padding: 28px 0; border-bottom: 1px solid var(--border); margin-bottom: 28px; }
+        .tag {
+            display: inline-flex; align-items: center; gap: 5px;
+            font-size: 10px; font-weight: 600; padding: 3px 10px;
+            border-radius: 100px; margin-bottom: 16px;
+        }
+        .tag .dot { width: 5px; height: 5px; border-radius: 50%; flex-shrink: 0; }
+        .tag.verde { background: var(--verde-d); color: var(--verde); }
+        .tag.verde .dot { background: var(--verde); }
+        .resource-title {
+            font-family: 'Playfair Display', Georgia, serif;
+            font-size: clamp(24px, 4vw, 34px);
+            font-weight: 700;
+            line-height: 1.18;
+            letter-spacing: -.3px;
+            margin-bottom: 14px;
+        }
+        .resource-sub { font-size: 15px; color: var(--muted); line-height: 1.6; margin-bottom: 18px; max-width: 560px; }
+        .resource-meta {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 11px;
+            color: var(--faint);
+            display: flex;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+        .resource-meta span { display: flex; align-items: center; gap: 5px; }
+        .meta-dot { width: 3px; height: 3px; border-radius: 50%; background: var(--faint); }
+
+        /* ── LEARN BOX ── */
+        .learn-box { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 18px 22px; margin-bottom: 28px; }
+        .learn-box-title { font-family: 'JetBrains Mono', monospace; font-size: 9px; color: var(--faint); letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 12px; }
+        .learn-list { list-style: none; display: flex; flex-direction: column; gap: 8px; }
+        .learn-item { display: flex; align-items: flex-start; gap: 8px; font-size: 13px; color: var(--text); line-height: 1.45; }
+        .learn-item::before { content: '→'; color: var(--verde); font-family: 'JetBrains Mono', monospace; font-size: 11px; flex-shrink: 0; margin-top: 1px; }
+
+        /* ── TOC ── */
+        .toc { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 16px 20px; margin-bottom: 48px; }
+        .toc-label { font-family: 'JetBrains Mono', monospace; font-size: 9px; color: var(--faint); letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 10px; }
+        .toc-links { display: flex; flex-wrap: wrap; gap: 6px; }
+        .toc-links a {
+            font-size: 12px; color: var(--muted); text-decoration: none;
+            padding: 4px 10px; border-radius: 6px; border: 1px solid var(--border);
+            transition: border-color .15s, color .15s, background .15s; white-space: nowrap;
+        }
+        .toc-links a:hover { border-color: var(--verde); color: var(--verde); background: var(--verde-d); }
+
+        /* ── SECTIONS ── */
+        .section { margin-bottom: 52px; scroll-margin-top: 32px; }
+        .section-num { font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--verde); font-weight: 600; letter-spacing: 1px; margin-bottom: 8px; }
+        .section h2 { font-family: 'Playfair Display', serif; font-size: 22px; font-weight: 700; line-height: 1.3; margin-bottom: 16px; }
+        .section p { color: var(--text); margin-bottom: 14px; }
+        .section p:last-child { margin-bottom: 0; }
+        .section-sub { font-family: 'JetBrains Mono', monospace; font-size: 9px; font-weight: 600; color: var(--verde); letter-spacing: 1.2px; text-transform: uppercase; margin: 28px 0 10px; }
+
+        /* ── CALLOUT ── */
+        .callout { border-left: 3px solid var(--amber); background: var(--amber-dim); border-radius: 0 8px 8px 0; padding: 14px 18px; margin: 20px 0; }
+        .callout-label { font-family: 'JetBrains Mono', monospace; font-size: 9px; font-weight: 600; color: var(--amber); letter-spacing: 1.2px; text-transform: uppercase; margin-bottom: 6px; }
+        .callout p { font-size: 14px; color: var(--text); margin: 0; }
+        .callout.verde { border-left-color: var(--verde); background: var(--verde-d); }
+        .callout.verde .callout-label { color: var(--verde); }
+        .callout.azul { border-left-color: var(--azul); background: var(--azul-d); }
+        .callout.azul .callout-label { color: var(--azul); }
+
+        /* ── GOLD QUOTE ── */
+        .gold-quote {
+            background: linear-gradient(135deg, var(--amber-dim) 0%, rgba(217,119,6,0.04) 100%);
+            border: 1.5px solid rgba(180,83,9,0.2);
+            border-radius: 12px;
+            padding: 22px 28px 20px;
+            margin: 24px 0;
+            text-align: center;
+            position: relative;
+        }
+        .gold-quote::before { content: '"'; position: absolute; top: 2px; left: 16px; font-family: 'Playfair Display', serif; font-size: 52px; line-height: 1; color: rgba(180,83,9,0.12); }
+        .gold-quote-text { font-family: 'Playfair Display', serif; font-size: 17px; font-weight: 700; line-height: 1.5; color: var(--text); padding: 0 8px; }
+        .gold-quote-text em { color: var(--amber); font-style: normal; }
+
+        /* ── TOOL CARDS (stack real) ── */
+        .tool-stack { display: flex; flex-direction: column; gap: 10px; margin: 24px 0 12px; }
+        .tool-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 16px 20px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            transition: border-color .15s;
+        }
+        .tool-card:hover { border-color: var(--verde); }
+        .tool-card-body { flex: 1; min-width: 0; }
+        .tool-card-name { font-size: 14px; font-weight: 700; color: var(--text); margin-bottom: 3px; }
+        .tool-card-desc { font-size: 12.5px; color: var(--muted); line-height: 1.45; }
+        .tool-card-alt { font-size: 11px; color: var(--faint); margin-top: 5px; font-style: italic; }
+        .tool-card-right { text-align: right; flex-shrink: 0; }
+        .tool-price-badge {
+            display: inline-block;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 12px;
+            font-weight: 700;
+            padding: 5px 12px;
+            border-radius: 8px;
+            margin-bottom: 4px;
+            white-space: nowrap;
+        }
+        .tool-price-badge.paid { background: var(--amar-d); color: var(--amar); }
+        .tool-price-badge.free { background: var(--verde-d); color: var(--verde); }
+        .tool-total {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 20px;
+            background: var(--verde-d);
+            border: 1px solid rgba(5,150,105,0.22);
+            border-radius: 10px;
+            margin-bottom: 4px;
+        }
+        .tool-total-label { font-family: 'JetBrains Mono', monospace; font-size: 11px; font-weight: 600; color: var(--verde); }
+        .tool-total-amount { font-family: 'JetBrains Mono', monospace; font-size: 16px; font-weight: 700; color: var(--verde); }
+        .tool-total-note { font-size: 11px; color: var(--muted); margin-left: 6px; font-weight: 400; }
+
+        /* ── TOOL CHIPS (marketplaces) ── */
+        .tool-chips { display: flex; flex-wrap: wrap; gap: 8px; margin: 14px 0 20px; }
+        .tool-chip {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 11px;
+            padding: 6px 13px;
+            border-radius: 100px;
+            border: 1px solid var(--border);
+            color: var(--muted);
+            text-decoration: none;
+            transition: border-color .15s, color .15s, background .15s;
+            white-space: nowrap;
+        }
+        .tool-chip:hover { border-color: var(--verde); color: var(--verde); background: var(--verde-d); }
+        .tool-chip.rec { border-color: var(--verde); color: var(--verde); background: var(--verde-d); }
+
+        /* ── TOOL BANNER (Skill Creator) ── */
+        .tool-banner-wrap {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 18px 20px;
+            margin: 20px 0;
+            display: flex;
+            align-items: flex-start;
+            gap: 16px;
+            transition: border-color .15s;
+        }
+        .tool-banner-wrap:hover { border-color: var(--verde); }
+        .tool-banner-icon {
+            width: 42px; height: 42px;
+            border-radius: 10px;
+            background: var(--verde-d);
+            border: 1px solid rgba(5,150,105,0.2);
+            display: flex; align-items: center; justify-content: center;
+            flex-shrink: 0;
+            color: var(--verde);
+        }
+        .tool-banner-body { flex: 1; }
+        .tool-banner-name { font-size: 15px; font-weight: 700; color: var(--text); margin-bottom: 4px; }
+        .tool-banner-desc { font-size: 13px; color: var(--muted); line-height: 1.5; margin-bottom: 12px; }
+        .tool-github-tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 10px;
+            font-weight: 600;
+            color: var(--verde);
+            text-decoration: none;
+            border: 1px solid rgba(5,150,105,0.3);
+            border-radius: 100px;
+            padding: 5px 12px;
+            transition: background .15s;
+        }
+        .tool-github-tag:hover { background: var(--verde-d); }
+
+        /* ── SPOILER BOX (teaser 2.4) ── */
+        .spoiler-box {
+            border: 1.5px dashed rgba(5,150,105,0.4);
+            background: var(--verde-d);
+            border-radius: 10px;
+            padding: 16px 20px;
+            margin: 16px 0 20px;
+            display: flex;
+            gap: 14px;
+            align-items: flex-start;
+        }
+        .spoiler-icon { font-size: 18px; flex-shrink: 0; margin-top: 1px; }
+        .spoiler-body {}
+        .spoiler-label { font-family: 'JetBrains Mono', monospace; font-size: 9px; font-weight: 600; color: var(--verde); letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 4px; }
+        .spoiler-text { font-size: 13.5px; color: var(--text); line-height: 1.55; }
+        .spoiler-text strong { color: var(--verde); }
+
+        /* ── DECISION TABLE ── */
+        .table-wrap { overflow-x: auto; margin: 16px 0; }
+        table { width: 100%; border-collapse: collapse; font-size: 13px; }
+        thead th {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 10px;
+            font-weight: 600;
+            letter-spacing: .8px;
+            text-transform: uppercase;
+            padding: 10px 14px;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            text-align: left;
+        }
+        thead th.th-verde-l { color: var(--verde); border-top-left-radius: 8px; }
+        thead th.th-verde-r { color: var(--verde); border-top-right-radius: 8px; }
+        tbody td { padding: 10px 14px; border: 1px solid var(--border); vertical-align: top; line-height: 1.55; color: var(--text); }
+        tbody tr:last-child td:first-child { border-bottom-left-radius: 8px; }
+        tbody tr:last-child td:last-child { border-bottom-right-radius: 8px; }
+        tbody tr:nth-child(even) td { background: var(--surface); }
+        .rec-badge { font-family: 'JetBrains Mono', monospace; font-size: 10px; font-weight: 600; padding: 2px 8px; border-radius: 100px; white-space: nowrap; }
+        .rec-badge.crea { background: var(--verde-d); color: var(--verde); }
+        .rec-badge.descarga { background: var(--azul-d); color: var(--azul); }
+
+        /* ── NO-USE CARD (OpenClaw) ── */
+        .no-use-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 20px 22px;
+            margin: 20px 0;
+        }
+        .no-use-header { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; flex-wrap: wrap; }
+        .no-use-badge {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 9px;
+            font-weight: 600;
+            background: var(--rojo-d);
+            color: var(--rojo);
+            padding: 3px 9px;
+            border-radius: 100px;
+            letter-spacing: .8px;
+            text-transform: uppercase;
+            flex-shrink: 0;
+        }
+        .no-use-name { font-size: 15px; font-weight: 700; color: var(--text); }
+        .no-use-link {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 10px;
+            color: var(--muted);
+            text-decoration: none;
+            margin-left: auto;
+            border: 1px solid var(--border);
+            padding: 3px 9px;
+            border-radius: 100px;
+            transition: color .15s, border-color .15s;
+        }
+        .no-use-link:hover { color: var(--amber); border-color: var(--amber); }
+        .no-use-reason { font-size: 13.5px; color: var(--text); line-height: 1.65; margin-bottom: 10px; }
+        .no-use-note { font-size: 12px; color: var(--muted); font-style: italic; line-height: 1.5; }
+
+        /* ── NEXT HOOK ── */
+        .next-hook {
+            display: flex; align-items: center; gap: 12px;
+            background: var(--verde-d);
+            border: 1px solid rgba(5,150,105,0.18);
+            border-radius: 10px;
+            padding: 16px 20px;
+            margin: 28px 0 0;
+            text-decoration: none;
+            transition: background .15s, gap .15s;
+        }
+        .next-hook:hover { background: rgba(5,150,105,0.12); gap: 16px; }
+        .next-hook-arrow { width: 32px; height: 32px; border-radius: 50%; background: var(--verde); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+        .next-hook-text { flex: 1; }
+        .next-hook-label { font-family: 'JetBrains Mono', monospace; font-size: 9px; color: var(--verde); letter-spacing: 1.2px; text-transform: uppercase; margin-bottom: 3px; }
+        .next-hook-title { font-size: 13.5px; font-weight: 600; color: var(--text); line-height: 1.3; }
+
+        /* ── CHECKLIST ── */
+        .checklist-section { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 24px 26px; margin-bottom: 52px; }
+        .checklist-title { font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--amber); font-weight: 600; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 16px; }
+        .checklist-items { list-style: none; display: flex; flex-direction: column; gap: 10px; }
+        .checklist-items li { display: flex; align-items: flex-start; gap: 10px; font-size: 13.5px; color: var(--text); line-height: 1.5; cursor: pointer; }
+        .check-box { width: 17px; height: 17px; border: 1.5px solid var(--border); border-radius: 4px; flex-shrink: 0; margin-top: 1px; transition: border-color .15s, background .15s; display: flex; align-items: center; justify-content: center; font-size: 10px; color: white; }
+        .checklist-items li.done .check-box { background: var(--verde); border-color: var(--verde); }
+        .checklist-items li.done .check-text { text-decoration: line-through; color: var(--muted); }
+
+        /* ── FOOTER ── */
+        .resource-footer { border-top: 1px solid var(--border); padding: 32px 0 56px; display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
+        .footer-back { font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--muted); text-decoration: none; display: flex; align-items: center; gap: 6px; transition: color .15s; }
+        .footer-back:hover { color: var(--amber); }
+        .footer-next { font-size: 13px; font-weight: 500; color: var(--amber); text-decoration: none; display: flex; align-items: center; gap: 6px; transition: gap .15s; }
+        .footer-next:hover { gap: 10px; }
+
+        /* ── RESPONSIVE ── */
+        @media (max-width: 600px) {
+            .wrap { padding: 0 16px; }
+            .resource-title { font-size: 22px; }
+            .tool-card { flex-direction: column; align-items: flex-start; }
+            .tool-card-right { align-self: flex-start; }
+            .no-use-link { display: none; }
+        }
+    </style>
+</head>
+<body>
+<div class="wrap">
+
+    <!-- NAV -->
+    <nav class="top-nav">
+        <a href="../index.html">alex.decode</a>
+        <span class="sep">/</span>
+        <span>Biblioteca</span>
+        <span class="sep">/</span>
+        <span>Nivel 2</span>
+        <span class="sep">/</span>
+        <span>Herramientas reales</span>
+        <a href="../index.html" class="nav-owl" aria-label="Volver a la biblioteca">
+            <svg width="28" height="32" viewBox="0 0 140 160" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <polygon points="44,32 36,6 52,26" fill="#92400E"/>
+                <polygon points="96,32 104,6 88,26" fill="#92400E"/>
+                <circle cx="70" cy="56" r="38" fill="#B45309"/>
+                <ellipse cx="70" cy="58" rx="26" ry="24" fill="#D97706" opacity="0.28"/>
+                <circle cx="56" cy="52" r="13" fill="#FEF3C7"/>
+                <circle cx="84" cy="52" r="13" fill="#FEF3C7"/>
+                <circle cx="56" cy="52" r="6.5" fill="#1C1917"/>
+                <circle cx="84" cy="52" r="6.5" fill="#1C1917"/>
+                <circle cx="59" cy="49" r="2.2" fill="white"/>
+                <circle cx="87" cy="49" r="2.2" fill="white"/>
+                <polygon points="63,64 77,64 70,75" fill="#D97706"/>
+                <ellipse cx="70" cy="120" rx="34" ry="36" fill="#B45309"/>
+                <ellipse cx="70" cy="126" rx="20" ry="24" fill="#D97706" opacity="0.22"/>
+            </svg>
+        </a>
+    </nav>
+
+    <!-- COVER SVG -->
+    <div class="cover-wrap">
+        <svg viewBox="0 0 800 350" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+                <linearGradient id="verdeGrad23" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stop-color="#059669"/>
+                    <stop offset="100%" stop-color="#064E3B"/>
+                </linearGradient>
+                <linearGradient id="iceAbove23" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stop-color="#FFFFFF"/>
+                    <stop offset="100%" stop-color="#F0FDF4"/>
+                </linearGradient>
+            </defs>
+
+            <!-- Sky background -->
+            <rect width="800" height="350" fill="#F5F4F0"/>
+
+            <!-- Left stat (sky) -->
+            <text x="110" y="118" text-anchor="middle" font-family="Georgia,serif" font-size="34" fill="#D6D3D1" font-weight="700">3</text>
+            <text x="110" y="138" text-anchor="middle" font-family="system-ui,sans-serif" font-size="9" fill="#B0A89E" letter-spacing=".5">suscripciones</text>
+            <text x="110" y="152" text-anchor="middle" font-family="system-ui,sans-serif" font-size="9" fill="#B0A89E" letter-spacing=".5">activas</text>
+
+            <!-- Right stat (sky) -->
+            <text x="690" y="118" text-anchor="middle" font-family="Georgia,serif" font-size="34" fill="#B45309" font-weight="700">$77</text>
+            <text x="690" y="138" text-anchor="middle" font-family="system-ui,sans-serif" font-size="9" fill="#B0A89E" letter-spacing=".5">visibles</text>
+            <text x="690" y="152" text-anchor="middle" font-family="system-ui,sans-serif" font-size="9" fill="#B0A89E" letter-spacing=".5">al mes</text>
+
+            <!-- Label top -->
+            <text x="400" y="22" text-anchor="middle" font-family="system-ui,sans-serif" font-size="9" fill="#A8A29E" letter-spacing="2" font-weight="700">LO QUE PAGAS</text>
+
+            <!-- Water (verde) -->
+            <path d="M0,190 C133,178 267,202 400,190 C533,178 667,202 800,190 L800,350 L0,350 Z" fill="url(#verdeGrad23)"/>
+
+            <!-- Wave shimmer -->
+            <path d="M0,190 C133,178 267,202 400,190 C533,178 667,202 800,190" fill="none" stroke="#34D399" stroke-width="1.5" opacity=".45"/>
+
+            <!-- Label underwater -->
+            <text x="400" y="214" text-anchor="middle" font-family="system-ui,sans-serif" font-size="9" fill="#6EE7B7" letter-spacing="2" font-weight="700">LA INVERSIÓN REAL</text>
+
+            <!-- ICEBERG above water -->
+            <path d="M400,36 L444,96 L460,144 L468,190 L332,190 L340,144 L356,96 Z" fill="url(#iceAbove23)" stroke="#E8E2D9" stroke-width="1.5"/>
+
+            <!-- Ice texture lines -->
+            <line x1="344" y1="134" x2="456" y2="134" stroke="#DDE8D9" stroke-width=".8" opacity=".55"/>
+            <line x1="336" y1="162" x2="464" y2="162" stroke="#DDE8D9" stroke-width=".8" opacity=".35"/>
+
+            <!-- Price inside tip -->
+            <text x="400" y="110" text-anchor="middle" font-family="Georgia,serif" font-size="22" fill="#B45309" font-weight="700">$77/mes</text>
+            <text x="400" y="128" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="8" fill="#78716C" letter-spacing=".6">Claude · Google AI · Higgsfield</text>
+
+            <!-- ICEBERG below water (outline + faint fill) -->
+            <path d="M332,190 L468,190 L608,258 L642,322 L158,322 L192,258 Z" fill="white" opacity=".08"/>
+            <path d="M332,190 L468,190 L608,258 L642,322 L158,322 L192,258 Z" fill="none" stroke="white" stroke-width="1.5" opacity=".28"/>
+
+            <!-- Fading depth items -->
+            <text x="400" y="250" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="18" fill="white" font-weight="700" opacity=".92">Tiempo</text>
+            <line x1="308" y1="258" x2="492" y2="258" stroke="white" stroke-width=".7" opacity=".14"/>
+
+            <text x="400" y="284" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="17" fill="white" font-weight="700" opacity=".74">Conocimiento</text>
+            <line x1="286" y1="292" x2="514" y2="292" stroke="white" stroke-width=".7" opacity=".11"/>
+
+            <text x="400" y="317" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="16" fill="white" font-weight="700" opacity=".55">Anticipación</text>
+
+            <!-- Bubbles -->
+            <circle cx="138" cy="238" r="4" fill="white" opacity=".11"/>
+            <circle cx="662" cy="252" r="6" fill="white" opacity=".08"/>
+            <circle cx="706" cy="308" r="4" fill="white" opacity=".1"/>
+            <circle cx="108" cy="298" r="5" fill="white" opacity=".07"/>
+            <circle cx="648" cy="318" r="3" fill="white" opacity=".11"/>
+        </svg>
+    </div>
+
+    <!-- HEADER -->
+    <header class="resource-header">
+        <div class="tag verde"><span class="dot"></span>Herramientas</div>
+        <h1 class="resource-title">Las herramientas que uso para construir (y lo que cuestan de verdad)</h1>
+        <p class="resource-sub">Sin afiliados, sin redondeos. El stack real con precios exactos — y la conclusión que cambia cómo piensas en el coste de construir con IA.</p>
+        <div class="resource-meta">
+            <span>10 min de lectura</span>
+            <span class="meta-dot"></span>
+            <span>Nivel 2</span>
+            <span class="meta-dot"></span>
+            <span>Mayo 2026</span>
+        </div>
+    </header>
+
+    <!-- LEARN BOX -->
+    <div class="learn-box">
+        <div class="learn-box-title">Lo que vas a descubrir</div>
+        <ul class="learn-list">
+            <li class="learn-item">Por qué ningún stack es definitivo — y eso es una ventaja, no un problema</li>
+            <li class="learn-item">Las 3 herramientas de mi stack actual con precios exactos al céntimo</li>
+            <li class="learn-item">Dónde encontrar skills ya construidas y cuándo tiene sentido crear las tuyas</li>
+            <li class="learn-item">La herramienta de agentes que todo el mundo recomienda y que no uso — con la razón exacta</li>
+        </ul>
+    </div>
+
+    <!-- TOC -->
+    <nav class="toc" aria-label="Contenido">
+        <div class="toc-label">En este recurso</div>
+        <div class="toc-links">
+            <a href="#s01">01 Transparencia</a>
+            <a href="#s02">02 Stack real</a>
+            <a href="#s03">03 Skills</a>
+            <a href="#s04">04 Lo que no uso</a>
+            <a href="#s05">05 Stack €0</a>
+            <a href="#checklist">Checklist</a>
+        </div>
+    </nav>
+
+    <!-- ── S01: TRANSPARENCIA ── -->
+    <section class="section" id="s01">
+        <div class="section-num">01</div>
+        <h2>La mayoría de listas de herramientas tienen algo en común</h2>
+        <p>No te dicen cuánto les cuestan de verdad. O tienen acuerdos de afiliado que incentivan recomendar lo que más comisión da, no lo que más funciona.</p>
+        <p>Aquí no hay afiliados ni acuerdos. Publico lo que uso porque el único valor que puedo ofrecerte es honestidad sin filtro — si esto me ayuda a construir, puede ayudarte a ti también.</p>
+
+        <div class="callout verde">
+            <div class="callout-label">El principio detrás</div>
+            <p>No tienes que copiar mi stack. Tienes que entender <em>por qué</em> uso cada herramienta — así puedes decidir cuál tiene sentido para lo que tú construyes. La copia ciega es otra forma de parálisis.</p>
+        </div>
+    </section>
+
+    <!-- ── S02: STACK REAL ── -->
+    <section class="section" id="s02">
+        <div class="section-num">02</div>
+        <h2>Mi stack actual — precios exactos, sin redondear</h2>
+        <p>Esto es lo que pago ahora mismo. No es un stack fijo para siempre — cambia cuando las herramientas cambian o cuando aparece algo mejor. Eso es lo normal.</p>
+
+        <div class="tool-stack">
+            <div class="tool-card">
+                <div class="tool-card-body">
+                    <div class="tool-card-name">Claude Pro</div>
+                    <div class="tool-card-desc">Motor principal de construcción y razonamiento. Donde ocurre la mayoría del trabajo real de este proyecto.</div>
+                    <div class="tool-card-alt">Alternativa: Claude.ai plan gratuito (con límites de uso)</div>
+                </div>
+                <div class="tool-card-right">
+                    <div class="tool-price-badge paid">$20/mes</div>
+                </div>
+            </div>
+
+            <div class="tool-card">
+                <div class="tool-card-body">
+                    <div class="tool-card-name">Google AI Plus</div>
+                    <div class="tool-card-desc">Acceso a NotebookLM para organizar y estructurar fuentes de conocimiento. Mejora la calidad de las referencias que uso al crear contenido.</div>
+                    <div class="tool-card-alt">Alternativa: NotebookLM gratuito (con menos capacidad)</div>
+                </div>
+                <div class="tool-card-right">
+                    <div class="tool-price-badge paid">$8/mes</div>
+                </div>
+            </div>
+
+            <div class="tool-card">
+                <div class="tool-card-body">
+                    <div class="tool-card-name">Higgsfield Plus</div>
+                    <div class="tool-card-desc">Creación y edición de contenido de vídeo para redes. El canal de entrada al funnel necesita producción visual — esto lo resuelve.</div>
+                    <div class="tool-card-alt">Alternativa: Remotion (gratuito, pero requiere más conocimiento técnico)</div>
+                </div>
+                <div class="tool-card-right">
+                    <div class="tool-price-badge paid">$49/mes</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="tool-total">
+            <span class="tool-total-label">Total mensual</span>
+            <span class="tool-total-amount">~$77/mes <span class="tool-total-note">≈ 70€</span></span>
+        </div>
+
+        <div class="gold-quote">
+            <div class="gold-quote-text">La inversión real no son los <em>70€ al mes</em>. Es tiempo, conocimiento y anticipación.</div>
+        </div>
+    </section>
+
+    <!-- ── S03: SKILLS ── -->
+    <section class="section" id="s03">
+        <div class="section-num">03</div>
+        <h2>Hay herramientas que compras. Y hay herramientas que construyes.</h2>
+        <p>Las suscripciones del stack anterior son herramientas que consumes: pagas y usas. Las skills son otro nivel — las configuras una vez y las activas cuando las necesitas. Y lo mejor: muchas ya existen.</p>
+
+        <div class="section-sub">Dónde buscar primero</div>
+        <p>Antes de construir una skill desde cero, comprueba si alguien ya la construyó. La mayoría de flujos habituales tienen solución.</p>
+
+        <div class="tool-chips">
+            <a href="https://claudemarketplaces.com/" target="_blank" rel="noopener" class="tool-chip rec">claudemarketplaces.com</a>
+            <a href="https://github.com/anthropics/skills" target="_blank" rel="noopener" class="tool-chip">github.com/anthropics/skills</a>
+            <span class="tool-chip">GitHub (búsqueda general)</span>
+        </div>
+
+        <div class="callout azul">
+            <div class="callout-label">Si usas Antigravity en lugar de Claude Pro</div>
+            <p>Las skills de Claude Code son compatibles con Antigravity sin modificaciones. Copia la carpeta <code style="font-family:'JetBrains Mono',monospace;font-size:12px">.claude/skills/</code> a <code style="font-family:'JetBrains Mono',monospace;font-size:12px">.agent/skills/</code> y funcionan igual. Una alternativa real si no quieres pagar el plan Pro — el ecosistema de skills es el mismo.</p>
+        </div>
+
+        <div class="section-sub">Cuándo crear la tuya</div>
+        <p>Cuando lo que necesitas no existe — o cuando existe pero no encaja con tu flujo exacto — entra Skill Creator. No es una herramienta más de suscripción: es la que te permite construir las que el mercado no tiene.</p>
+
+        <div class="tool-banner-wrap">
+            <div class="tool-banner-icon">
+                <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+                    <path d="M8 9l-3 3 3 3M16 9l3 3-3 3M12 7l-2 10"/>
+                </svg>
+            </div>
+            <div class="tool-banner-body">
+                <div class="tool-banner-name">Skill Creator</div>
+                <div class="tool-banner-desc">Herramienta oficial de Anthropic para construir skills personalizadas en Claude Code. Con ella puedes crear cualquier capacidad específica que tu flujo de trabajo necesite.</div>
+                <a href="https://github.com/anthropics/skills/tree/main/skills/skill-creator" target="_blank" rel="noopener" class="tool-github-tag">
+                    <svg width="12" height="12" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
+                    Ver en GitHub
+                </a>
+            </div>
+        </div>
+
+        <div class="spoiler-box">
+            <div class="spoiler-icon">👀</div>
+            <div class="spoiler-body">
+                <div class="spoiler-label">Próximo recurso — 2.4</div>
+                <div class="spoiler-text">En el siguiente recurso aprenderás a usar <strong>Skill Creator paso a paso</strong> — desde cero hasta tener tu primera skill funcionando. No hace falta experiencia previa.</div>
+            </div>
+        </div>
+
+        <div class="section-sub">¿Crear o descargar? El criterio</div>
+
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr>
+                        <th class="th-verde-l">Situación</th>
+                        <th class="th-verde-r">Qué hacer</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Existe una skill que hace exactamente lo que necesitas</td>
+                        <td><span class="rec-badge descarga">Descarga</span></td>
+                    </tr>
+                    <tr>
+                        <td>Necesitas algo muy específico de tu flujo de trabajo</td>
+                        <td><span class="rec-badge crea">Crea</span></td>
+                    </tr>
+                    <tr>
+                        <td>Necesitas algo funcionando hoy, sin margen de error</td>
+                        <td><span class="rec-badge descarga">Descarga primero</span></td>
+                    </tr>
+                    <tr>
+                        <td>Quieres entender cómo funciona el sistema por dentro</td>
+                        <td><span class="rec-badge crea">Crea — el proceso enseña</span></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <!-- ── S04: LO QUE NO USO ── -->
+    <section class="section" id="s04">
+        <div class="section-num">04</div>
+        <h2>La herramienta que más me recomiendan y que no tengo en el stack</h2>
+        <p>Que todo el mundo recomiende algo no significa que sea lo correcto para todos. Esta es mi postura.</p>
+
+        <div class="no-use-card">
+            <div class="no-use-header">
+                <span class="no-use-badge">No la uso</span>
+                <span class="no-use-name">OpenClaw</span>
+                <a href="https://openclaw.es/" target="_blank" rel="noopener" class="no-use-link">openclaw.es ↗</a>
+            </div>
+            <p class="no-use-reason">OpenClaw corre con tus permisos de usuario completos: acceso a shell, email, control del navegador y capacidad de actuar en bucle sin pedirte confirmación. Sin programa de bug bounty ni equipo de seguridad dedicado. Si algo sale mal — un prompt injection, un error de ejecución — el impacto puede ser difícil de revertir y el daño ocurre antes de que puedas pararlo.</p>
+            <p class="no-use-note">No es una crítica a la propuesta — es una postura sobre el momento actual. Los agentes autónomos con acceso total son una apuesta arriesgada mientras los marcos de seguridad no estén maduros.</p>
+        </div>
+
+        <div class="section-sub">La alternativa que sí uso</div>
+
+        <div class="tool-banner-wrap">
+            <div class="tool-banner-icon">
+                <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+                    <circle cx="12" cy="8" r="4"/><path d="M20 21a8 8 0 10-16 0"/>
+                </svg>
+            </div>
+            <div class="tool-banner-body">
+                <div class="tool-banner-name">Claude Cowork</div>
+                <div class="tool-banner-desc">Agente de Anthropic para tareas de conocimiento en escritorio. Corre en entorno controlado — pide permiso antes de cada acción relevante y no tiene acceso a email ni apps sin configuración explícita. Anthropic mantiene auditorías de seguridad regulares y es responsable de la infraestructura. <strong>Incluido con Claude Pro sin coste adicional.</strong></div>
+                <a href="https://claude.com/product/cowork" target="_blank" rel="noopener" class="tool-github-tag">
+                    <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6M15 3h6v6M10 14L21 3"/></svg>
+                    Ver Claude Cowork
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- ── S05: STACK €0 ── -->
+    <section class="section" id="s05">
+        <div class="section-num">05</div>
+        <h2>Cómo empezar con €0/mes</h2>
+        <p>Si todavía no estás listo para pagar, no hay excusa de herramientas. Este es el stack gratuito con el que puedes empezar hoy.</p>
+
+        <div class="tool-stack">
+            <div class="tool-card">
+                <div class="tool-card-body">
+                    <div class="tool-card-name">Claude.ai — plan gratuito</div>
+                    <div class="tool-card-desc">Chat y tareas puntuales con límites de uso diario. Suficiente para empezar a construir.</div>
+                </div>
+                <div class="tool-card-right">
+                    <div class="tool-price-badge free">$0</div>
+                </div>
+            </div>
+            <div class="tool-card">
+                <div class="tool-card-body">
+                    <div class="tool-card-name">NotebookLM — plan gratuito</div>
+                    <div class="tool-card-desc">Organización de fuentes de conocimiento sin coste. Perfecto para empezar a estructurar lo que sabes.</div>
+                </div>
+                <div class="tool-card-right">
+                    <div class="tool-price-badge free">$0</div>
+                </div>
+            </div>
+            <div class="tool-card">
+                <div class="tool-card-body">
+                    <div class="tool-card-name">GitHub — repositorios de skills</div>
+                    <div class="tool-card-desc">Acceso a skills ya construidas por la comunidad y por Anthropic. Sin coste, sin límite.</div>
+                </div>
+                <div class="tool-card-right">
+                    <div class="tool-price-badge free">$0</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="callout verde">
+            <div class="callout-label">La conclusión</div>
+            <p>Con estas herramientas tienes todo lo que necesitas para empezar. El siguiente paso no es pagar más — es construir algo. Y para eso está el siguiente recurso.</p>
+        </div>
+
+        <a href="2-4.html" class="next-hook">
+            <div class="next-hook-arrow">
+                <svg width="14" height="14" fill="none" stroke="white" stroke-width="2.5" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+            </div>
+            <div class="next-hook-text">
+                <div class="next-hook-label">Siguiente — 2.4 · Acción · Incluye Skill Creator</div>
+                <div class="next-hook-title">Construye tu primer sistema con criterio propio</div>
+            </div>
+        </a>
+    </section>
+
+    <!-- ── CHECKLIST ── -->
+    <div class="checklist-section" id="checklist">
+        <div class="checklist-title">Lista de comprobación</div>
+        <ul class="checklist-items" id="checklistItems">
+            <li onclick="toggleCheck(this)"><span class="check-box"></span><span class="check-text">Sé lo que Alex gasta al mes en herramientas — y ya no me parece tanto</span></li>
+            <li onclick="toggleCheck(this)"><span class="check-box"></span><span class="check-text">Tengo al menos un marketplace de skills abierto en otra pestaña</span></li>
+            <li onclick="toggleCheck(this)"><span class="check-box"></span><span class="check-text">Entiendo qué es Skill Creator y por qué me va a hacer falta en 2.4</span></li>
+            <li onclick="toggleCheck(this)"><span class="check-box"></span><span class="check-text">Sé por qué OpenClaw no está en el stack de Alex — y lo respeto aunque no comparta la postura</span></li>
+            <li onclick="toggleCheck(this)"><span class="check-box"></span><span class="check-text">Mi excusa de "no tengo herramientas" ya no existe (stack de €0 en mano)</span></li>
+        </ul>
+    </div>
+
+    <!-- FOOTER -->
+    <footer class="resource-footer">
+        <a href="2-2.html" class="footer-back">
+            <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+            Nivel 2 · Conceptos
+        </a>
+        <a href="2-4.html" class="footer-next">
+            Construye tu primer sistema
+            <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </a>
+    </footer>
+
+</div>
+
+<script>
+function toggleCheck(li) {
+    li.classList.toggle('done');
+    li.querySelector('.check-box').textContent = li.classList.contains('done') ? '✓' : '';
+    const items = document.querySelectorAll('#checklistItems li');
+    if ([...items].every(i => i.classList.contains('done'))) launchConfetti();
+}
+
+function launchConfetti() {
+    const canvas = document.getElementById('confettiCanvas');
+    if (!canvas) return;
+    canvas.style.display = 'block';
+    const ctx = canvas.getContext('2d');
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+    const colors = ['#B45309','#D97706','#FDE68A','#059669','#7C3AED','#2563EB','#F59E0B','#10B981','#DC2626'];
+    const pieces = Array.from({length: 140}, () => ({
+        x: Math.random() * canvas.width,
+        y: -10 - Math.random() * canvas.height * 0.6,
+        w: Math.random() * 11 + 5,
+        h: Math.random() * 6 + 3,
+        color: colors[Math.floor(Math.random() * colors.length)],
+        vx: (Math.random() - 0.5) * 4,
+        vy: Math.random() * 3 + 1.5,
+        rot: Math.random() * 360,
+        vrot: (Math.random() - 0.5) * 10,
+        alpha: 1,
+        shape: Math.random() > 0.5 ? 'rect' : 'circle'
+    }));
+    let frame = 0;
+    (function animate() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        pieces.forEach(p => {
+            p.x += p.vx; p.y += p.vy; p.rot += p.vrot; p.vy += 0.06;
+            if (frame > 90) p.alpha = Math.max(0, p.alpha - 0.012);
+            ctx.save();
+            ctx.globalAlpha = p.alpha;
+            ctx.translate(p.x + p.w / 2, p.y + p.h / 2);
+            ctx.rotate(p.rot * Math.PI / 180);
+            ctx.fillStyle = p.color;
+            if (p.shape === 'circle') {
+                ctx.beginPath(); ctx.arc(0, 0, p.w / 2, 0, Math.PI * 2); ctx.fill();
+            } else {
+                ctx.fillRect(-p.w / 2, -p.h / 2, p.w, p.h);
+            }
+            ctx.restore();
+        });
+        frame++;
+        if (frame < 170) requestAnimationFrame(animate);
+        else canvas.style.display = 'none';
+    })();
+}
+</script>
+
+<canvas id="confettiCanvas" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:9999;"></canvas>
+</body>
+</html>

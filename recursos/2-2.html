@@ -1,0 +1,809 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>La lógica detrás de los sistemas: buenas prácticas para que Claude Code rinda de verdad — alex.decode</title>
+    <meta name="description" content="Aprende las buenas prácticas para trabajar con Claude Code: CLAUDE.md, MEMORY.md, /init, /compact y selección de modelo. Construye proyectos sólidos con IA desde la primera sesión.">
+    <meta name="keywords" content="Claude Code buenas prácticas, CLAUDE.md, MEMORY.md, contexto IA, ingeniería de contexto, trabajar con IA, proyectos IA, /compact, /init">
+    <link rel="icon" type="image/svg+xml" href="../favicon.svg">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        :root {
+            --bg:        #FAFAF7;
+            --surface:   #FFFFFF;
+            --border:    #E8E2D9;
+            --text:      #1C1917;
+            --muted:     #78716C;
+            --faint:     #B0A89E;
+            --amber:     #B45309;
+            --amber-mid: #D97706;
+            --amber-dim: rgba(180,83,9,0.07);
+            --rojo:  #DC2626; --rojo-d:  rgba(220,38,38,0.07);
+            --amar:  #D97706; --amar-d:  rgba(217,119,6,0.07);
+            --azul:  #2563EB; --azul-d:  rgba(37,99,235,0.07);
+            --verde: #059669; --verde-d: rgba(5,150,105,0.07);
+            --morad: #7C3AED; --morad-d: rgba(124,58,237,0.07);
+        }
+
+        html { scroll-behavior: smooth; }
+        body {
+            background: var(--bg);
+            color: var(--text);
+            font-family: 'Inter', system-ui, sans-serif;
+            font-size: 15px;
+            line-height: 1.7;
+            min-height: 100vh;
+        }
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0; left: 0; right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, #1D4ED8 0%, #2563EB 50%, #1D4ED8 100%);
+            z-index: 100;
+        }
+
+        .wrap { max-width: 720px; margin: 0 auto; padding: 0 24px; }
+
+        /* ── NAV ── */
+        .top-nav {
+            padding: 28px 0 0;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 11px;
+            color: var(--faint);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
+        .top-nav a { color: var(--amber); text-decoration: none; transition: opacity .15s; }
+        .top-nav a:hover { opacity: .7; }
+        .top-nav .sep { color: var(--faint); }
+        .nav-owl {
+            margin-left: auto;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            color: var(--faint);
+            text-decoration: none;
+            font-size: 10px;
+            letter-spacing: .5px;
+            transition: opacity .15s;
+            animation: owlFloat 5s ease-in-out 1s infinite;
+        }
+        .nav-owl:hover { opacity: .7; color: var(--amber); }
+        @keyframes owlFloat { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-4px)} }
+
+        /* ── COVER ── */
+        .cover-wrap { margin: 28px 0 0; border-radius: 12px; overflow: hidden; border: 1px solid var(--border); }
+        .cover-wrap svg { display: block; width: 100%; height: auto; }
+
+        /* ── HEADER ── */
+        .resource-header { padding: 28px 0 28px; border-bottom: 1px solid var(--border); margin-bottom: 28px; }
+        .tag {
+            display: inline-flex; align-items: center; gap: 5px;
+            font-size: 10px; font-weight: 600; padding: 3px 10px;
+            border-radius: 100px; margin-bottom: 16px;
+        }
+        .tag .dot { width: 5px; height: 5px; border-radius: 50%; flex-shrink: 0; }
+        .tag.azul { background: var(--azul-d); color: var(--azul); }
+        .tag.azul .dot { background: var(--azul); }
+        .resource-title {
+            font-family: 'Playfair Display', Georgia, serif;
+            font-size: clamp(24px, 4vw, 34px);
+            font-weight: 700;
+            line-height: 1.18;
+            letter-spacing: -.3px;
+            margin-bottom: 14px;
+        }
+        .resource-sub { font-size: 15px; color: var(--muted); line-height: 1.6; margin-bottom: 18px; max-width: 560px; }
+        .resource-meta {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 11px;
+            color: var(--faint);
+            display: flex;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+        .resource-meta span { display: flex; align-items: center; gap: 5px; }
+        .meta-dot { width: 3px; height: 3px; border-radius: 50%; background: var(--faint); }
+
+        /* ── LEARN BOX ── */
+        .learn-box {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 18px 22px;
+            margin-bottom: 28px;
+        }
+        .learn-box-title {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 9px;
+            color: var(--faint);
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            margin-bottom: 12px;
+        }
+        .learn-list { list-style: none; display: flex; flex-direction: column; gap: 8px; }
+        .learn-item { display: flex; align-items: flex-start; gap: 8px; font-size: 13px; color: var(--text); line-height: 1.45; }
+        .learn-item::before {
+            content: '→';
+            color: var(--azul);
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 11px;
+            flex-shrink: 0;
+            margin-top: 1px;
+        }
+
+        /* ── TOC ── */
+        .toc { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 16px 20px; margin-bottom: 48px; }
+        .toc-label { font-family: 'JetBrains Mono', monospace; font-size: 9px; color: var(--faint); letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 10px; }
+        .toc-links { display: flex; flex-wrap: wrap; gap: 6px; }
+        .toc-links a {
+            font-size: 12px;
+            color: var(--muted);
+            text-decoration: none;
+            padding: 4px 10px;
+            border-radius: 6px;
+            border: 1px solid var(--border);
+            transition: border-color .15s, color .15s, background .15s;
+            white-space: nowrap;
+        }
+        .toc-links a:hover { border-color: var(--azul); color: var(--azul); background: var(--azul-d); }
+
+        /* ── SECTIONS ── */
+        .section { margin-bottom: 52px; scroll-margin-top: 32px; }
+        .section-num {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 10px;
+            color: var(--azul);
+            font-weight: 600;
+            letter-spacing: 1px;
+            margin-bottom: 8px;
+        }
+        .section h2 { font-family: 'Playfair Display', serif; font-size: 22px; font-weight: 700; line-height: 1.3; margin-bottom: 16px; }
+        .section p { color: var(--text); margin-bottom: 14px; }
+        .section p:last-child { margin-bottom: 0; }
+
+        /* ── CALLOUT ── */
+        .callout { border-left: 3px solid var(--amber); background: var(--amber-dim); border-radius: 0 8px 8px 0; padding: 14px 18px; margin: 20px 0; }
+        .callout-label { font-family: 'JetBrains Mono', monospace; font-size: 9px; font-weight: 600; color: var(--amber); letter-spacing: 1.2px; text-transform: uppercase; margin-bottom: 6px; }
+        .callout p { font-size: 14px; color: var(--text); margin: 0; }
+        .callout.azul { border-left-color: var(--azul); background: var(--azul-d); }
+        .callout.azul .callout-label { color: var(--azul); }
+        .callout.verde { border-left-color: var(--verde); background: var(--verde-d); }
+        .callout.verde .callout-label { color: var(--verde); }
+
+        /* ── GOLD QUOTE ── */
+        .gold-quote {
+            background: linear-gradient(135deg, var(--amber-dim) 0%, rgba(217,119,6,0.04) 100%);
+            border: 1.5px solid rgba(180,83,9,0.2);
+            border-radius: 12px;
+            padding: 22px 28px 20px;
+            margin: 24px 0;
+            text-align: center;
+            position: relative;
+        }
+        .gold-quote::before {
+            content: '"';
+            position: absolute;
+            top: 2px; left: 16px;
+            font-family: 'Playfair Display', serif;
+            font-size: 52px;
+            line-height: 1;
+            color: rgba(180,83,9,0.12);
+        }
+        .gold-quote-text { font-family: 'Playfair Display', serif; font-size: 17px; font-weight: 700; line-height: 1.5; color: var(--text); padding: 0 8px; }
+        .gold-quote-text em { color: var(--amber); font-style: normal; }
+
+        /* ── LAYER STACK ── */
+        .layer-stack { display: flex; flex-direction: column; gap: 8px; margin: 24px 0; }
+        .layer-item {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 13px 16px;
+            display: flex;
+            align-items: flex-start;
+            gap: 14px;
+            transition: border-color .15s;
+        }
+        .layer-item:hover { border-color: var(--azul); }
+        .layer-badge {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 10px;
+            font-weight: 600;
+            color: var(--azul);
+            background: var(--azul-d);
+            padding: 4px 9px;
+            border-radius: 5px;
+            flex-shrink: 0;
+            white-space: nowrap;
+            min-width: 90px;
+            text-align: center;
+            margin-top: 1px;
+        }
+        .layer-content { flex: 1; }
+        .layer-name { font-size: 13px; font-weight: 600; color: var(--text); margin-bottom: 3px; line-height: 1.3; }
+        .layer-desc { font-size: 12px; color: var(--muted); line-height: 1.45; }
+
+        /* ── DIAGNOSTIC LIST ── */
+        .diag-list { display: flex; flex-direction: column; gap: 10px; margin: 24px 0; }
+        .diag-item {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 14px 18px;
+            display: flex;
+            gap: 14px;
+            align-items: flex-start;
+        }
+        .diag-num {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--azul);
+            flex-shrink: 0;
+            min-width: 22px;
+            padding-top: 1px;
+        }
+        .diag-body { flex: 1; }
+        .diag-q { font-size: 13.5px; font-weight: 600; color: var(--text); margin-bottom: 5px; line-height: 1.35; }
+        .diag-hint { font-size: 12px; color: var(--muted); line-height: 1.45; font-style: italic; }
+
+        /* ── CODE BLOCK ── */
+        .code-wrap { position: relative; margin: 20px 0; }
+        .code-label { font-family: 'JetBrains Mono', monospace; font-size: 9px; color: var(--faint); letter-spacing: 1.2px; text-transform: uppercase; margin-bottom: 6px; }
+        pre {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 16px 18px;
+            overflow-x: auto;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 12.5px;
+            line-height: 1.65;
+            color: var(--text);
+        }
+        .copy-btn {
+            position: absolute;
+            top: 26px; right: 10px;
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: 4px 10px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 9px;
+            color: var(--faint);
+            cursor: pointer;
+            transition: border-color .15s, color .15s;
+        }
+        .copy-btn:hover { border-color: var(--amber); color: var(--amber); }
+        .copy-btn.copied { color: var(--verde); border-color: var(--verde); }
+
+        /* ── TABLE ── */
+        .table-wrap { overflow-x: auto; margin: 20px 0; }
+        table { width: 100%; border-collapse: collapse; font-size: 13px; }
+        thead th {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 10px;
+            font-weight: 600;
+            letter-spacing: .8px;
+            text-transform: uppercase;
+            padding: 10px 14px;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            text-align: left;
+        }
+        thead th:first-child { color: var(--azul); border-top-left-radius: 8px; }
+        thead th:last-child { color: var(--muted); border-top-right-radius: 8px; }
+        tbody td { padding: 10px 14px; border: 1px solid var(--border); vertical-align: top; line-height: 1.55; color: var(--text); }
+        tbody tr:last-child td:first-child { border-bottom-left-radius: 8px; }
+        tbody tr:last-child td:last-child { border-bottom-right-radius: 8px; }
+        tbody tr:nth-child(even) td { background: var(--surface); }
+        .mono { font-family: 'JetBrains Mono', monospace; font-size: 11px; }
+
+        /* ── ACTION WRITE ── */
+        .action-write {
+            background: var(--surface);
+            border: 2px dashed var(--border);
+            border-radius: 12px;
+            padding: 26px 28px;
+            margin: 24px 0;
+            text-align: center;
+        }
+        .action-write-label { font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--amber); font-weight: 600; letter-spacing: 1.2px; text-transform: uppercase; margin-bottom: 14px; }
+        .action-write-prompt { font-family: 'Playfair Display', serif; font-size: 18px; font-weight: 700; color: var(--text); margin-bottom: 16px; line-height: 1.35; }
+        .action-write-line {
+            display: block;
+            width: 100%;
+            max-width: 440px;
+            margin: 0 auto;
+            border: none;
+            border-bottom: 2px solid var(--border);
+            background: transparent;
+            padding: 8px 4px;
+            font-family: 'Inter', sans-serif;
+            font-size: 15px;
+            color: var(--text);
+            text-align: center;
+            outline: none;
+            transition: border-color .2s;
+        }
+        .action-write-line:focus { border-bottom-color: var(--azul); }
+        .action-write-line::placeholder { color: var(--faint); }
+        .action-write-hint { font-size: 12px; color: var(--faint); margin-top: 10px; font-style: italic; }
+
+        /* ── NEXT HOOK ── */
+        .next-hook {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: var(--azul-d);
+            border: 1px solid rgba(37,99,235,0.15);
+            border-radius: 10px;
+            padding: 16px 20px;
+            margin: 28px 0 0;
+            text-decoration: none;
+            transition: background .15s, gap .15s;
+        }
+        .next-hook:hover { background: rgba(37,99,235,0.12); gap: 16px; }
+        .next-hook-arrow { width: 32px; height: 32px; border-radius: 50%; background: var(--azul); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+        .next-hook-text { flex: 1; }
+        .next-hook-label { font-family: 'JetBrains Mono', monospace; font-size: 9px; color: var(--azul); letter-spacing: 1.2px; text-transform: uppercase; margin-bottom: 3px; }
+        .next-hook-title { font-size: 13.5px; font-weight: 600; color: var(--text); line-height: 1.3; }
+
+        /* ── CHECKLIST ── */
+        .checklist-section { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 24px 26px; margin-bottom: 52px; }
+        .checklist-title { font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--amber); font-weight: 600; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 16px; }
+        .checklist-items { list-style: none; display: flex; flex-direction: column; gap: 10px; }
+        .checklist-items li { display: flex; align-items: flex-start; gap: 10px; font-size: 13.5px; color: var(--text); line-height: 1.5; cursor: pointer; }
+        .check-box { width: 17px; height: 17px; border: 1.5px solid var(--border); border-radius: 4px; flex-shrink: 0; margin-top: 1px; transition: border-color .15s, background .15s; display: flex; align-items: center; justify-content: center; font-size: 10px; color: white; }
+        .checklist-items li.done .check-box { background: var(--verde); border-color: var(--verde); }
+        .checklist-items li.done .check-text { text-decoration: line-through; color: var(--muted); }
+
+        /* ── FOOTER ── */
+        .resource-footer { border-top: 1px solid var(--border); padding: 32px 0 56px; display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
+        .footer-back { font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--muted); text-decoration: none; display: flex; align-items: center; gap: 6px; transition: color .15s; }
+        .footer-back:hover { color: var(--amber); }
+        .footer-next { font-size: 13px; font-weight: 500; color: var(--amber); text-decoration: none; display: flex; align-items: center; gap: 6px; transition: gap .15s; }
+        .footer-next:hover { gap: 10px; }
+
+        /* ── RESPONSIVE ── */
+        @media (max-width: 600px) {
+            .wrap { padding: 0 16px; }
+            .resource-title { font-size: 22px; }
+            .layer-badge { min-width: 72px; font-size: 9px; }
+        }
+    </style>
+</head>
+<body>
+<div class="wrap">
+
+    <!-- NAV -->
+    <nav class="top-nav">
+        <a href="../index.html">alex.decode</a>
+        <span class="sep">/</span>
+        <span>Biblioteca</span>
+        <span class="sep">/</span>
+        <span>Nivel 2</span>
+        <span class="sep">/</span>
+        <span>Buenas prácticas de sistemas</span>
+        <a href="../index.html" class="nav-owl" aria-label="Volver a la biblioteca">
+            <svg width="28" height="32" viewBox="0 0 140 160" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <polygon points="44,32 36,6 52,26" fill="#92400E"/>
+                <polygon points="96,32 104,6 88,26" fill="#92400E"/>
+                <circle cx="70" cy="56" r="38" fill="#B45309"/>
+                <ellipse cx="70" cy="58" rx="26" ry="24" fill="#D97706" opacity="0.28"/>
+                <circle cx="56" cy="52" r="13" fill="#FEF3C7"/>
+                <circle cx="84" cy="52" r="13" fill="#FEF3C7"/>
+                <circle cx="56" cy="52" r="6.5" fill="#1C1917"/>
+                <circle cx="84" cy="52" r="6.5" fill="#1C1917"/>
+                <circle cx="59" cy="49" r="2.2" fill="white"/>
+                <circle cx="87" cy="49" r="2.2" fill="white"/>
+                <polygon points="63,64 77,64 70,75" fill="#D97706"/>
+                <ellipse cx="70" cy="120" rx="34" ry="36" fill="#B45309"/>
+                <ellipse cx="70" cy="126" rx="20" ry="24" fill="#D97706" opacity="0.22"/>
+            </svg>
+        </a>
+    </nav>
+
+    <!-- COVER SVG -->
+    <div class="cover-wrap">
+        <svg viewBox="0 0 800 350" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect width="800" height="350" fill="#FAFAF7"/>
+            <rect width="390" height="350" fill="#F5F4F0"/>
+            <rect x="410" width="390" height="350" fill="#EFF6FF"/>
+
+            <!-- Labels -->
+            <text x="195" y="30" text-anchor="middle" font-family="system-ui,sans-serif" font-size="10" fill="#A8A29E" letter-spacing="2" font-weight="700">CADA SESIÓN DESDE CERO</text>
+            <text x="605" y="30" text-anchor="middle" font-family="system-ui,sans-serif" font-size="10" fill="#2563EB" letter-spacing="2" font-weight="700">CONTEXTO PERSISTENTE</text>
+
+            <!-- Divider -->
+            <line x1="400" y1="18" x2="400" y2="332" stroke="#E8E2D9" stroke-width="1.5" stroke-dasharray="5 4"/>
+            <rect x="381" y="154" width="38" height="30" rx="8" fill="white" stroke="#E8E2D9" stroke-width="1.2"/>
+            <text x="400" y="174" text-anchor="middle" font-family="system-ui,sans-serif" font-size="15" fill="#78716C" font-weight="700">→</text>
+
+            <!-- Left: 3 isolated session bubbles -->
+            <g transform="rotate(-5, 107, 77)">
+                <rect x="30" y="50" width="154" height="55" rx="8" fill="white" stroke="#D6D3D1" stroke-width="1.2"/>
+                <text x="46" y="72" font-family="JetBrains Mono,monospace" font-size="8" fill="#A8A29E" letter-spacing="1" font-weight="600">SESIÓN 1</text>
+                <rect x="46" y="80" width="90" height="4" rx="2" fill="#E7E5E4"/>
+                <rect x="46" y="90" width="60" height="3" rx="2" fill="#E7E5E4" opacity="0.6"/>
+            </g>
+
+            <g transform="rotate(3, 177, 168)">
+                <rect x="100" y="141" width="154" height="55" rx="8" fill="white" stroke="#D6D3D1" stroke-width="1.2"/>
+                <text x="116" y="163" font-family="JetBrains Mono,monospace" font-size="8" fill="#A8A29E" letter-spacing="1" font-weight="600">SESIÓN 2</text>
+                <rect x="116" y="171" width="90" height="4" rx="2" fill="#E7E5E4"/>
+                <rect x="116" y="181" width="60" height="3" rx="2" fill="#E7E5E4" opacity="0.6"/>
+            </g>
+
+            <g transform="rotate(-2, 118, 260)">
+                <rect x="41" y="233" width="154" height="55" rx="8" fill="white" stroke="#D6D3D1" stroke-width="1.2"/>
+                <text x="57" y="255" font-family="JetBrains Mono,monospace" font-size="8" fill="#A8A29E" letter-spacing="1" font-weight="600">SESIÓN 3</text>
+                <rect x="57" y="263" width="90" height="4" rx="2" fill="#E7E5E4"/>
+                <rect x="57" y="273" width="60" height="3" rx="2" fill="#E7E5E4" opacity="0.6"/>
+            </g>
+
+            <!-- "?" indicators between sessions -->
+            <text x="248" y="114" font-family="Georgia,serif" font-size="26" fill="#D6D3D1" font-weight="700">?</text>
+            <text x="52" y="200" font-family="Georgia,serif" font-size="18" fill="#D6D3D1" font-weight="700">?</text>
+            <text x="260" y="228" font-family="Georgia,serif" font-size="18" fill="#D6D3D1" font-weight="700">?</text>
+
+            <!-- Left stat -->
+            <text x="195" y="306" text-anchor="middle" font-family="Georgia,serif" font-size="34" fill="#D6D3D1" font-weight="700">0</text>
+            <text x="195" y="326" text-anchor="middle" font-family="system-ui,sans-serif" font-size="10" fill="#A8A29E" letter-spacing="0.5">memoria entre sesiones</text>
+
+            <!-- Right: 5 stacked layer bars -->
+            <rect x="428" y="48" width="333" height="37" rx="7" fill="white" stroke="#BFDBFE" stroke-width="1.2"/>
+            <rect x="440" y="59" width="40" height="15" rx="4" fill="#DBEAFE"/>
+            <text x="460" y="70" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="9" fill="#2563EB" font-weight="600">/init</text>
+            <rect x="492" y="60" width="130" height="4" rx="2" fill="#BFDBFE"/>
+            <rect x="492" y="70" width="90" height="3" rx="2" fill="#BFDBFE" opacity="0.6"/>
+
+            <rect x="428" y="93" width="333" height="37" rx="7" fill="white" stroke="#BFDBFE" stroke-width="1.2"/>
+            <rect x="440" y="104" width="66" height="15" rx="4" fill="#DBEAFE"/>
+            <text x="473" y="115" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="9" fill="#2563EB" font-weight="600">CLAUDE.md</text>
+            <rect x="518" y="105" width="110" height="4" rx="2" fill="#BFDBFE"/>
+            <rect x="518" y="115" width="78" height="3" rx="2" fill="#BFDBFE" opacity="0.6"/>
+
+            <rect x="428" y="138" width="333" height="37" rx="7" fill="white" stroke="#BFDBFE" stroke-width="1.2"/>
+            <rect x="440" y="149" width="70" height="15" rx="4" fill="#DBEAFE"/>
+            <text x="475" y="160" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="9" fill="#2563EB" font-weight="600">MEMORY.md</text>
+            <rect x="522" y="150" width="105" height="4" rx="2" fill="#BFDBFE"/>
+            <rect x="522" y="160" width="73" height="3" rx="2" fill="#BFDBFE" opacity="0.6"/>
+
+            <rect x="428" y="183" width="333" height="37" rx="7" fill="white" stroke="#BFDBFE" stroke-width="1.2"/>
+            <rect x="440" y="194" width="58" height="15" rx="4" fill="#DBEAFE"/>
+            <text x="469" y="205" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="9" fill="#2563EB" font-weight="600">/compact</text>
+            <rect x="510" y="195" width="115" height="4" rx="2" fill="#BFDBFE"/>
+            <rect x="510" y="205" width="82" height="3" rx="2" fill="#BFDBFE" opacity="0.6"/>
+
+            <rect x="428" y="228" width="333" height="37" rx="7" fill="white" stroke="#BFDBFE" stroke-width="1.2"/>
+            <rect x="440" y="239" width="76" height="15" rx="4" fill="#DBEAFE"/>
+            <text x="478" y="250" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="9" fill="#2563EB" font-weight="600">Skills / MCPs</text>
+            <rect x="528" y="240" width="100" height="4" rx="2" fill="#BFDBFE"/>
+            <rect x="528" y="250" width="68" height="3" rx="2" fill="#BFDBFE" opacity="0.6"/>
+
+            <!-- Right stat -->
+            <text x="605" y="306" text-anchor="middle" font-family="Georgia,serif" font-size="34" fill="#2563EB" font-weight="700">5</text>
+            <text x="605" y="326" text-anchor="middle" font-family="system-ui,sans-serif" font-size="10" fill="#1D4ED8" letter-spacing="0.5">capas de contexto</text>
+        </svg>
+    </div>
+
+    <!-- HEADER -->
+    <header class="resource-header">
+        <div class="tag azul"><span class="dot"></span>Conceptos</div>
+        <h1 class="resource-title">La lógica detrás de los sistemas: buenas prácticas para que Claude Code rinda de verdad</h1>
+        <p class="resource-sub">Cualquiera puede abrir Claude Code y escribir un prompt. Lo que separa un proyecto que escala de uno que colapsa son las prácticas que hay detrás.</p>
+        <div class="resource-meta">
+            <span>12 min de lectura</span>
+            <span class="meta-dot"></span>
+            <span>Nivel 2</span>
+            <span class="meta-dot"></span>
+            <span>Mayo 2026</span>
+        </div>
+    </header>
+
+    <!-- LEARN BOX -->
+    <div class="learn-box">
+        <div class="learn-box-title">Lo que vas a entender</div>
+        <ul class="learn-list">
+            <li class="learn-item">Por qué un prompt suelto no es suficiente para construir algo que dure</li>
+            <li class="learn-item">Las 5 capas que hacen que Claude Code te entienda entre sesiones</li>
+            <li class="learn-item">Cómo diagnosticar si tu proyecto actual está bien estructurado</li>
+            <li class="learn-item">La diferencia entre usar IA y colaborar con IA de forma consistente</li>
+        </ul>
+    </div>
+
+    <!-- TOC -->
+    <nav class="toc" aria-label="Contenido">
+        <div class="toc-label">En este recurso</div>
+        <div class="toc-links">
+            <a href="#s01">01 El síntoma</a>
+            <a href="#s02">02 Las 5 capas</a>
+            <a href="#s03">03 En la práctica</a>
+            <a href="#s04">04 Diagnóstico</a>
+            <a href="#s05">05 Cierre</a>
+            <a href="#checklist">Checklist</a>
+        </div>
+    </nav>
+
+    <!-- ── S01: EL SÍNTOMA ── -->
+    <section class="section" id="s01">
+        <div class="section-num">01</div>
+        <h2>La mayoría trabaja con IA como si fuera un buscador</h2>
+        <p>Abres Claude Code, describes lo que necesitas, obtienes algo útil. Cierras. Al día siguiente vuelves a abrir y el modelo no recuerda nada del proyecto, del contexto ni de cómo te gusta trabajar. Cada sesión desde cero — como si fuera la primera vez.</p>
+        <p>No es un fallo del modelo. Es que nadie le dio el contexto para trabajar de otra forma.</p>
+
+        <div class="callout azul">
+            <div class="callout-label">El problema de fondo</div>
+            <p>Pedirle a Claude Code que construya algo sin contexto es como pedirle a alguien que lleva dos horas en la empresa que entregue el proyecto de la tarde. Sin briefing, sin instrucciones, sin historial de lo que ya existe. El resultado va a ser genérico — no porque el modelo sea malo, sino porque no sabe qué construir ni para quién.</p>
+        </div>
+    </section>
+
+    <!-- ── S02: LAS 5 CAPAS ── -->
+    <section class="section" id="s02">
+        <div class="section-num">02</div>
+        <h2>No es el prompt lo que decide el resultado — es el entorno que construyes antes</h2>
+        <p>Los desarrolladores que construyen con IA de forma consistente no tienen mejores prompts. Tienen mejor contexto. Esto es lo que hay detrás.</p>
+
+        <div class="layer-stack">
+            <div class="layer-item">
+                <span class="layer-badge">/init</span>
+                <div class="layer-content">
+                    <div class="layer-name">Orientación inicial</div>
+                    <div class="layer-desc">Claude Code lee la carpeta, procesa el CLAUDE.md y entiende qué tiene delante. Sin este paso, el modelo entra a ciegas en cada sesión.</div>
+                </div>
+            </div>
+            <div class="layer-item">
+                <span class="layer-badge">CLAUDE.md</span>
+                <div class="layer-content">
+                    <div class="layer-name">Instrucciones permanentes</div>
+                    <div class="layer-desc">Rol del agente, stack, tono, protocolo de trabajo, skills disponibles. Todo lo que el modelo necesita saber sin que lo repitas en cada sesión.</div>
+                </div>
+            </div>
+            <div class="layer-item">
+                <span class="layer-badge">MEMORY.md</span>
+                <div class="layer-content">
+                    <div class="layer-name">Contexto que evoluciona</div>
+                    <div class="layer-desc">Lo que no está en el código pero importa entre sesiones: decisiones tomadas, estado actual del proyecto, preferencias confirmadas.</div>
+                </div>
+            </div>
+            <div class="layer-item">
+                <span class="layer-badge">/compact</span>
+                <div class="layer-content">
+                    <div class="layer-name">Gestión activa del contexto</div>
+                    <div class="layer-desc">El rendimiento cae visiblemente a partir de los 100k tokens. Compacta antes de llegar ahí — el contador de tokens está visible en la barra inferior de Claude Code.</div>
+                </div>
+            </div>
+            <div class="layer-item">
+                <span class="layer-badge">Skills / MCPs</span>
+                <div class="layer-content">
+                    <div class="layer-name">Capacidades extendidas</div>
+                    <div class="layer-desc">Copywriting, estrategia de contenido, búsqueda web, análisis. No reinventas capacidades — activas las que ya existen cuando las necesitas.</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="gold-quote">
+            <div class="gold-quote-text">No construyes con IA. Construyes con IA <em>en un entorno que has diseñado</em>.</div>
+        </div>
+    </section>
+
+    <!-- ── S03: EN LA PRÁCTICA ── -->
+    <section class="section" id="s03">
+        <div class="section-num">03</div>
+        <h2>Ejemplo real: así está construida esta biblioteca</h2>
+        <p>Lo que estás leyendo existe porque hay estructura detrás — meses de trabajo en sesiones que no pueden perderse entre sí.</p>
+
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Capa</th>
+                        <th>Qué hace en este proyecto</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><span class="mono">CLAUDE.md</span></td>
+                        <td>Define el rol del agente, el stack visual, las skills activas, el protocolo de compactación y el idioma</td>
+                    </tr>
+                    <tr>
+                        <td><span class="mono">MEMORY.md</span></td>
+                        <td>Guarda el estado de cada nivel (completo/pendiente), componentes CSS por recurso, decisiones de diseño y el próximo paso</td>
+                    </tr>
+                    <tr>
+                        <td><span class="mono">/compact</span></td>
+                        <td>Se ejecuta aprox. cada 100k tokens — el rendimiento baja notablemente a partir de ahí. El contador de tokens está visible en la barra inferior de Claude Code.</td>
+                    </tr>
+                    <tr>
+                        <td><span class="mono">Skills</span></td>
+                        <td>Copywriting para los recursos, grill-me para clarificar briefs, content-strategy para el arco de cada nivel</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <p>Para arrancar en cualquier proyecto nuevo, estos son los dos primeros movimientos:</p>
+
+        <div class="code-wrap">
+            <div class="code-label">Paso 1 — Orientar a Claude Code en la carpeta del proyecto</div>
+            <pre id="code-init">/init</pre>
+            <button class="copy-btn" onclick="copyCode('code-init', this)">copiar</button>
+        </div>
+
+        <div class="code-wrap">
+            <div class="code-label">Paso 2 — Compactar aprox. cada 100k tokens (contador visible en la barra inferior de Claude Code)</div>
+            <pre id="code-compact">/compact</pre>
+            <button class="copy-btn" onclick="copyCode('code-compact', this)">copiar</button>
+        </div>
+
+        <div class="callout verde">
+            <div class="callout-label">La estructura mínima para empezar</div>
+            <p>Carpeta del proyecto → ejecuta <span class="mono">/init</span> → crea <span class="mono">CLAUDE.md</span> con rol, stack y protocolo → empieza a construir. El resto lo vas añadiendo según el proyecto lo pide.</p>
+        </div>
+    </section>
+
+    <!-- ── S04: DIAGNÓSTICO ── -->
+    <section class="section" id="s04">
+        <div class="section-num">04</div>
+        <h2>4 preguntas para diagnosticar cualquier proyecto</h2>
+        <p>Revisa el proyecto que tienes abierto ahora mismo — o el último en el que trabajaste con IA.</p>
+
+        <div class="diag-list">
+            <div class="diag-item">
+                <div class="diag-num">01</div>
+                <div class="diag-body">
+                    <div class="diag-q">¿Tu carpeta de proyecto tiene un CLAUDE.md con instrucciones reales?</div>
+                    <div class="diag-hint">Si no existe o está vacío, el modelo no tiene contexto permanente. Cada sesión empieza sin saber quién eres ni qué construyes.</div>
+                </div>
+            </div>
+            <div class="diag-item">
+                <div class="diag-num">02</div>
+                <div class="diag-body">
+                    <div class="diag-q">¿Ejecutaste /init en esa carpeta antes de abrir el chat?</div>
+                    <div class="diag-hint">Sin este paso, Claude Code no procesa el proyecto. Es pedirle que trabaje sin haberse leído los apuntes.</div>
+                </div>
+            </div>
+            <div class="diag-item">
+                <div class="diag-num">03</div>
+                <div class="diag-body">
+                    <div class="diag-q">¿El contexto activo de tu sesión es útil o hay ruido acumulado?</div>
+                    <div class="diag-hint">En la práctica, el rendimiento baja visiblemente a partir de ~100k tokens de contexto. Compacta antes de llegar ahí — no esperes a que el modelo dé respuestas inconsistentes para actuar.</div>
+                </div>
+            </div>
+            <div class="diag-item">
+                <div class="diag-num">04</div>
+                <div class="diag-body">
+                    <div class="diag-q">¿Estás usando el modelo correcto para la tarea?</div>
+                    <div class="diag-hint">Haiku para respuestas rápidas y ediciones menores. Sonnet para estrategia, borradores y análisis. Opus para investigación profunda o sistemas complejos.</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="action-write">
+            <div class="action-write-label">Diagnóstico inmediato</div>
+            <div class="action-write-prompt">Lo que voy a corregir esta semana…</div>
+            <input class="action-write-line" type="text" placeholder="lo que respondiste 'no' en alguna pregunta" maxlength="120"/>
+            <p class="action-write-hint">Si respondes "no" a cualquier pregunta, ya tienes el plan.</p>
+        </div>
+    </section>
+
+    <!-- ── S05: CIERRE ── -->
+    <section class="section" id="s05">
+        <div class="section-num">05</div>
+        <h2>El entorno ya está diseñado. Las herramientas vienen después.</h2>
+        <p>Las 5 capas no son una configuración técnica. Son el contrato de trabajo entre tú y el modelo. Sin ese contrato, cada sesión empieza desde cero. Con él, el modelo sabe quién eres, qué construyes y cómo quieres trabajar — incluso después de meses.</p>
+        <p>En el siguiente recurso vemos las herramientas concretas: cuáles uso, cuánto cuestan de verdad y cuándo tiene sentido usar cada una.</p>
+
+        <a href="2-3.html" class="next-hook">
+            <div class="next-hook-arrow">
+                <svg width="14" height="14" fill="none" stroke="white" stroke-width="2.5" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+            </div>
+            <div class="next-hook-text">
+                <div class="next-hook-label">Siguiente — 2.3 · Herramientas</div>
+                <div class="next-hook-title">Las herramientas que uso para construir (y lo que cuestan de verdad)</div>
+            </div>
+        </a>
+    </section>
+
+    <!-- ── CHECKLIST ── -->
+    <div class="checklist-section" id="checklist">
+        <div class="checklist-title">Lista de comprobación</div>
+        <ul class="checklist-items" id="checklistItems">
+            <li onclick="toggleCheck(this)"><span class="check-box"></span><span class="check-text">Entiendo por qué un prompt suelto no es suficiente para un proyecto que dura semanas</span></li>
+            <li onclick="toggleCheck(this)"><span class="check-box"></span><span class="check-text">Sé qué hace cada una de las 5 capas — y puedo explicar la diferencia entre CLAUDE.md y MEMORY.md</span></li>
+            <li onclick="toggleCheck(this)"><span class="check-box"></span><span class="check-text">He hecho el diagnóstico de un proyecto real mío (y sé exactamente qué tiene que mejorar)</span></li>
+            <li onclick="toggleCheck(this)"><span class="check-box"></span><span class="check-text">Sé cuándo usar haiku, sonnet y opus — y no voy a usar opus para pedirle que resuma un párrafo</span></li>
+            <li onclick="toggleCheck(this)"><span class="check-box"></span><span class="check-text">Mi próximo proyecto empieza con /init y un CLAUDE.md antes de escribir el primer prompt</span></li>
+        </ul>
+    </div>
+
+    <!-- FOOTER -->
+    <footer class="resource-footer">
+        <a href="2-1.html" class="footer-back">
+            <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+            Nivel 2 · Mitos
+        </a>
+        <a href="2-3.html" class="footer-next">
+            Las herramientas que uso
+            <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </a>
+    </footer>
+
+</div>
+
+<script>
+function copyCode(id, btn) {
+    const text = document.getElementById(id).textContent;
+    navigator.clipboard.writeText(text).then(() => {
+        btn.textContent = 'copiado';
+        btn.classList.add('copied');
+        setTimeout(() => { btn.textContent = 'copiar'; btn.classList.remove('copied'); }, 2000);
+    });
+}
+
+function toggleCheck(li) {
+    li.classList.toggle('done');
+    li.querySelector('.check-box').textContent = li.classList.contains('done') ? '✓' : '';
+    const items = document.querySelectorAll('#checklistItems li');
+    if ([...items].every(i => i.classList.contains('done'))) launchConfetti();
+}
+
+function launchConfetti() {
+    const canvas = document.getElementById('confettiCanvas');
+    if (!canvas) return;
+    canvas.style.display = 'block';
+    const ctx = canvas.getContext('2d');
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+    const colors = ['#B45309','#D97706','#FDE68A','#059669','#7C3AED','#2563EB','#F59E0B','#10B981','#DC2626'];
+    const pieces = Array.from({length: 140}, () => ({
+        x: Math.random() * canvas.width,
+        y: -10 - Math.random() * canvas.height * 0.6,
+        w: Math.random() * 11 + 5,
+        h: Math.random() * 6 + 3,
+        color: colors[Math.floor(Math.random() * colors.length)],
+        vx: (Math.random() - 0.5) * 4,
+        vy: Math.random() * 3 + 1.5,
+        rot: Math.random() * 360,
+        vrot: (Math.random() - 0.5) * 10,
+        alpha: 1,
+        shape: Math.random() > 0.5 ? 'rect' : 'circle'
+    }));
+    let frame = 0;
+    (function animate() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        pieces.forEach(p => {
+            p.x += p.vx; p.y += p.vy; p.rot += p.vrot; p.vy += 0.06;
+            if (frame > 90) p.alpha = Math.max(0, p.alpha - 0.012);
+            ctx.save();
+            ctx.globalAlpha = p.alpha;
+            ctx.translate(p.x + p.w / 2, p.y + p.h / 2);
+            ctx.rotate(p.rot * Math.PI / 180);
+            ctx.fillStyle = p.color;
+            if (p.shape === 'circle') {
+                ctx.beginPath(); ctx.arc(0, 0, p.w / 2, 0, Math.PI * 2); ctx.fill();
+            } else {
+                ctx.fillRect(-p.w / 2, -p.h / 2, p.w, p.h);
+            }
+            ctx.restore();
+        });
+        frame++;
+        if (frame < 170) requestAnimationFrame(animate);
+        else canvas.style.display = 'none';
+    })();
+}
+</script>
+
+<canvas id="confettiCanvas" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:9999;"></canvas>
+</body>
+</html>
