@@ -1,0 +1,798 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Herramientas para montar tu primer agente de IA — alex.decode</title>
+    <meta name="description" content="Plugin, skill y agente: las diferencias reales. Todo lo que necesitas para montar tu primer agente de IA — MCPs, contexto, permisos y el stack de alex.decode.">
+    <meta name="keywords" content="herramientas agente IA, Claude Code MCP, plugin skill agente diferencia, MCP servidor IA, Higgsfield MCP, GitHub MCP, Obsidian MCP, agente IA herramientas 2026">
+    <link rel="icon" type="image/svg+xml" href="../favicon.svg">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        :root {
+            --bg:        #FAFAF7;
+            --surface:   #FFFFFF;
+            --border:    #E8E2D9;
+            --text:      #1C1917;
+            --muted:     #78716C;
+            --faint:     #B0A89E;
+            --amber:     #B45309;
+            --amber-mid: #D97706;
+            --amber-dim: rgba(180,83,9,0.07);
+            --rojo:  #DC2626; --rojo-d:  rgba(220,38,38,0.07);
+            --amar:  #D97706; --amar-d:  rgba(217,119,6,0.07);
+            --azul:  #2563EB; --azul-d:  rgba(37,99,235,0.07);
+            --verde: #059669; --verde-d: rgba(5,150,105,0.07);
+            --morad: #7C3AED; --morad-d: rgba(124,58,237,0.07);
+        }
+
+        html { scroll-behavior: smooth; }
+        body {
+            background: var(--bg);
+            color: var(--text);
+            font-family: 'Inter', system-ui, sans-serif;
+            font-size: 15px;
+            line-height: 1.7;
+            min-height: 100vh;
+        }
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0; left: 0; right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, #047857 0%, #059669 50%, #047857 100%);
+            z-index: 100;
+        }
+
+        .wrap { max-width: 720px; margin: 0 auto; padding: 0 24px; }
+
+        /* ── NAV ── */
+        .top-nav {
+            padding: 28px 0 0;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 11px;
+            color: var(--faint);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
+        .top-nav a { color: var(--amber); text-decoration: none; transition: opacity .15s; }
+        .top-nav a:hover { opacity: .7; }
+        .top-nav .sep { color: var(--faint); }
+        .nav-owl {
+            margin-left: auto;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            color: var(--faint);
+            text-decoration: none;
+            font-size: 10px;
+            letter-spacing: .5px;
+            transition: opacity .15s;
+            animation: owlFloat 5s ease-in-out 1s infinite;
+        }
+        .nav-owl:hover { opacity: .7; color: var(--amber); }
+        @keyframes owlFloat { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-4px)} }
+
+        /* ── COVER ── */
+        .cover-wrap { margin: 28px 0 0; border-radius: 12px; overflow: hidden; border: 1px solid var(--border); }
+        .cover-wrap svg { display: block; width: 100%; height: auto; }
+
+        /* ── HEADER ── */
+        .resource-header { padding: 28px 0; border-bottom: 1px solid var(--border); margin-bottom: 28px; }
+        .tag {
+            display: inline-flex; align-items: center; gap: 5px;
+            font-size: 10px; font-weight: 600; padding: 3px 10px;
+            border-radius: 100px; margin-bottom: 16px;
+        }
+        .tag .dot { width: 5px; height: 5px; border-radius: 50%; flex-shrink: 0; }
+        .tag.verde { background: var(--verde-d); color: var(--verde); }
+        .tag.verde .dot { background: var(--verde); }
+        .resource-title {
+            font-family: 'Playfair Display', Georgia, serif;
+            font-size: clamp(24px, 4vw, 34px);
+            font-weight: 700;
+            line-height: 1.18;
+            letter-spacing: -.3px;
+            margin-bottom: 14px;
+        }
+        .resource-sub { font-size: 15px; color: var(--muted); line-height: 1.6; margin-bottom: 18px; max-width: 560px; }
+        .resource-meta {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 11px;
+            color: var(--faint);
+            display: flex;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+        .resource-meta span { display: flex; align-items: center; gap: 5px; }
+        .meta-dot { width: 3px; height: 3px; border-radius: 50%; background: var(--faint); }
+
+        /* ── LEARN BOX ── */
+        .learn-box { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 18px 22px; margin-bottom: 28px; }
+        .learn-box-title { font-family: 'JetBrains Mono', monospace; font-size: 9px; color: var(--faint); letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 12px; }
+        .learn-list { list-style: none; display: flex; flex-direction: column; gap: 8px; }
+        .learn-item { display: flex; align-items: flex-start; gap: 8px; font-size: 13px; color: var(--text); line-height: 1.45; }
+        .learn-item::before { content: '→'; color: var(--verde); font-family: 'JetBrains Mono', monospace; font-size: 11px; flex-shrink: 0; margin-top: 1px; }
+
+        /* ── TOC ── */
+        .toc { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 16px 20px; margin-bottom: 48px; }
+        .toc-label { font-family: 'JetBrains Mono', monospace; font-size: 9px; color: var(--faint); letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 10px; }
+        .toc-links { display: flex; flex-wrap: wrap; gap: 6px; }
+        .toc-links a {
+            font-size: 12px; color: var(--muted); text-decoration: none;
+            padding: 4px 10px; border-radius: 6px; border: 1px solid var(--border);
+            transition: border-color .15s, color .15s, background .15s; white-space: nowrap;
+        }
+        .toc-links a:hover { border-color: var(--verde); color: var(--verde); background: var(--verde-d); }
+
+        /* ── SECTIONS ── */
+        .section { margin-bottom: 52px; scroll-margin-top: 32px; }
+        .section-num { font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--verde); font-weight: 600; letter-spacing: 1px; margin-bottom: 8px; }
+        .section h2 { font-family: 'Playfair Display', serif; font-size: 22px; font-weight: 700; line-height: 1.3; margin-bottom: 16px; }
+        .section p { color: var(--text); margin-bottom: 14px; }
+        .section p:last-child { margin-bottom: 0; }
+        .section-sub { font-family: 'JetBrains Mono', monospace; font-size: 9px; font-weight: 600; color: var(--verde); letter-spacing: 1.2px; text-transform: uppercase; margin: 28px 0 10px; }
+
+        /* ── CALLOUT ── */
+        .callout { border-left: 3px solid var(--amber); background: var(--amber-dim); border-radius: 0 8px 8px 0; padding: 14px 18px; margin: 20px 0; }
+        .callout-label { font-family: 'JetBrains Mono', monospace; font-size: 9px; font-weight: 600; color: var(--amber); letter-spacing: 1.2px; text-transform: uppercase; margin-bottom: 6px; }
+        .callout p { font-size: 14px; color: var(--text); margin: 0; }
+        .callout.verde { border-left-color: var(--verde); background: var(--verde-d); }
+        .callout.verde .callout-label { color: var(--verde); }
+        .callout.azul { border-left-color: var(--azul); background: var(--azul-d); }
+        .callout.azul .callout-label { color: var(--azul); }
+
+        /* ── GOLD QUOTE ── */
+        .gold-quote {
+            background: linear-gradient(135deg, var(--amber-dim) 0%, rgba(217,119,6,0.04) 100%);
+            border: 1.5px solid rgba(180,83,9,0.2);
+            border-radius: 12px;
+            padding: 22px 28px 20px;
+            margin: 24px 0;
+            text-align: center;
+            position: relative;
+        }
+        .gold-quote::before { content: '"'; position: absolute; top: 2px; left: 16px; font-family: 'Playfair Display', serif; font-size: 52px; line-height: 1; color: rgba(180,83,9,0.12); }
+        .gold-quote-text { font-family: 'Playfair Display', serif; font-size: 17px; font-weight: 700; line-height: 1.5; color: var(--text); padding: 0 8px; }
+        .gold-quote-text em { color: var(--amber); font-style: normal; }
+
+        /* ── TRIO TABLE (Plugin / Skill / Agente) ── */
+        .trio-table { margin: 20px 0; border: 1px solid var(--border); border-radius: 10px; overflow: hidden; }
+        .trio-row { display: grid; grid-template-columns: 90px 1fr 1fr; border-bottom: 1px solid var(--border); }
+        .trio-row:last-child { border-bottom: none; }
+        .trio-row.trio-header .trio-cell { font-family: 'JetBrains Mono', monospace; font-size: 9px; font-weight: 600; letter-spacing: 1.2px; text-transform: uppercase; color: var(--faint); background: var(--bg); padding: 10px 14px; }
+        .trio-cell { padding: 14px 16px; font-size: 13px; color: var(--text); line-height: 1.5; display: flex; align-items: flex-start; border-right: 1px solid var(--border); }
+        .trio-cell:last-child { border-right: none; }
+        .trio-cell.what { font-family: 'JetBrains Mono', monospace; font-size: 12px; font-weight: 700; align-items: center; }
+        .trio-cell.what.plugin { color: var(--amber); }
+        .trio-cell.what.skill  { color: var(--azul); }
+        .trio-cell.what.agente { color: var(--verde); }
+        .trio-cell.example { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--muted); background: var(--bg); }
+        .trio-row:nth-child(even) .trio-cell:not(.what) { background: var(--surface); }
+
+        /* ── ENVIRONMENTS ── */
+        .env-row { display: flex; flex-direction: column; gap: 8px; margin: 20px 0; }
+        .env-item { display: flex; align-items: center; gap: 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 14px 18px; transition: border-color .15s; }
+        .env-item:hover { border-color: var(--verde); }
+        .env-badge { font-family: 'JetBrains Mono', monospace; font-size: 9px; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; color: var(--faint); background: var(--bg); border: 1px solid var(--border); border-radius: 6px; padding: 3px 8px; flex-shrink: 0; white-space: nowrap; min-width: 88px; text-align: center; }
+        .env-body { flex: 1; }
+        .env-name { font-size: 14px; font-weight: 700; color: var(--text); margin-bottom: 2px; }
+        .env-desc { font-size: 12.5px; color: var(--muted); line-height: 1.4; }
+
+        /* ── MCP CARDS ── */
+        .mcp-group { margin: 24px 0; }
+        .mcp-group-label { font-family: 'JetBrains Mono', monospace; font-size: 9px; font-weight: 600; color: var(--verde); letter-spacing: 1.2px; text-transform: uppercase; margin-bottom: 10px; padding-bottom: 6px; border-bottom: 1px solid var(--border); }
+        .mcp-stack { display: flex; flex-direction: column; gap: 8px; }
+        .mcp-card { display: flex; align-items: flex-start; gap: 14px; background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 14px 18px; transition: border-color .15s; }
+        .mcp-card:hover { border-color: var(--verde); }
+        .mcp-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; margin-top: 7px; }
+        .mcp-dot.accion    { background: var(--verde); }
+        .mcp-dot.saber     { background: var(--morad); }
+        .mcp-dot.traduccion { background: var(--azul); }
+        .mcp-body { flex: 1; }
+        .mcp-name { font-size: 14px; font-weight: 700; color: var(--text); margin-bottom: 3px; }
+        .mcp-desc { font-size: 12.5px; color: var(--muted); line-height: 1.5; }
+        .mcp-tag { display: inline-block; font-family: 'JetBrains Mono', monospace; font-size: 9px; font-weight: 600; padding: 2px 8px; border-radius: 100px; margin-top: 6px; }
+        .mcp-tag.accion    { background: var(--verde-d); color: var(--verde); }
+        .mcp-tag.saber     { background: var(--morad-d); color: var(--morad); }
+        .mcp-tag.traduccion { background: var(--azul-d); color: var(--azul); }
+        .mcp-connect-note { font-size: 11.5px; color: var(--faint); font-style: italic; margin-top: 6px; padding-left: 22px; }
+
+        /* ── FOLDER TREE ── */
+        .folder-tree { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 18px 22px; margin: 20px 0; font-family: 'JetBrains Mono', monospace; font-size: 12.5px; line-height: 1.8; }
+        .folder-root { font-weight: 600; color: var(--text); margin-bottom: 4px; }
+        .folder-root-icon { color: var(--verde); }
+        .folder-line { color: var(--faint); }
+        .folder-item { display: flex; gap: 10px; }
+        .folder-item-name { color: var(--text); font-weight: 500; min-width: 160px; }
+        .folder-item-name.dir { color: var(--verde); }
+        .folder-item-comment { color: var(--faint); font-size: 11px; }
+        .folder-sub { margin-left: 20px; }
+
+        /* ── PERMISSIONS ── */
+        .perm-list { display: flex; flex-direction: column; gap: 8px; margin: 20px 0; }
+        .perm-item { display: flex; align-items: flex-start; gap: 12px; padding: 12px 16px; border-radius: 10px; border: 1px solid var(--border); }
+        .perm-item.allow { background: rgba(5,150,105,0.04); border-color: rgba(5,150,105,0.2); }
+        .perm-item.warn  { background: rgba(220,38,38,0.04); border-color: rgba(220,38,38,0.15); }
+        .perm-item.maybe { background: rgba(217,119,6,0.04); border-color: rgba(217,119,6,0.2); }
+        .perm-icon { font-family: 'JetBrains Mono', monospace; font-size: 11px; font-weight: 700; flex-shrink: 0; margin-top: 2px; min-width: 28px; }
+        .perm-icon.ok   { color: var(--verde); }
+        .perm-icon.stop { color: var(--rojo); }
+        .perm-icon.dep  { color: var(--amar); }
+        .perm-name { font-size: 13.5px; font-weight: 600; color: var(--text); margin-bottom: 3px; }
+        .perm-desc { font-size: 12.5px; color: var(--muted); line-height: 1.45; }
+
+        /* ── ACTION WRITE ── */
+        .action-write {
+            background: var(--surface);
+            border: 2px dashed var(--border);
+            border-radius: 12px;
+            padding: 26px 28px;
+            margin: 24px 0;
+            text-align: center;
+        }
+        .action-write-label { font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--amber); font-weight: 600; letter-spacing: 1.2px; text-transform: uppercase; margin-bottom: 14px; }
+        .action-write-prompt { font-family: 'Playfair Display', serif; font-size: 18px; font-weight: 700; color: var(--text); margin-bottom: 16px; line-height: 1.35; }
+        .action-write-line {
+            display: block;
+            width: 100%;
+            max-width: 440px;
+            margin: 0 auto;
+            border: none;
+            border-bottom: 2px solid var(--border);
+            background: transparent;
+            padding: 8px 4px;
+            font-family: 'Inter', sans-serif;
+            font-size: 15px;
+            color: var(--text);
+            text-align: center;
+            outline: none;
+            transition: border-color .2s;
+        }
+        .action-write-line:focus { border-bottom-color: var(--verde); }
+        .action-write-line::placeholder { color: var(--faint); }
+        .action-write-hint { font-size: 12px; color: var(--faint); margin-top: 10px; font-style: italic; }
+
+        /* ── NEXT HOOK ── */
+        .next-hook {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: var(--azul-d);
+            border: 1px solid rgba(37,99,235,0.15);
+            border-radius: 10px;
+            padding: 16px 20px;
+            margin: 28px 0 0;
+            text-decoration: none;
+            transition: background .15s, gap .15s;
+        }
+        .next-hook:hover { background: rgba(37,99,235,0.12); gap: 16px; }
+        .next-hook-arrow { width: 32px; height: 32px; border-radius: 50%; background: var(--azul); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+        .next-hook-text { flex: 1; }
+        .next-hook-label { font-family: 'JetBrains Mono', monospace; font-size: 9px; color: var(--azul); letter-spacing: 1.2px; text-transform: uppercase; margin-bottom: 3px; }
+        .next-hook-title { font-size: 13.5px; font-weight: 600; color: var(--text); line-height: 1.3; }
+
+        /* ── CHECKLIST ── */
+        .checklist-section { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 24px 26px; margin-bottom: 52px; }
+        .checklist-title { font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--amber); font-weight: 600; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 16px; }
+        .checklist-items { list-style: none; display: flex; flex-direction: column; gap: 10px; }
+        .checklist-items li { display: flex; align-items: flex-start; gap: 10px; font-size: 13.5px; color: var(--text); line-height: 1.5; cursor: pointer; }
+        .check-box { width: 17px; height: 17px; border: 1.5px solid var(--border); border-radius: 4px; flex-shrink: 0; margin-top: 1px; transition: border-color .15s, background .15s; display: flex; align-items: center; justify-content: center; font-size: 10px; color: white; }
+        .checklist-items li.done .check-box { background: var(--verde); border-color: var(--verde); }
+        .checklist-items li.done .check-text { text-decoration: line-through; color: var(--muted); }
+
+        /* ── FOOTER ── */
+        .resource-footer { border-top: 1px solid var(--border); padding: 32px 0 56px; display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
+        .footer-back { font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--muted); text-decoration: none; display: flex; align-items: center; gap: 6px; transition: color .15s; }
+        .footer-back:hover { color: var(--amber); }
+        .footer-next { font-size: 13px; font-weight: 500; color: var(--amber); text-decoration: none; display: flex; align-items: center; gap: 6px; transition: gap .15s; }
+        .footer-next:hover { gap: 10px; }
+
+        /* ── RESPONSIVE ── */
+        @media (max-width: 600px) {
+            .wrap { padding: 0 16px; }
+            .resource-title { font-size: 22px; }
+            .trio-row { grid-template-columns: 72px 1fr; }
+            .trio-cell.example { display: none; }
+            .env-item { flex-wrap: wrap; }
+        }
+    </style>
+</head>
+<body>
+<div class="wrap">
+
+    <!-- NAV -->
+    <nav class="top-nav">
+        <a href="../index.html">alex.decode</a>
+        <span class="sep">/</span>
+        <span>Biblioteca</span>
+        <span class="sep">/</span>
+        <span>Nivel 3</span>
+        <span class="sep">/</span>
+        <span>Herramientas del agente</span>
+        <a href="../index.html" class="nav-owl" aria-label="Volver a la biblioteca">
+            <svg width="28" height="32" viewBox="0 0 140 160" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <polygon points="44,32 36,6 52,26" fill="#92400E"/>
+                <polygon points="96,32 104,6 88,26" fill="#92400E"/>
+                <circle cx="70" cy="56" r="38" fill="#B45309"/>
+                <ellipse cx="70" cy="58" rx="26" ry="24" fill="#D97706" opacity="0.28"/>
+                <circle cx="56" cy="52" r="13" fill="#FEF3C7"/>
+                <circle cx="84" cy="52" r="13" fill="#FEF3C7"/>
+                <circle cx="56" cy="52" r="6.5" fill="#1C1917"/>
+                <circle cx="84" cy="52" r="6.5" fill="#1C1917"/>
+                <circle cx="59" cy="49" r="2.2" fill="white"/>
+                <circle cx="87" cy="49" r="2.2" fill="white"/>
+                <polygon points="63,64 77,64 70,75" fill="#D97706"/>
+                <ellipse cx="70" cy="120" rx="34" ry="36" fill="#B45309"/>
+                <ellipse cx="70" cy="126" rx="20" ry="24" fill="#D97706" opacity="0.22"/>
+            </svg>
+        </a>
+    </nav>
+
+    <!-- COVER SVG -->
+    <div class="cover-wrap">
+        <svg viewBox="0 0 800 350" xmlns="http://www.w3.org/2000/svg" font-family="Inter, system-ui, sans-serif">
+            <defs>
+                <marker id="ag32" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto">
+                    <path d="M0,0 L8,4 L0,8 Z" fill="#C8C0B8"/>
+                </marker>
+                <marker id="gn32" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto">
+                    <path d="M0,0 L8,4 L0,8 Z" fill="#059669"/>
+                </marker>
+            </defs>
+
+            <!-- BG -->
+            <rect width="800" height="350" fill="#FAFAF7"/>
+
+            <!-- Zone backgrounds -->
+            <rect x="0"   y="0" width="262" height="350" fill="rgba(0,0,0,0.015)"/>
+            <rect x="262" y="0" width="278" height="350" fill="rgba(5,150,105,0.055)"/>
+            <rect x="540" y="0" width="260" height="350" fill="rgba(5,150,105,0.03)"/>
+
+            <!-- Zone dividers -->
+            <line x1="262" y1="0" x2="262" y2="350" stroke="#E8E2D9" stroke-width="1"/>
+            <line x1="540" y1="0" x2="540" y2="350" stroke="#E8E2D9" stroke-width="1"/>
+
+            <!-- Zone labels -->
+            <text x="131" y="28" font-family="JetBrains Mono, monospace" font-size="9" fill="#B0A89E" text-anchor="middle" letter-spacing="1.5" font-weight="600">ENTORNOS</text>
+            <text x="401" y="28" font-family="JetBrains Mono, monospace" font-size="9" fill="#047857" text-anchor="middle" letter-spacing="1.5" font-weight="600">CEREBRO</text>
+            <text x="670" y="28" font-family="JetBrains Mono, monospace" font-size="9" fill="#B0A89E" text-anchor="middle" letter-spacing="1.5" font-weight="600">MCPs</text>
+
+            <!-- Left: Environments (x=15-220, w=205) -->
+            <rect x="15" y="90" width="205" height="50" rx="8" fill="white" stroke="#E8E2D9" stroke-width="1"/>
+            <text x="38" y="112" font-size="13" font-weight="700" fill="#1C1917">Terminal</text>
+            <text x="38" y="130" font-family="JetBrains Mono, monospace" font-size="10" fill="#B0A89E">nativa · CLI</text>
+
+            <rect x="15" y="150" width="205" height="50" rx="8" fill="white" stroke="#E8E2D9" stroke-width="1"/>
+            <text x="38" y="172" font-size="13" font-weight="700" fill="#1C1917">VS Code</text>
+            <text x="38" y="190" font-family="JetBrains Mono, monospace" font-size="10" fill="#B0A89E">extensión · IDE</text>
+
+            <rect x="15" y="210" width="205" height="50" rx="8" fill="white" stroke="#E8E2D9" stroke-width="1"/>
+            <text x="38" y="232" font-size="13" font-weight="700" fill="#1C1917">Antigravity</text>
+            <text x="38" y="250" font-family="JetBrains Mono, monospace" font-size="10" fill="#B0A89E">no-code · Google</text>
+
+            <!-- Gray arrows: env → circle -->
+            <line x1="220" y1="115" x2="324" y2="151" stroke="#D1CBC3" stroke-width="1.5" marker-end="url(#ag32)"/>
+            <line x1="220" y1="175" x2="320" y2="175" stroke="#D1CBC3" stroke-width="1.5" marker-end="url(#ag32)"/>
+            <line x1="220" y1="235" x2="324" y2="199" stroke="#D1CBC3" stroke-width="1.5" marker-end="url(#ag32)"/>
+
+            <!-- Center: Claude Code circle -->
+            <circle cx="401" cy="175" r="78" fill="white" stroke="rgba(5,150,105,0.22)" stroke-width="2"/>
+            <circle cx="401" cy="175" r="66" fill="rgba(5,150,105,0.07)"/>
+            <rect x="351" y="133" width="100" height="18" rx="9" fill="rgba(5,150,105,0.15)"/>
+            <text x="401" y="146" font-family="JetBrains Mono, monospace" font-size="9" fill="#047857" text-anchor="middle" letter-spacing="0.8" font-weight="600">CLAUDE CODE</text>
+            <text x="401" y="178" font-family="Georgia, serif" font-size="22" font-weight="700" fill="#1C1917" text-anchor="middle">cerebro</text>
+            <text x="401" y="200" font-size="11" fill="#78716C" text-anchor="middle">skills · plugins · contexto</text>
+
+            <!-- Verde dashed arrows: circle → MCPs -->
+            <line x1="477" y1="151" x2="582" y2="115" stroke="#059669" stroke-width="1.5" stroke-dasharray="5,3" marker-end="url(#gn32)"/>
+            <line x1="479" y1="175" x2="582" y2="175" stroke="#059669" stroke-width="1.5" stroke-dasharray="5,3" marker-end="url(#gn32)"/>
+            <line x1="477" y1="199" x2="582" y2="235" stroke="#059669" stroke-width="1.5" stroke-dasharray="5,3" marker-end="url(#gn32)"/>
+
+            <!-- Right: MCPs (x=585-783, w=198) -->
+            <rect x="585" y="90" width="198" height="50" rx="8" fill="white" stroke="rgba(5,150,105,0.25)" stroke-width="1"/>
+            <text x="605" y="112" font-size="13" font-weight="700" fill="#1C1917">Higgsfield</text>
+            <text x="605" y="130" font-family="JetBrains Mono, monospace" font-size="10" fill="#059669">video · IA a IA</text>
+
+            <rect x="585" y="150" width="198" height="50" rx="8" fill="white" stroke="rgba(5,150,105,0.25)" stroke-width="1"/>
+            <text x="605" y="168" font-size="12" font-weight="700" fill="#1C1917">Drive · NLM · Obsidian</text>
+            <text x="605" y="188" font-family="JetBrains Mono, monospace" font-size="10" fill="#059669">red de conocimiento</text>
+
+            <rect x="585" y="210" width="198" height="50" rx="8" fill="white" stroke="rgba(5,150,105,0.25)" stroke-width="1"/>
+            <text x="605" y="232" font-size="13" font-weight="700" fill="#1C1917">GitHub</text>
+            <text x="605" y="250" font-family="JetBrains Mono, monospace" font-size="10" fill="#059669">código · sincronización</text>
+
+            <!-- Bottom tagline -->
+            <text x="401" y="298" font-family="Georgia, serif" font-size="17" font-weight="700" fill="#1C1917" text-anchor="middle">El entorno no define al agente.</text>
+            <text x="401" y="322" font-size="13" fill="#78716C" text-anchor="middle">Los MCPs determinan hasta dónde puede llegar.</text>
+        </svg>
+    </div>
+
+    <!-- HEADER -->
+    <header class="resource-header">
+        <div class="tag verde"><span class="dot"></span>Herramientas</div>
+        <h1 class="resource-title">El cerebro, los brazos y la mesa de trabajo</h1>
+        <p class="resource-sub">Antes de construir un agente, necesitas entender con qué lo construyes. Plugin, skill y agente no son lo mismo. Y Claude Code no es una sola herramienta — es un cerebro que puedes conectar a casi cualquier entorno y casi cualquier herramienta externa.</p>
+        <div class="resource-meta">
+            <span>12 min de lectura</span>
+            <span class="meta-dot"></span>
+            <span>Nivel 3</span>
+            <span class="meta-dot"></span>
+            <span>Mayo 2026</span>
+        </div>
+    </header>
+
+    <!-- LEARN BOX -->
+    <div class="learn-box">
+        <div class="learn-box-title">Lo que vas a tener claro al terminar</div>
+        <ul class="learn-list">
+            <li class="learn-item">La diferencia exacta entre plugin, skill y agente — y por qué confundirlos es el primer error</li>
+            <li class="learn-item">Que Claude Code funciona en más de un entorno — y que eso cambia lo que puedes construir</li>
+            <li class="learn-item">Qué son los MCPs y cómo el stack real de alex.decode los usa para que el agente actúe, no solo razone</li>
+            <li class="learn-item">Qué van en los archivos de contexto — y por qué no es lo mismo que el CLAUDE.md</li>
+            <li class="learn-item">Qué permisos necesita tu primer agente y cuáles deberías no dar sin pensar</li>
+        </ul>
+    </div>
+
+    <!-- TOC -->
+    <nav class="toc" aria-label="Contenido">
+        <div class="toc-label">En este recurso</div>
+        <div class="toc-links">
+            <a href="#s01">01 Plugin, Skill, Agente</a>
+            <a href="#s02">02 El cerebro y la mesa</a>
+            <a href="#s03">03 MCPs: los brazos</a>
+            <a href="#s04">04 Archivos de contexto</a>
+            <a href="#s05">05 Permisos</a>
+            <a href="#checklist">Checklist</a>
+        </div>
+    </nav>
+
+    <!-- ── S01: PLUGIN / SKILL / AGENTE ── -->
+    <section class="section" id="s01">
+        <div class="section-num">01</div>
+        <h2>Plugin, Skill, Agente: la distinción que nadie explica bien</h2>
+        <p>Los tres términos aparecen juntos constantemente y casi siempre sin definir. El resultado: mucha gente que cree tener un agente y tiene una skill, o que instala plugins pensando que está añadiendo inteligencia a su sistema.</p>
+
+        <div class="trio-table">
+            <div class="trio-row trio-header">
+                <div class="trio-cell">Qué es</div>
+                <div class="trio-cell">Para qué sirve</div>
+                <div class="trio-cell">Ejemplo</div>
+            </div>
+            <div class="trio-row">
+                <div class="trio-cell what plugin">Plugin</div>
+                <div class="trio-cell">Añade una capacidad al entorno donde corre el agente — a Claude Code como herramienta, no al agente en sí. Extiende lo que puedes hacer desde el IDE.</div>
+                <div class="trio-cell example">Skill Creator — crea y gestiona skills sin salir de Claude Code</div>
+            </div>
+            <div class="trio-row">
+                <div class="trio-cell what skill">Skill</div>
+                <div class="trio-cell">Instrucciones especializadas que el agente carga cuando las necesita. Le dice CÓMO hacer una tarea concreta. Una skill = una tarea. Pasiva por defecto.</div>
+                <div class="trio-cell example">copywriting/skill.md — instrucciones de voz, estructura y tono para escribir</div>
+            </div>
+            <div class="trio-row">
+                <div class="trio-cell what agente">Agente</div>
+                <div class="trio-cell">Sistema con un objetivo claro, un modelo asignado y skills disponibles. Se ejecuta solo, itera hasta que el resultado cumple el criterio — sin que tú pulses siguiente en cada paso.</div>
+                <div class="trio-cell example">Agente guionista — recibe el briefing, genera el guion completo, lo deja en output/</div>
+            </div>
+        </div>
+
+        <div class="callout verde">
+            <div class="callout-label">La relación entre los tres</div>
+            <p>Los plugins amplían Claude Code como entorno → las skills dan instrucciones especializadas al agente → el agente usa esas skills para completar su objetivo. Cada pieza tiene su función. Mezclarlas no suma capacidad — genera confusión.</p>
+        </div>
+    </section>
+
+    <!-- ── S02: EL CEREBRO Y LA MESA DE TRABAJO ── -->
+    <section class="section" id="s02">
+        <div class="section-num">02</div>
+        <h2>El cerebro y la mesa de trabajo</h2>
+        <p>Claude Code es el cerebro. El entorno donde lo ejecutas — terminal, VS Code, Antigravity — es la mesa de trabajo. El cerebro no cambia según la mesa. Lo que cambia es el flujo de trabajo que puedes construir alrededor.</p>
+
+        <div class="env-row">
+            <div class="env-item">
+                <div class="env-badge">Terminal</div>
+                <div class="env-body">
+                    <div class="env-name">Línea de comandos nativa</div>
+                    <div class="env-desc">El acceso directo. Sin intermediarios. Ideal para ejecutar agentes, gestionar skills y lanzar proyectos desde cero. Requiere más comodidad con la terminal, pero da el control total.</div>
+                </div>
+            </div>
+            <div class="env-item">
+                <div class="env-badge">VS Code</div>
+                <div class="env-body">
+                    <div class="env-name">Extensión para el editor de código</div>
+                    <div class="env-desc">Claude Code integrado directamente en VS Code. El agente ve el código que tienes abierto, puede leer el proyecto completo y actúa dentro del contexto del editor. Es el entorno que más facilita la supervisión.</div>
+                </div>
+            </div>
+            <div class="env-item">
+                <div class="env-badge">Antigravity</div>
+                <div class="env-body">
+                    <div class="env-name">Entorno no-code de Google</div>
+                    <div class="env-desc">La herramienta del Nivel 1 también acepta Claude Code como cerebro. Compatible con el sistema de skills: copiar la carpeta <code style="font-family:'JetBrains Mono',monospace;font-size:12px;">.claude/skills/</code> a <code style="font-family:'JetBrains Mono',monospace;font-size:12px;">.agents/skills/</code> y las skills funcionan en Antigravity sin modificar.</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="callout">
+            <div class="callout-label">Lo que esto cambia para ti</div>
+            <p>Si ya construiste algo con Antigravity en el Nivel 1, no empiezas desde cero. El cerebro (Claude Code + skills) se puede conectar al entorno que ya usas. La curva de aprendizaje no es de herramienta — es de arquitectura.</p>
+        </div>
+    </section>
+
+    <!-- ── S03: MCPs ── -->
+    <section class="section" id="s03">
+        <div class="section-num">03</div>
+        <h2>MCPs: los brazos del agente</h2>
+        <p>Sin MCPs, el agente solo razona. Puede escribir, analizar, estructurar — todo dentro de su ventana de contexto. Con MCPs, actúa: guarda archivos, sincroniza repositorios, genera imágenes, recupera información de tu nube de conocimiento.</p>
+        <p>Un MCP (Model Context Protocol) es un protocolo estándar que permite a Claude conectarse con herramientas externas. No es magia — es una interfaz definida que el agente puede llamar como si fuera una skill, pero que vive fuera del modelo.</p>
+
+        <div class="mcp-group">
+            <div class="mcp-group-label">Red de conocimiento</div>
+            <div class="mcp-stack">
+                <div class="mcp-card">
+                    <div class="mcp-dot saber"></div>
+                    <div class="mcp-body">
+                        <div class="mcp-name">Google Drive MCP</div>
+                        <div class="mcp-desc">El agente lee y escribe en Drive directamente. Archivos de contexto, referencias, outputs — todo en la misma nube que ya usas. Sin copiar y pegar manualmente entre el agente y tu almacenamiento.</div>
+                        <div class="mcp-tag saber">conocimiento</div>
+                    </div>
+                </div>
+                <div class="mcp-card">
+                    <div class="mcp-dot saber"></div>
+                    <div class="mcp-body">
+                        <div class="mcp-name">NotebookLM MCP</div>
+                        <div class="mcp-desc">NotebookLM convierte documentos en bases de conocimiento consultables. El MCP permite al agente recuperar información de esa base durante la ejecución — sin necesidad de pasarle el documento completo como contexto.</div>
+                        <div class="mcp-tag saber">conocimiento</div>
+                    </div>
+                </div>
+                <div class="mcp-card">
+                    <div class="mcp-dot saber"></div>
+                    <div class="mcp-body">
+                        <div class="mcp-name">Obsidian MCP</div>
+                        <div class="mcp-desc">Obsidian es un sistema de notas con grafo de conexiones entre ideas. Combinado con Drive y NotebookLM, forma una red neuronal de conocimiento personal: el agente puede depositar outputs y recuperar contexto de esa red en la misma sesión.</div>
+                        <div class="mcp-tag saber">conocimiento</div>
+                    </div>
+                </div>
+                <p class="mcp-connect-note">Drive + NotebookLM + Obsidian trabajan juntos. El agente accede a la red completa, no a cada herramienta por separado.</p>
+            </div>
+        </div>
+
+        <div class="mcp-group">
+            <div class="mcp-group-label">Acción directa</div>
+            <div class="mcp-stack">
+                <div class="mcp-card">
+                    <div class="mcp-dot accion"></div>
+                    <div class="mcp-body">
+                        <div class="mcp-name">GitHub MCP</div>
+                        <div class="mcp-desc">El agente hace commits, abre pull requests y sincroniza cambios directamente en el repositorio. Sin salir de Claude Code, sin copiar código manualmente. Cada cambio que el agente produce queda versionado en el repo automáticamente.</div>
+                        <div class="mcp-tag accion">acción</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="mcp-group">
+            <div class="mcp-group-label">Traducción IA a IA</div>
+            <div class="mcp-stack">
+                <div class="mcp-card">
+                    <div class="mcp-dot traduccion"></div>
+                    <div class="mcp-body">
+                        <div class="mcp-name">Higgsfield MCP</div>
+                        <div class="mcp-desc">Higgsfield es una plataforma de generación de video por IA. El MCP permite que Claude traduzca tu intención en el prompt técnico óptimo para Higgsfield — y que lo envíe directamente. El resultado es más preciso que si escribieras el prompt tú mismo, porque dos IAs se comunican en el mismo idioma técnico.</div>
+                        <div class="mcp-tag traduccion">IA a IA</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="gold-quote">
+            <div class="gold-quote-text">La traducción más precisa no ocurre entre humano y máquina.<br>Ocurre cuando <em>una IA le habla a otra.</em></div>
+        </div>
+    </section>
+
+    <!-- ── S04: ARCHIVOS DE CONTEXTO ── -->
+    <section class="section" id="s04">
+        <div class="section-num">04</div>
+        <h2>Los archivos de contexto: la capa que define quién eres</h2>
+        <p>El CLAUDE.md define las instrucciones generales del proyecto. Las skills definen cómo hacer tareas concretas. Los archivos de contexto en <code style="font-family:'JetBrains Mono',monospace;font-size:13px;">context/</code> responden a una pregunta distinta: ¿quién eres, a quién le hablas y con qué referencias trabaja el agente?</p>
+        <p>No son obligatorios para que el agente funcione. Son obligatorios para que el agente funcione <em>bien</em>.</p>
+
+        <div class="folder-tree">
+            <div class="folder-root"><span class="folder-root-icon">📁</span> tu-proyecto/</div>
+            <div class="folder-sub">
+                <div class="folder-item">
+                    <span class="folder-line">├──</span>
+                    <span class="folder-item-name">CLAUDE.md</span>
+                    <span class="folder-item-comment">← instrucciones generales del proyecto</span>
+                </div>
+                <div class="folder-item">
+                    <span class="folder-line">├──</span>
+                    <span class="folder-item-name dir">context/</span>
+                    <span class="folder-item-comment">← quién eres + a quién le hablas</span>
+                </div>
+                <div class="folder-sub">
+                    <div class="folder-item">
+                        <span class="folder-line">│&nbsp;&nbsp;├──</span>
+                        <span class="folder-item-name">perfil.md</span>
+                        <span class="folder-item-comment">← tu voz, tu tono, cómo trabajas</span>
+                    </div>
+                    <div class="folder-item">
+                        <span class="folder-line">│&nbsp;&nbsp;├──</span>
+                        <span class="folder-item-name">audiencia.md</span>
+                        <span class="folder-item-comment">← a quién va dirigido el output</span>
+                    </div>
+                    <div class="folder-item">
+                        <span class="folder-line">│&nbsp;&nbsp;└──</span>
+                        <span class="folder-item-name dir">referencias/</span>
+                        <span class="folder-item-comment">← ejemplos de lo que quieres</span>
+                    </div>
+                </div>
+                <div class="folder-item">
+                    <span class="folder-line">├──</span>
+                    <span class="folder-item-name dir">output/</span>
+                    <span class="folder-item-comment">← donde el agente deja resultados</span>
+                </div>
+                <div class="folder-item">
+                    <span class="folder-line">└──</span>
+                    <span class="folder-item-name dir">.claude/skills/</span>
+                    <span class="folder-item-comment">← instrucciones especializadas</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="callout verde">
+            <div class="callout-label">CLAUDE.md vs context/ — no es lo mismo</div>
+            <p>El CLAUDE.md le dice al agente <strong>qué tiene que hacer y cómo operar</strong> en este proyecto. Los archivos de <code style="font-family:'JetBrains Mono',monospace;font-size:12px;">context/</code> le dicen <strong>con qué materiales trabaja</strong> — tu voz, tu audiencia, tus referencias visuales. Sin context/, el agente produce algo técnicamente correcto pero sin personalidad propia.</p>
+        </div>
+    </section>
+
+    <!-- ── S05: PERMISOS ── -->
+    <section class="section" id="s05">
+        <div class="section-num">05</div>
+        <h2>Permisos: lo que autorizas al agente a hacer</h2>
+        <p>Cuando lanzas un agente por primera vez, Claude Code te pregunta qué puede hacer. La mayoría acepta todo sin leer. Eso no es un problema si sabes qué estás aceptando — pero si no lo sabes, puedes terminar con un agente que modifica archivos que no debería o que gasta créditos en MCPs que no necesitaba.</p>
+
+        <div class="perm-list">
+            <div class="perm-item allow">
+                <div class="perm-icon ok">SÍ</div>
+                <div>
+                    <div class="perm-name">Leer archivos del proyecto</div>
+                    <div class="perm-desc">El agente necesita leer CLAUDE.md, context/ y cualquier referencia para hacer su trabajo. Sin este permiso, trabaja a ciegas.</div>
+                </div>
+            </div>
+            <div class="perm-item allow">
+                <div class="perm-icon ok">SÍ</div>
+                <div>
+                    <div class="perm-name">Escribir en output/</div>
+                    <div class="perm-desc">El agente necesita dejar sus resultados en algún sitio. La carpeta output/ es el lugar diseñado para eso — y el lugar desde donde otros agentes recogen el contexto.</div>
+                </div>
+            </div>
+            <div class="perm-item maybe">
+                <div class="perm-icon dep">↓</div>
+                <div>
+                    <div class="perm-name">Ejecutar comandos de terminal</div>
+                    <div class="perm-desc">Solo si el agente necesita scripts o automatizaciones. Para la mayoría de agentes de contenido o análisis, no es necesario. Actívalo cuando sepas exactamente por qué lo necesitas.</div>
+                </div>
+            </div>
+            <div class="perm-item maybe">
+                <div class="perm-icon dep">↓</div>
+                <div>
+                    <div class="perm-name">Acceder a la red (MCPs externos)</div>
+                    <div class="perm-desc">Necesario si usas MCPs como GitHub, Drive o Higgsfield. Sin este permiso los MCPs no pueden conectarse. Actívalo cuando tengas MCPs configurados — no antes.</div>
+                </div>
+            </div>
+            <div class="perm-item warn">
+                <div class="perm-icon stop">NO</div>
+                <div>
+                    <div class="perm-name">Modificar archivos fuera del proyecto</div>
+                    <div class="perm-desc">Sin una razón muy concreta, no. Un agente que puede escribir fuera de su carpeta de trabajo puede causar cambios donde no los esperas. El scope del agente debe coincidir con el scope del proyecto.</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="action-write">
+            <div class="action-write-label">Antes de construir</div>
+            <div class="action-write-prompt">Los permisos que mi primer agente va a necesitar son…</div>
+            <input class="action-write-line" type="text" placeholder="leer, escribir en output/, acceder a red..." maxlength="120"/>
+            <p class="action-write-hint">En el siguiente recurso vas a configurar esos permisos paso a paso.</p>
+        </div>
+
+        <a href="3-3.html" class="next-hook">
+            <div class="next-hook-arrow">
+                <svg width="14" height="14" fill="none" stroke="white" stroke-width="2.5" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+            </div>
+            <div class="next-hook-text">
+                <div class="next-hook-label">Siguiente — 3.3 · Acción</div>
+                <div class="next-hook-title">Tu primer agente: una tarea que se ejecuta sola mientras no estás</div>
+            </div>
+        </a>
+    </section>
+
+    <!-- ── CHECKLIST ── -->
+    <div class="checklist-section" id="checklist">
+        <div class="checklist-title">Lista de comprobación</div>
+        <ul class="checklist-items" id="checklistItems">
+            <li onclick="toggleCheck(this)"><span class="check-box"></span><span class="check-text">Sé la diferencia entre plugin, skill y agente — y no voy a confundir instalar un plugin con tener un agente</span></li>
+            <li onclick="toggleCheck(this)"><span class="check-box"></span><span class="check-text">Entiendo que Claude Code funciona en terminal, VS Code y Antigravity — y que las skills son compatibles entre entornos</span></li>
+            <li onclick="toggleCheck(this)"><span class="check-box"></span><span class="check-text">Sé qué hacen los MCPs de mi stack y por qué sin ellos el agente solo razona pero no actúa</span></li>
+            <li onclick="toggleCheck(this)"><span class="check-box"></span><span class="check-text">Entiendo qué va en context/ y que no es lo mismo que el CLAUDE.md ni que una skill</span></li>
+            <li onclick="toggleCheck(this)"><span class="check-box"></span><span class="check-text">Sé qué permisos voy a activar para mi primer agente — y cuál no voy a activar sin razón concreta</span></li>
+        </ul>
+    </div>
+
+    <!-- FOOTER -->
+    <footer class="resource-footer">
+        <a href="3-1.html" class="footer-back">
+            <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+            Nivel 3 · Qué es un agente
+        </a>
+        <a href="3-3.html" class="footer-next">
+            Tu primer agente
+            <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </a>
+    </footer>
+
+</div>
+
+<script>
+function toggleCheck(li) {
+    li.classList.toggle('done');
+    li.querySelector('.check-box').textContent = li.classList.contains('done') ? '✓' : '';
+    const items = document.querySelectorAll('#checklistItems li');
+    if ([...items].every(i => i.classList.contains('done'))) launchConfetti();
+}
+
+function launchConfetti() {
+    const canvas = document.getElementById('confettiCanvas');
+    if (!canvas) return;
+    canvas.style.display = 'block';
+    const ctx = canvas.getContext('2d');
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+    const colors = ['#B45309','#D97706','#FDE68A','#059669','#7C3AED','#2563EB','#F59E0B','#10B981','#DC2626'];
+    const pieces = Array.from({length: 140}, () => ({
+        x: Math.random() * canvas.width,
+        y: -10 - Math.random() * canvas.height * 0.6,
+        w: Math.random() * 11 + 5,
+        h: Math.random() * 6 + 3,
+        color: colors[Math.floor(Math.random() * colors.length)],
+        vx: (Math.random() - 0.5) * 4,
+        vy: Math.random() * 3 + 1.5,
+        rot: Math.random() * 360,
+        vrot: (Math.random() - 0.5) * 10,
+        alpha: 1,
+        shape: Math.random() > 0.5 ? 'rect' : 'circle'
+    }));
+    let frame = 0;
+    (function animate() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        pieces.forEach(p => {
+            p.x += p.vx; p.y += p.vy; p.rot += p.vrot; p.vy += 0.06;
+            if (frame > 90) p.alpha = Math.max(0, p.alpha - 0.012);
+            ctx.save();
+            ctx.globalAlpha = p.alpha;
+            ctx.translate(p.x + p.w / 2, p.y + p.h / 2);
+            ctx.rotate(p.rot * Math.PI / 180);
+            ctx.fillStyle = p.color;
+            if (p.shape === 'circle') {
+                ctx.beginPath(); ctx.arc(0, 0, p.w / 2, 0, Math.PI * 2); ctx.fill();
+            } else {
+                ctx.fillRect(-p.w / 2, -p.h / 2, p.w, p.h);
+            }
+            ctx.restore();
+        });
+        frame++;
+        if (frame < 170) requestAnimationFrame(animate);
+        else canvas.style.display = 'none';
+    })();
+}
+</script>
+
+<canvas id="confettiCanvas" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:9999;"></canvas>
+</body>
+</html>

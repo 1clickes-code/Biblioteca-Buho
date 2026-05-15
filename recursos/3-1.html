@@ -1,0 +1,957 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Qué es un agente de IA y para qué sirve realmente — alex.decode</title>
+    <meta name="description" content="Qué es un agente de IA, cómo funciona el loop autónomo, diferencia entre skill y agente, RAG vs agente con skills, y cuándo tiene sentido usarlo.">
+    <meta name="keywords" content="agente de IA, qué es un agente IA, skill vs agente, RAG agente, Claude Code agentes, automatización IA, loop agente">
+    <link rel="icon" type="image/svg+xml" href="../favicon.svg">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        :root {
+            --bg:        #FAFAF7;
+            --surface:   #FFFFFF;
+            --border:    #E8E2D9;
+            --text:      #1C1917;
+            --muted:     #78716C;
+            --faint:     #B0A89E;
+            --amber:     #B45309;
+            --amber-mid: #D97706;
+            --amber-dim: rgba(180,83,9,0.07);
+            --rojo:  #DC2626; --rojo-d:  rgba(220,38,38,0.07);
+            --amar:  #D97706; --amar-d:  rgba(217,119,6,0.07);
+            --azul:  #2563EB; --azul-d:  rgba(37,99,235,0.07);
+            --verde: #059669; --verde-d: rgba(5,150,105,0.07);
+            --morad: #7C3AED; --morad-d: rgba(124,58,237,0.07);
+        }
+
+        html { scroll-behavior: smooth; }
+        body {
+            background: var(--bg);
+            color: var(--text);
+            font-family: 'Inter', system-ui, sans-serif;
+            font-size: 15px;
+            line-height: 1.7;
+            min-height: 100vh;
+        }
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0; left: 0; right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, #1D4ED8 0%, #2563EB 50%, #1D4ED8 100%);
+            z-index: 100;
+        }
+
+        .wrap { max-width: 720px; margin: 0 auto; padding: 0 24px; }
+
+        /* ── NAV ── */
+        .top-nav {
+            padding: 28px 0 0;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 11px;
+            color: var(--faint);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
+        .top-nav a { color: var(--amber); text-decoration: none; transition: opacity .15s; }
+        .top-nav a:hover { opacity: .7; }
+        .top-nav .sep { color: var(--faint); }
+        .nav-owl {
+            margin-left: auto;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            color: var(--faint);
+            text-decoration: none;
+            font-size: 10px;
+            letter-spacing: .5px;
+            transition: opacity .15s;
+            animation: owlFloat 5s ease-in-out 1s infinite;
+        }
+        .nav-owl:hover { opacity: .7; color: var(--amber); }
+        @keyframes owlFloat { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-4px)} }
+
+        /* ── COVER ── */
+        .cover-wrap { margin: 28px 0 0; border-radius: 12px; overflow: hidden; border: 1px solid var(--border); }
+        .cover-wrap svg { display: block; width: 100%; height: auto; }
+
+        /* ── HEADER ── */
+        .resource-header { padding: 28px 0 28px; border-bottom: 1px solid var(--border); margin-bottom: 28px; }
+        .tag {
+            display: inline-flex; align-items: center; gap: 5px;
+            font-size: 10px; font-weight: 600; padding: 3px 10px;
+            border-radius: 100px; margin-bottom: 16px;
+        }
+        .tag .dot { width: 5px; height: 5px; border-radius: 50%; flex-shrink: 0; }
+        .tag.azul { background: var(--azul-d); color: var(--azul); }
+        .tag.azul .dot { background: var(--azul); }
+        .resource-title {
+            font-family: 'Playfair Display', Georgia, serif;
+            font-size: clamp(24px, 4vw, 34px);
+            font-weight: 700;
+            line-height: 1.18;
+            letter-spacing: -.3px;
+            margin-bottom: 14px;
+        }
+        .resource-sub { font-size: 15px; color: var(--muted); line-height: 1.6; margin-bottom: 18px; max-width: 560px; }
+        .resource-meta {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 11px;
+            color: var(--faint);
+            display: flex;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+        .resource-meta span { display: flex; align-items: center; gap: 5px; }
+        .meta-dot { width: 3px; height: 3px; border-radius: 50%; background: var(--faint); }
+
+        /* ── LEARN BOX ── */
+        .learn-box {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 18px 22px;
+            margin-bottom: 28px;
+        }
+        .learn-box-title {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 9px;
+            color: var(--faint);
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            margin-bottom: 12px;
+        }
+        .learn-list { list-style: none; display: flex; flex-direction: column; gap: 8px; }
+        .learn-item { display: flex; align-items: flex-start; gap: 8px; font-size: 13px; color: var(--text); line-height: 1.45; }
+        .learn-item::before {
+            content: '→';
+            color: var(--azul);
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 11px;
+            flex-shrink: 0;
+            margin-top: 1px;
+        }
+
+        /* ── TOC ── */
+        .toc { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 16px 20px; margin-bottom: 48px; }
+        .toc-label { font-family: 'JetBrains Mono', monospace; font-size: 9px; color: var(--faint); letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 10px; }
+        .toc-links { display: flex; flex-wrap: wrap; gap: 6px; }
+        .toc-links a {
+            font-size: 12px;
+            color: var(--muted);
+            text-decoration: none;
+            padding: 4px 10px;
+            border-radius: 6px;
+            border: 1px solid var(--border);
+            transition: border-color .15s, color .15s, background .15s;
+            white-space: nowrap;
+        }
+        .toc-links a:hover { border-color: var(--azul); color: var(--azul); background: var(--azul-d); }
+
+        /* ── SECTIONS ── */
+        .section { margin-bottom: 52px; scroll-margin-top: 32px; }
+        .section-num {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 10px;
+            color: var(--azul);
+            font-weight: 600;
+            letter-spacing: 1px;
+            margin-bottom: 8px;
+        }
+        .section h2 { font-family: 'Playfair Display', serif; font-size: 22px; font-weight: 700; line-height: 1.3; margin-bottom: 16px; }
+        .section p { color: var(--text); margin-bottom: 14px; }
+        .section p:last-child { margin-bottom: 0; }
+
+        /* ── CALLOUT ── */
+        .callout { border-left: 3px solid var(--amber); background: var(--amber-dim); border-radius: 0 8px 8px 0; padding: 14px 18px; margin: 20px 0; }
+        .callout-label { font-family: 'JetBrains Mono', monospace; font-size: 9px; font-weight: 600; color: var(--amber); letter-spacing: 1.2px; text-transform: uppercase; margin-bottom: 6px; }
+        .callout p { font-size: 14px; color: var(--text); margin: 0; }
+        .callout.azul { border-left-color: var(--azul); background: var(--azul-d); }
+        .callout.azul .callout-label { color: var(--azul); }
+        .callout.verde { border-left-color: var(--verde); background: var(--verde-d); }
+        .callout.verde .callout-label { color: var(--verde); }
+
+        /* ── GOLD QUOTE ── */
+        .gold-quote {
+            background: linear-gradient(135deg, var(--amber-dim) 0%, rgba(217,119,6,0.04) 100%);
+            border: 1.5px solid rgba(180,83,9,0.2);
+            border-radius: 12px;
+            padding: 22px 28px 20px;
+            margin: 24px 0;
+            text-align: center;
+            position: relative;
+        }
+        .gold-quote::before {
+            content: '"';
+            position: absolute;
+            top: 2px; left: 16px;
+            font-family: 'Playfair Display', serif;
+            font-size: 52px;
+            line-height: 1;
+            color: rgba(180,83,9,0.12);
+        }
+        .gold-quote-text { font-family: 'Playfair Display', serif; font-size: 17px; font-weight: 700; line-height: 1.5; color: var(--text); padding: 0 8px; }
+        .gold-quote-text em { color: var(--amber); font-style: normal; }
+
+        /* ── LAYER STACK ── */
+        .layer-stack { display: flex; flex-direction: column; gap: 8px; margin: 24px 0; }
+        .layer-item {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 13px 16px;
+            display: flex;
+            align-items: flex-start;
+            gap: 14px;
+            transition: border-color .15s;
+        }
+        .layer-item:hover { border-color: var(--azul); }
+        .layer-badge {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 10px;
+            font-weight: 600;
+            color: var(--azul);
+            background: var(--azul-d);
+            padding: 4px 9px;
+            border-radius: 5px;
+            flex-shrink: 0;
+            white-space: nowrap;
+            min-width: 110px;
+            text-align: center;
+            margin-top: 1px;
+        }
+        .layer-content { flex: 1; }
+        .layer-name { font-size: 13px; font-weight: 600; color: var(--text); margin-bottom: 3px; line-height: 1.3; }
+        .layer-desc { font-size: 12px; color: var(--muted); line-height: 1.45; }
+
+        /* ── TABLE ── */
+        .table-wrap { overflow-x: auto; margin: 20px 0; }
+        table { width: 100%; border-collapse: collapse; font-size: 13px; }
+        thead th {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 10px;
+            font-weight: 600;
+            letter-spacing: .8px;
+            text-transform: uppercase;
+            padding: 10px 14px;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            text-align: left;
+            color: var(--muted);
+        }
+        thead th:first-child { border-top-left-radius: 8px; }
+        thead th:last-child { border-top-right-radius: 8px; }
+        .th-azul { color: var(--azul) !important; }
+        .th-verde-r { color: var(--verde) !important; border-top-right-radius: 8px; }
+        tbody td { padding: 10px 14px; border: 1px solid var(--border); vertical-align: top; line-height: 1.55; color: var(--text); }
+        tbody tr:last-child td:first-child { border-bottom-left-radius: 8px; }
+        tbody tr:last-child td:last-child { border-bottom-right-radius: 8px; }
+        tbody tr:nth-child(even) td { background: var(--surface); }
+        .mono { font-family: 'JetBrains Mono', monospace; font-size: 11px; }
+        .check-yes { color: var(--verde); font-weight: 700; }
+        .check-no { color: var(--faint); }
+        .check-partial { color: var(--amar); font-weight: 600; }
+
+        /* ── DIAG LIST ── */
+        .diag-list { display: flex; flex-direction: column; gap: 10px; margin: 24px 0; }
+        .diag-item {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 14px 18px;
+            display: flex;
+            gap: 14px;
+            align-items: flex-start;
+        }
+        .diag-num {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--azul);
+            flex-shrink: 0;
+            min-width: 22px;
+            padding-top: 1px;
+        }
+        .diag-body { flex: 1; }
+        .diag-q { font-size: 13.5px; font-weight: 600; color: var(--text); margin-bottom: 5px; line-height: 1.35; }
+        .diag-hint { font-size: 12px; color: var(--muted); line-height: 1.45; }
+
+        /* ── MODEL CARDS ── */
+        .model-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin: 24px 0; }
+        .model-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 14px 16px;
+            text-align: center;
+        }
+        .model-name {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--azul);
+            margin-bottom: 6px;
+        }
+        .model-tag {
+            font-size: 10px;
+            font-weight: 600;
+            padding: 2px 8px;
+            border-radius: 100px;
+            margin-bottom: 8px;
+            display: inline-block;
+        }
+        .model-tag.rapido { background: var(--verde-d); color: var(--verde); }
+        .model-tag.equilibrado { background: var(--azul-d); color: var(--azul); }
+        .model-tag.potente { background: var(--morad-d); color: var(--morad); }
+        .model-desc { font-size: 11.5px; color: var(--muted); line-height: 1.4; }
+
+        /* ── ACTION WRITE ── */
+        .action-write {
+            background: var(--surface);
+            border: 2px dashed var(--border);
+            border-radius: 12px;
+            padding: 26px 28px;
+            margin: 24px 0;
+            text-align: center;
+        }
+        .action-write-label { font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--amber); font-weight: 600; letter-spacing: 1.2px; text-transform: uppercase; margin-bottom: 14px; }
+        .action-write-prompt { font-family: 'Playfair Display', serif; font-size: 18px; font-weight: 700; color: var(--text); margin-bottom: 16px; line-height: 1.35; }
+        .action-write-line {
+            display: block;
+            width: 100%;
+            max-width: 440px;
+            margin: 0 auto;
+            border: none;
+            border-bottom: 2px solid var(--border);
+            background: transparent;
+            padding: 8px 4px;
+            font-family: 'Inter', sans-serif;
+            font-size: 15px;
+            color: var(--text);
+            text-align: center;
+            outline: none;
+            transition: border-color .2s;
+        }
+        .action-write-line:focus { border-bottom-color: var(--azul); }
+        .action-write-line::placeholder { color: var(--faint); }
+        .action-write-hint { font-size: 12px; color: var(--faint); margin-top: 10px; font-style: italic; }
+
+        /* ── NEXT HOOK ── */
+        .next-hook {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: var(--azul-d);
+            border: 1px solid rgba(37,99,235,0.15);
+            border-radius: 10px;
+            padding: 16px 20px;
+            margin: 28px 0 0;
+            text-decoration: none;
+            transition: background .15s, gap .15s;
+        }
+        .next-hook:hover { background: rgba(37,99,235,0.12); gap: 16px; }
+        .next-hook-arrow { width: 32px; height: 32px; border-radius: 50%; background: var(--azul); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+        .next-hook-text { flex: 1; }
+        .next-hook-label { font-family: 'JetBrains Mono', monospace; font-size: 9px; color: var(--azul); letter-spacing: 1.2px; text-transform: uppercase; margin-bottom: 3px; }
+        .next-hook-title { font-size: 13.5px; font-weight: 600; color: var(--text); line-height: 1.3; }
+
+        /* ── CHECKLIST ── */
+        .checklist-section { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 24px 26px; margin-bottom: 52px; }
+        .checklist-title { font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--amber); font-weight: 600; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 16px; }
+        .checklist-items { list-style: none; display: flex; flex-direction: column; gap: 10px; }
+        .checklist-items li { display: flex; align-items: flex-start; gap: 10px; font-size: 13.5px; color: var(--text); line-height: 1.5; cursor: pointer; }
+        .check-box { width: 17px; height: 17px; border: 1.5px solid var(--border); border-radius: 4px; flex-shrink: 0; margin-top: 1px; transition: border-color .15s, background .15s; display: flex; align-items: center; justify-content: center; font-size: 10px; color: white; }
+        .checklist-items li.done .check-box { background: var(--verde); border-color: var(--verde); }
+        .checklist-items li.done .check-text { text-decoration: line-through; color: var(--muted); }
+
+        /* ── FOOTER ── */
+        .resource-footer { border-top: 1px solid var(--border); padding: 32px 0 56px; display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
+        .footer-back { font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--muted); text-decoration: none; display: flex; align-items: center; gap: 6px; transition: color .15s; }
+        .footer-back:hover { color: var(--amber); }
+        .footer-next { font-size: 13px; font-weight: 500; color: var(--amber); text-decoration: none; display: flex; align-items: center; gap: 6px; transition: gap .15s; }
+        .footer-next:hover { gap: 10px; }
+
+        /* ── GARBAGE IN / OUT ── */
+        .gio-compare { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 20px 0; }
+        .gio-panel { border-radius: 10px; padding: 14px 16px; border: 1px solid; }
+        .gio-panel.bad  { background: rgba(220,38,38,0.05); border-color: rgba(220,38,38,0.18); }
+        .gio-panel.good { background: rgba(5,150,105,0.05);  border-color: rgba(5,150,105,0.18);  }
+        .gio-head { font-family: 'JetBrains Mono', monospace; font-size: 9px; font-weight: 600; letter-spacing: 1.2px; text-transform: uppercase; margin-bottom: 10px; }
+        .gio-panel.bad  .gio-head { color: var(--rojo); }
+        .gio-panel.good .gio-head { color: var(--verde); }
+        .gio-flow { display: flex; align-items: center; gap: 5px; flex-wrap: wrap; margin-bottom: 10px; }
+        .gio-node { font-size: 10.5px; padding: 4px 9px; border-radius: 5px; line-height: 1.3; }
+        .gio-panel.bad  .gio-node { background: rgba(220,38,38,0.10); color: var(--rojo); }
+        .gio-panel.good .gio-node { background: rgba(5,150,105,0.10); color: var(--verde); }
+        .gio-sep { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--faint); flex-shrink: 0; }
+        .gio-verdict { font-size: 11.5px; color: var(--muted); border-top: 1px solid; padding-top: 8px; line-height: 1.45; }
+        .gio-panel.bad  .gio-verdict { border-color: rgba(220,38,38,0.15); }
+        .gio-panel.good .gio-verdict { border-color: rgba(5,150,105,0.15); }
+
+        /* ── SPOILER ROJO ── */
+        .spoiler-rojo {
+            display: flex;
+            align-items: flex-start;
+            gap: 14px;
+            background: var(--rojo-d);
+            border: 1.5px dashed rgba(220,38,38,0.25);
+            border-radius: 10px;
+            padding: 16px 20px;
+            margin: 20px 0 0;
+        }
+        .spoiler-rojo-icon { font-size: 15px; flex-shrink: 0; margin-top: 2px; }
+        .spoiler-rojo-label { font-family: 'JetBrains Mono', monospace; font-size: 9px; color: var(--rojo); letter-spacing: 1.2px; text-transform: uppercase; margin-bottom: 5px; font-weight: 600; }
+        .spoiler-rojo-text { font-size: 13px; color: var(--text); line-height: 1.5; }
+
+        /* ── RESPONSIVE ── */
+        @media (max-width: 600px) {
+            .wrap { padding: 0 16px; }
+            .resource-title { font-size: 22px; }
+            .layer-badge { min-width: 80px; font-size: 9px; }
+            .model-row { grid-template-columns: 1fr; }
+            .gio-compare { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+<div class="wrap">
+
+    <!-- NAV -->
+    <nav class="top-nav">
+        <a href="../index.html">alex.decode</a>
+        <span class="sep">/</span>
+        <span>Biblioteca</span>
+        <span class="sep">/</span>
+        <span>Nivel 3</span>
+        <span class="sep">/</span>
+        <span>Qué es un agente</span>
+        <a href="../index.html" class="nav-owl" aria-label="Volver a la biblioteca">
+            <svg width="28" height="32" viewBox="0 0 140 160" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <polygon points="44,32 36,6 52,26" fill="#92400E"/>
+                <polygon points="96,32 104,6 88,26" fill="#92400E"/>
+                <circle cx="70" cy="56" r="38" fill="#B45309"/>
+                <ellipse cx="70" cy="58" rx="26" ry="24" fill="#D97706" opacity="0.28"/>
+                <circle cx="56" cy="52" r="13" fill="#FEF3C7"/>
+                <circle cx="84" cy="52" r="13" fill="#FEF3C7"/>
+                <circle cx="56" cy="52" r="6.5" fill="#1C1917"/>
+                <circle cx="84" cy="52" r="6.5" fill="#1C1917"/>
+                <circle cx="59" cy="49" r="2.2" fill="white"/>
+                <circle cx="87" cy="49" r="2.2" fill="white"/>
+                <polygon points="63,64 77,64 70,75" fill="#D97706"/>
+                <ellipse cx="70" cy="120" rx="34" ry="36" fill="#B45309"/>
+                <ellipse cx="70" cy="126" rx="20" ry="24" fill="#D97706" opacity="0.22"/>
+            </svg>
+        </a>
+    </nav>
+
+    <!-- COVER SVG -->
+    <div class="cover-wrap">
+        <svg viewBox="0 0 800 350" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect width="800" height="350" fill="#FAFAF7"/>
+
+            <!-- Left half: SKILL (one-shot) -->
+            <rect width="370" height="350" fill="#F5F4F0"/>
+            <text x="185" y="30" text-anchor="middle" font-family="system-ui,sans-serif" font-size="10" fill="#A8A29E" letter-spacing="2" font-weight="700">SKILL — UNA ACCIÓN</text>
+
+            <!-- Skill: simple arrow flow -->
+            <rect x="40" y="110" width="100" height="38" rx="7" fill="white" stroke="#D6D3D1" stroke-width="1.2"/>
+            <text x="90" y="134" text-anchor="middle" font-family="system-ui,sans-serif" font-size="11" fill="#78716C" font-weight="600">INSTRUCCIÓN</text>
+
+            <line x1="145" y1="129" x2="185" y2="129" stroke="#D6D3D1" stroke-width="1.5" marker-end="url(#arrowGray)"/>
+
+            <rect x="188" y="110" width="100" height="38" rx="7" fill="white" stroke="#D6D3D1" stroke-width="1.2"/>
+            <text x="238" y="134" text-anchor="middle" font-family="system-ui,sans-serif" font-size="11" fill="#78716C" font-weight="600">EJECUCIÓN</text>
+
+            <line x1="293" y1="129" x2="333" y2="129" stroke="#D6D3D1" stroke-width="1.5" marker-end="url(#arrowGray)"/>
+
+            <rect x="336" y="110" width="80" height="38" rx="7" fill="white" stroke="#D6D3D1" stroke-width="1.2"/>
+            <text x="376" y="134" text-anchor="middle" font-family="system-ui,sans-serif" font-size="11" fill="#78716C" font-weight="600">OUTPUT</text>
+
+            <!-- Skill label bottom -->
+            <text x="185" y="205" text-anchor="middle" font-family="Georgia,serif" font-size="28" fill="#D6D3D1" font-weight="700">1</text>
+            <text x="185" y="226" text-anchor="middle" font-family="system-ui,sans-serif" font-size="10" fill="#A8A29E" letter-spacing="0.5">acción. se detiene.</text>
+
+            <!-- Divider -->
+            <line x1="400" y1="18" x2="400" y2="332" stroke="#E8E2D9" stroke-width="1.5" stroke-dasharray="5 4"/>
+
+            <!-- Right half: AGENT (loop) -->
+            <rect x="430" width="370" height="350" fill="#EFF6FF"/>
+            <text x="615" y="30" text-anchor="middle" font-family="system-ui,sans-serif" font-size="10" fill="#2563EB" letter-spacing="2" font-weight="700">AGENTE — LOOP AUTÓNOMO</text>
+
+            <!-- Agent loop nodes -->
+            <!-- Objetivo -->
+            <rect x="435" y="60" width="88" height="34" rx="7" fill="white" stroke="#BFDBFE" stroke-width="1.3"/>
+            <text x="479" y="82" text-anchor="middle" font-family="system-ui,sans-serif" font-size="10" fill="#2563EB" font-weight="700">OBJETIVO</text>
+
+            <!-- arrow right -->
+            <line x1="524" y1="77" x2="560" y2="77" stroke="#2563EB" stroke-width="1.5" marker-end="url(#arrowBlue)"/>
+
+            <!-- Actúa -->
+            <rect x="563" y="60" width="88" height="34" rx="7" fill="#DBEAFE" stroke="#BFDBFE" stroke-width="1.3"/>
+            <text x="607" y="82" text-anchor="middle" font-family="system-ui,sans-serif" font-size="10" fill="#1D4ED8" font-weight="700">ACTÚA</text>
+
+            <!-- arrow right -->
+            <line x1="652" y1="77" x2="688" y2="77" stroke="#2563EB" stroke-width="1.5" marker-end="url(#arrowBlue)"/>
+
+            <!-- Resultado -->
+            <rect x="691" y="60" width="88" height="34" rx="7" fill="white" stroke="#BFDBFE" stroke-width="1.3"/>
+            <text x="735" y="82" text-anchor="middle" font-family="system-ui,sans-serif" font-size="10" fill="#2563EB" font-weight="700">RESULTADO</text>
+
+            <!-- arrow down from resultado -->
+            <line x1="735" y1="95" x2="735" y2="155" stroke="#2563EB" stroke-width="1.5" marker-end="url(#arrowBlue)"/>
+
+            <!-- Verifica -->
+            <rect x="691" y="158" width="88" height="34" rx="7" fill="#DBEAFE" stroke="#BFDBFE" stroke-width="1.3"/>
+            <text x="735" y="180" text-anchor="middle" font-family="system-ui,sans-serif" font-size="10" fill="#1D4ED8" font-weight="700">¿LISTO?</text>
+
+            <!-- arrow left: NO path (loop back) -->
+            <path d="M691 175 L620 175 L620 105 L562 105" stroke="#2563EB" stroke-width="1.5" fill="none" stroke-dasharray="4 3" marker-end="url(#arrowBlue)"/>
+            <text x="648" y="195" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="9" fill="#2563EB" font-weight="600">NO → itera</text>
+
+            <!-- arrow down: YES path -->
+            <line x1="735" y1="193" x2="735" y2="245" stroke="#059669" stroke-width="1.5" marker-end="url(#arrowGreen)"/>
+            <text x="752" y="228" font-family="JetBrains Mono,monospace" font-size="9" fill="#059669" font-weight="600">SÍ</text>
+
+            <!-- Entrega -->
+            <rect x="691" y="248" width="88" height="34" rx="7" fill="white" stroke="#6EE7B7" stroke-width="1.3"/>
+            <text x="735" y="270" text-anchor="middle" font-family="system-ui,sans-serif" font-size="10" fill="#059669" font-weight="700">ENTREGA</text>
+
+            <!-- Skill badge inside agent -->
+            <rect x="452" y="155" width="80" height="24" rx="5" fill="white" stroke="#BFDBFE" stroke-width="1"/>
+            <text x="492" y="171" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="8" fill="#2563EB" font-weight="600">+ skill</text>
+            <text x="492" y="205" text-anchor="middle" font-family="system-ui,sans-serif" font-size="9" fill="#93C5FD">usa skills en cada iteración</text>
+
+            <!-- Agent stat bottom -->
+            <text x="530" y="305" text-anchor="middle" font-family="Georgia,serif" font-size="28" fill="#2563EB" font-weight="700">∞</text>
+            <text x="530" y="326" text-anchor="middle" font-family="system-ui,sans-serif" font-size="10" fill="#1D4ED8" letter-spacing="0.5">itera hasta que está listo</text>
+
+            <!-- Arrow markers -->
+            <defs>
+                <marker id="arrowBlue" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+                    <path d="M0,0 L0,6 L8,3 z" fill="#2563EB"/>
+                </marker>
+                <marker id="arrowGray" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+                    <path d="M0,0 L0,6 L8,3 z" fill="#D6D3D1"/>
+                </marker>
+                <marker id="arrowGreen" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+                    <path d="M0,0 L0,6 L8,3 z" fill="#059669"/>
+                </marker>
+            </defs>
+        </svg>
+    </div>
+
+    <!-- HEADER -->
+    <header class="resource-header">
+        <div class="tag azul"><span class="dot"></span>Conceptos</div>
+        <h1 class="resource-title">Qué es un agente de IA y para qué sirve realmente</h1>
+        <p class="resource-sub">El término se usa para venderlo todo. Aquí está la definición que realmente funciona — y las diferencias que necesitas entender antes de construir nada.</p>
+        <div class="resource-meta">
+            <span>10 min de lectura</span>
+            <span class="meta-dot"></span>
+            <span>Nivel 3</span>
+            <span class="meta-dot"></span>
+            <span>Mayo 2026</span>
+        </div>
+    </header>
+
+    <!-- LEARN BOX -->
+    <div class="learn-box">
+        <div class="learn-box-title">Lo que vas a entender</div>
+        <ul class="learn-list">
+            <li class="learn-item">La definición mínima de agente — sin tecnicismos, sin hype</li>
+            <li class="learn-item">La diferencia fundamental entre una skill y un agente</li>
+            <li class="learn-item">Por qué un sistema RAG y un agente con skills son arquitecturas distintas</li>
+            <li class="learn-item">Qué modelo usar para cada tipo de agente — y qué pasa si eliges mal</li>
+            <li class="learn-item">La pregunta que tienes que hacerte antes de construir cualquier agente</li>
+        </ul>
+    </div>
+
+    <!-- TOC -->
+    <nav class="toc" aria-label="Contenido">
+        <div class="toc-label">En este recurso</div>
+        <div class="toc-links">
+            <a href="#s01">01 El problema del término</a>
+            <a href="#s02">02 El loop del agente</a>
+            <a href="#s03">03 Skill vs Agente</a>
+            <a href="#s04">04 RAG vs Agente con skills</a>
+            <a href="#s05">05 El modelo y la pregunta</a>
+            <a href="#checklist">Checklist</a>
+        </div>
+    </nav>
+
+    <!-- ── S01: EL PROBLEMA DEL TÉRMINO ── -->
+    <section class="section" id="s01">
+        <div class="section-num">01</div>
+        <h2>Por qué la palabra "agente" confunde más que aclara</h2>
+        <p>Si buscas "agente de IA" vas a encontrar tres cosas completamente distintas llamadas igual: un chatbot con memoria de conversación, una automatización de N8N que encadena pasos, y un sistema que toma decisiones autónomas sobre cómo resolver un problema.</p>
+        <p>El término se usa para venderlo todo porque suena bien. El problema es que cuando no sabes exactamente qué es, no puedes decidir cuándo lo necesitas — ni darte cuenta cuando te están vendiendo algo que no lo es.</p>
+
+        <div class="callout azul">
+            <div class="callout-label">La definición que funciona</div>
+            <p>Un agente de IA es un sistema que recibe un objetivo, ejecuta acciones para lograrlo, evalúa el resultado y decide si continuar o entregar — sin necesitar que un humano pulse "siguiente" en cada paso.</p>
+        </div>
+
+        <p>Lo que define a un agente no es la tecnología que usa. Es el loop. Si no hay loop, no hay agente.</p>
+        <p>Y el loop es tan bueno como lo que le das al entrar.</p>
+
+        <div class="gio-compare">
+            <div class="gio-panel bad">
+                <div class="gio-head">Garbage in</div>
+                <div class="gio-flow">
+                    <span class="gio-node">"Haz algo útil"</span>
+                    <span class="gio-sep">→</span>
+                    <span class="gio-node">Agente ?</span>
+                    <span class="gio-sep">→</span>
+                    <span class="gio-node">Output genérico</span>
+                </div>
+                <div class="gio-verdict">Itera sin mejorar. Terminas supervisando cada paso.</div>
+            </div>
+            <div class="gio-panel good">
+                <div class="gio-head">Contexto rico</div>
+                <div class="gio-flow">
+                    <span class="gio-node">goals + CLAUDE.md + refs</span>
+                    <span class="gio-sep">→</span>
+                    <span class="gio-node">Agente →</span>
+                    <span class="gio-sep">→</span>
+                    <span class="gio-node">Output preciso</span>
+                </div>
+                <div class="gio-verdict">Entrega en menos bucles. Solo revisas el resultado.</div>
+            </div>
+        </div>
+
+        <div class="callout verde">
+            <div class="callout-label">Por eso existe el comando goals en Claude Code</div>
+            <p>Anthropic lo codificó directamente en el producto: una instrucción dedicada para que el agente sepa qué tiene que conseguir y cómo trabajar antes de empezar el bucle. Si el contexto no importara, no existiría.</p>
+        </div>
+    </section>
+
+    <!-- ── S02: EL LOOP ── -->
+    <section class="section" id="s02">
+        <div class="section-num">02</div>
+        <h2>La cadena que todo agente sigue, sin excepción</h2>
+        <p>Da igual la complejidad del sistema. Todo agente de IA sigue la misma cadena de pasos. Entenderla es entender por qué falla — y dónde.</p>
+
+        <div class="layer-stack">
+            <div class="layer-item">
+                <span class="layer-badge">01 · OBJETIVO</span>
+                <div class="layer-content">
+                    <div class="layer-name">Recibe la instrucción</div>
+                    <div class="layer-desc">El agente recibe una tarea con un criterio de éxito claro. Sin criterio claro, el agente no sabe cuándo parar — y sigue iterando hasta consumir el contexto o entregar algo inaceptable.</div>
+                </div>
+            </div>
+            <div class="layer-item">
+                <span class="layer-badge">02 · ACTÚA</span>
+                <div class="layer-content">
+                    <div class="layer-name">Usa las herramientas disponibles</div>
+                    <div class="layer-desc">Puede usar skills, buscar información, generar contenido, llamar a MCPs externos. Aquí es donde entran las skills: son las herramientas que el agente puede activar en esta fase.</div>
+                </div>
+            </div>
+            <div class="layer-item">
+                <span class="layer-badge">03 · RESULTADO</span>
+                <div class="layer-content">
+                    <div class="layer-name">Obtiene un output intermedio</div>
+                    <div class="layer-desc">El resultado de esta iteración. Puede ser un borrador, un análisis, un archivo generado. No es el output final — es lo que tiene hasta ahora.</div>
+                </div>
+            </div>
+            <div class="layer-item">
+                <span class="layer-badge">04 · VERIFICA</span>
+                <div class="layer-content">
+                    <div class="layer-name">Evalúa contra el objetivo</div>
+                    <div class="layer-desc">El agente compara el resultado con el criterio de éxito. ¿Está listo? Entrega. ¿No está listo? Vuelve al paso 02, ajusta y lo intenta de nuevo.</div>
+                </div>
+            </div>
+            <div class="layer-item">
+                <span class="layer-badge">05 · ENTREGA</span>
+                <div class="layer-content">
+                    <div class="layer-name">Sale del loop cuando el resultado es válido</div>
+                    <div class="layer-desc">El agente termina cuando el resultado cumple el criterio definido en el paso 01 — no antes. Esa es la diferencia con ejecutar un script o una skill suelta.</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="gold-quote">
+            <div class="gold-quote-text">Un agente no es magia. Es <em>lógica encadenada</em> que se repite hasta que el trabajo está bien hecho.</div>
+        </div>
+    </section>
+
+    <!-- ── S03: SKILL VS AGENTE ── -->
+    <section class="section" id="s03">
+        <div class="section-num">03</div>
+        <h2>Skill vs Agente: la diferencia que cambia todo</h2>
+        <p>En el Nivel 2 construiste sistemas con skills. Una skill es un conjunto de instrucciones especializadas que Claude carga cuando las necesita — y eso la hace muy potente para tareas concretas. Pero una skill no es un agente.</p>
+        <p>La diferencia no es de complejidad. Es de arquitectura:</p>
+
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr>
+                        <th></th>
+                        <th class="th-azul">Skill</th>
+                        <th class="th-azul">Agente sin skills</th>
+                        <th class="th-verde-r">Agente con skills</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Loop autónomo</strong></td>
+                        <td><span class="check-no">No</span></td>
+                        <td><span class="check-yes">Sí</span></td>
+                        <td><span class="check-yes">Sí</span></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Especialización en tarea</strong></td>
+                        <td><span class="check-yes">Sí</span></td>
+                        <td><span class="check-no">No</span></td>
+                        <td><span class="check-yes">Sí</span></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Decide cuándo actuar</strong></td>
+                        <td><span class="check-no">No</span></td>
+                        <td><span class="check-yes">Sí</span></td>
+                        <td><span class="check-yes">Sí</span></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Verifica su propio resultado</strong></td>
+                        <td><span class="check-no">No</span></td>
+                        <td><span class="check-partial">Limitado</span></td>
+                        <td><span class="check-yes">Sí</span></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Puede usar otras herramientas</strong></td>
+                        <td><span class="check-no">No</span></td>
+                        <td><span class="check-partial">Limitado</span></td>
+                        <td><span class="check-yes">Sí</span></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <p>El agente <em>usa</em> las skills como herramientas dentro de su loop. La skill le dice cómo hacer algo concreto — escribir copy, revisar código, generar títulos. El agente decide cuándo usar esa skill, la ejecuta, evalúa el resultado y decide si repetirla o pasar al siguiente paso.</p>
+
+        <div class="callout verde">
+            <div class="callout-label">La forma más fácil de verlo</div>
+            <p>La skill es el martillo. El agente es el carpintero. El carpintero sabe cuándo coger el martillo, cuántas veces golpear y si el resultado es suficientemente bueno. El martillo solo no construye nada solo.</p>
+        </div>
+    </section>
+
+    <!-- ── S04: RAG VS AGENTE CON SKILLS ── -->
+    <section class="section" id="s04">
+        <div class="section-num">04</div>
+        <h2>RAG vs Agente con skills: dos arquitecturas distintas</h2>
+        <p>RAG (Retrieval-Augmented Generation) es otra arquitectura que se confunde frecuentemente con agentes. No son lo mismo.</p>
+        <p>Un sistema RAG hace una sola cosa muy bien: busca información relevante en una base de conocimiento y la incluye en el contexto de la respuesta. Busca → responde → se detiene. No hay loop. No hay verificación. No ejecuta acciones sobre el mundo.</p>
+
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr>
+                        <th></th>
+                        <th class="th-azul">Sistema RAG</th>
+                        <th class="th-verde-r">Agente con skills</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Qué hace</strong></td>
+                        <td>Recupera información de una base de conocimiento y responde</td>
+                        <td>Recibe un objetivo, actúa, verifica y entrega</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Loop</strong></td>
+                        <td><span class="check-no">No</span></td>
+                        <td><span class="check-yes">Sí</span></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Ejecuta acciones externas</strong></td>
+                        <td><span class="check-no">No — solo lee</span></td>
+                        <td><span class="check-yes">Sí — lee, escribe, genera, conecta</span></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Mejor para</strong></td>
+                        <td>Preguntas sobre documentos propios</td>
+                        <td>Tareas con múltiples pasos y decisiones</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Puede incluir al otro</strong></td>
+                        <td><span class="check-no">No</span></td>
+                        <td><span class="check-yes">Sí — RAG puede ser una skill del agente</span></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <p>La clave: RAG es una técnica, no una arquitectura completa. Un agente puede usar RAG como una de sus herramientas — busca información en los documentos relevantes y la usa en la siguiente iteración del loop. Pero un sistema RAG solo no puede ser un agente, porque no tiene loop ni capacidad de acción.</p>
+
+        <div class="callout azul">
+            <div class="callout-label">Cuándo usar cada uno</div>
+            <p>¿Quieres preguntarle a tus documentos y obtener una respuesta? RAG. ¿Quieres que el sistema tome una tarea y la complete de principio a fin iterando hasta que esté bien? Agente con skills.</p>
+        </div>
+    </section>
+
+    <!-- ── S05: EL MODELO Y LA PREGUNTA ── -->
+    <section class="section" id="s05">
+        <div class="section-num">05</div>
+        <h2>El modelo que eliges y la pregunta que tienes que hacerte</h2>
+        <p>No todos los agentes necesitan el mismo modelo. Elegir mal aquí no rompe el agente — lo hace caro, lento, o poco preciso en los momentos que importan.</p>
+
+        <div class="model-row">
+            <div class="model-card">
+                <div class="model-name">Haiku</div>
+                <div class="model-tag rapido">Rápido</div>
+                <div class="model-desc">Tareas repetitivas, muchas iteraciones, clasificación, extracción de datos. Económico — útil cuando el volumen importa más que la profundidad.</div>
+            </div>
+            <div class="model-card">
+                <div class="model-name">Sonnet</div>
+                <div class="model-tag equilibrado">Equilibrado</div>
+                <div class="model-desc">El punto de entrada recomendado para la mayoría de agentes. Producción de contenido, análisis, sistemas de trabajo. La mejor relación calidad/coste.</div>
+            </div>
+            <div class="model-card">
+                <div class="model-name">Opus</div>
+                <div class="model-tag potente">Potente</div>
+                <div class="model-desc">Razonamiento complejo, decisiones de alta responsabilidad, investigación profunda. Consume el plan más rápido — úsalo donde la calidad no admite compromiso.</div>
+            </div>
+        </div>
+
+        <p>Y antes de construir cualquier agente, hay una pregunta que siempre merece una respuesta honesta:</p>
+
+        <div class="diag-list">
+            <div class="diag-item">
+                <div class="diag-num">01</div>
+                <div class="diag-body">
+                    <div class="diag-q">¿La tarea requiere múltiples pasos que se verifican entre sí?</div>
+                    <div class="diag-hint">Si es una sola acción con un input y un output claro, una skill o un MCP es suficiente. No necesitas un agente.</div>
+                </div>
+            </div>
+            <div class="diag-item">
+                <div class="diag-num">02</div>
+                <div class="diag-body">
+                    <div class="diag-q">¿El sistema necesita tomar decisiones basadas en resultados intermedios?</div>
+                    <div class="diag-hint">Si el siguiente paso siempre es el mismo independientemente del resultado anterior, es una automatización lineal — no un agente.</div>
+                </div>
+            </div>
+            <div class="diag-item">
+                <div class="diag-num">03</div>
+                <div class="diag-body">
+                    <div class="diag-q">¿El criterio de "listo" es suficientemente claro para que el sistema lo evalúe sin intervención humana?</div>
+                    <div class="diag-hint">Si el criterio es subjetivo o requiere juicio humano en cada iteración, el agente no puede cerrar el loop solo — y vas a terminar supervisándolo más de lo que ahorras.</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="action-write">
+            <div class="action-write-label">Tu tarea candidata</div>
+            <div class="action-write-prompt">La tarea que más tiempo me cuesta arrancar es…</div>
+            <input class="action-write-line" type="text" placeholder="describe la tarea en una línea" maxlength="120"/>
+            <p class="action-write-hint">En el siguiente recurso verás exactamente con qué herramientas vas a construirlo.</p>
+        </div>
+
+        <a href="3-2.html" class="next-hook">
+            <div class="next-hook-arrow">
+                <svg width="14" height="14" fill="none" stroke="white" stroke-width="2.5" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+            </div>
+            <div class="next-hook-text">
+                <div class="next-hook-label">Siguiente — 3.2 · Herramientas</div>
+                <div class="next-hook-title">El cerebro, los brazos y la mesa de trabajo</div>
+            </div>
+        </a>
+
+        <div class="spoiler-rojo">
+            <div class="spoiler-rojo-icon">⚠</div>
+            <div>
+                <div class="spoiler-rojo-label">Al final del nivel · 3.5 · Mitos</div>
+                <div class="spoiler-rojo-text">Hay errores muy concretos que se cometen al construir agentes — en el contexto, en la configuración, en las expectativas. Los que más cuestan no son los técnicos. Te los cuento en el último recurso de este nivel: los síntomas exactos, lo que los causa y cómo evitarlos antes de que los pagues tú.</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ── CHECKLIST ── -->
+    <div class="checklist-section" id="checklist">
+        <div class="checklist-title">Lista de comprobación</div>
+        <ul class="checklist-items" id="checklistItems">
+            <li onclick="toggleCheck(this)"><span class="check-box"></span><span class="check-text">Entiendo qué es un agente de IA y puedo explicarlo sin usar la palabra "magia" ni "autónomo" sin contexto</span></li>
+            <li onclick="toggleCheck(this)"><span class="check-box"></span><span class="check-text">Sé la diferencia entre una skill y un agente — y entiendo que el agente usa las skills, no al revés</span></li>
+            <li onclick="toggleCheck(this)"><span class="check-box"></span><span class="check-text">Entiendo por qué un sistema RAG no es un agente — y cuándo tiene sentido usar cada uno</span></li>
+            <li onclick="toggleCheck(this)"><span class="check-box"></span><span class="check-text">Sé cuándo usar Haiku, Sonnet u Opus — y no voy a usar Opus para clasificar una lista de keywords</span></li>
+            <li onclick="toggleCheck(this)"><span class="check-box"></span><span class="check-text">He respondido las 3 preguntas de diagnóstico para la tarea que tengo en mente — y sé si necesito un agente o algo más simple</span></li>
+        </ul>
+    </div>
+
+    <!-- FOOTER -->
+    <footer class="resource-footer">
+        <a href="2-5.html" class="footer-back">
+            <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+            Nivel 2 · Mi sistema completo
+        </a>
+        <a href="3-2.html" class="footer-next">
+            Tu primer agente
+            <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </a>
+    </footer>
+
+</div>
+
+<script>
+function toggleCheck(li) {
+    li.classList.toggle('done');
+    li.querySelector('.check-box').textContent = li.classList.contains('done') ? '✓' : '';
+    const items = document.querySelectorAll('#checklistItems li');
+    if ([...items].every(i => i.classList.contains('done'))) launchConfetti();
+}
+
+function launchConfetti() {
+    const canvas = document.getElementById('confettiCanvas');
+    if (!canvas) return;
+    canvas.style.display = 'block';
+    const ctx = canvas.getContext('2d');
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+    const colors = ['#B45309','#D97706','#FDE68A','#059669','#7C3AED','#2563EB','#F59E0B','#10B981','#DC2626'];
+    const pieces = Array.from({length: 140}, () => ({
+        x: Math.random() * canvas.width,
+        y: -10 - Math.random() * canvas.height * 0.6,
+        w: Math.random() * 11 + 5,
+        h: Math.random() * 6 + 3,
+        color: colors[Math.floor(Math.random() * colors.length)],
+        vx: (Math.random() - 0.5) * 4,
+        vy: Math.random() * 3 + 1.5,
+        rot: Math.random() * 360,
+        vrot: (Math.random() - 0.5) * 10,
+        alpha: 1,
+        shape: Math.random() > 0.5 ? 'rect' : 'circle'
+    }));
+    let frame = 0;
+    (function animate() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        pieces.forEach(p => {
+            p.x += p.vx; p.y += p.vy; p.rot += p.vrot; p.vy += 0.06;
+            if (frame > 90) p.alpha = Math.max(0, p.alpha - 0.012);
+            ctx.save();
+            ctx.globalAlpha = p.alpha;
+            ctx.translate(p.x + p.w / 2, p.y + p.h / 2);
+            ctx.rotate(p.rot * Math.PI / 180);
+            ctx.fillStyle = p.color;
+            if (p.shape === 'circle') {
+                ctx.beginPath(); ctx.arc(0, 0, p.w / 2, 0, Math.PI * 2); ctx.fill();
+            } else {
+                ctx.fillRect(-p.w / 2, -p.h / 2, p.w, p.h);
+            }
+            ctx.restore();
+        });
+        frame++;
+        if (frame < 170) requestAnimationFrame(animate);
+        else canvas.style.display = 'none';
+    })();
+}
+</script>
+
+<canvas id="confettiCanvas" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:9999;"></canvas>
+</body>
+</html>
