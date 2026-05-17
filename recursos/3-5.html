@@ -1,0 +1,793 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cuándo los agentes de IA crean más problemas de los que resuelven — alex.decode</title>
+    <meta name="description" content="5 mitos y 5 errores reales al construir agentes de IA. Con soluciones. Más el patrón de Revelación Progresiva para prevenir la mayoría antes de que ocurran.">
+    <meta name="keywords" content="errores agentes IA, mitos agentes IA, revelación progresiva skills, problemas agentes Claude Code, cuándo no usar agentes IA, buenas prácticas agentes 2026">
+    <link rel="icon" type="image/svg+xml" href="../favicon.svg">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        :root {
+            --bg:        #FAFAF7;
+            --surface:   #FFFFFF;
+            --border:    #E8E2D9;
+            --text:      #1C1917;
+            --muted:     #78716C;
+            --faint:     #B0A89E;
+            --amber:     #B45309;
+            --amber-mid: #D97706;
+            --amber-dim: rgba(180,83,9,0.07);
+            --rojo:  #DC2626; --rojo-d:  rgba(220,38,38,0.07);
+            --amar:  #D97706; --amar-d:  rgba(217,119,6,0.07);
+            --azul:  #2563EB; --azul-d:  rgba(37,99,235,0.07);
+            --verde: #059669; --verde-d: rgba(5,150,105,0.07);
+            --morad: #7C3AED; --morad-d: rgba(124,58,237,0.07);
+        }
+
+        html { scroll-behavior: smooth; }
+        body { background: var(--bg); color: var(--text); font-family: 'Inter', system-ui, sans-serif; font-size: 15px; line-height: 1.7; min-height: 100vh; }
+        body::before { content: ''; position: fixed; top: 0; left: 0; right: 0; height: 3px; background: linear-gradient(90deg, #7F1D1D 0%, #DC2626 50%, #7F1D1D 100%); z-index: 100; }
+
+        .wrap { max-width: 720px; margin: 0 auto; padding: 0 24px; }
+
+        /* NAV */
+        .top-nav { padding: 28px 0 0; font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--faint); display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+        .top-nav a { color: var(--amber); text-decoration: none; transition: opacity .15s; }
+        .top-nav a:hover { opacity: .7; }
+        .top-nav .sep { color: var(--faint); }
+        .nav-owl { margin-left: auto; display: flex; align-items: center; gap: 5px; color: var(--faint); text-decoration: none; font-size: 10px; letter-spacing: .5px; transition: opacity .15s; animation: owlFloat 5s ease-in-out 1s infinite; }
+        .nav-owl:hover { opacity: .7; color: var(--amber); }
+        @keyframes owlFloat { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-4px)} }
+
+        /* COVER */
+        .cover-wrap { margin: 28px 0 0; border-radius: 12px; overflow: hidden; border: 1px solid var(--border); }
+        .cover-wrap svg { display: block; width: 100%; height: auto; }
+
+        /* HEADER */
+        .resource-header { padding: 28px 0; border-bottom: 1px solid var(--border); margin-bottom: 28px; }
+        .tag { display: inline-flex; align-items: center; gap: 5px; font-size: 10px; font-weight: 600; padding: 3px 10px; border-radius: 100px; margin-bottom: 16px; }
+        .tag .dot { width: 5px; height: 5px; border-radius: 50%; flex-shrink: 0; }
+        .tag.rojo { background: var(--rojo-d); color: var(--rojo); }
+        .tag.rojo .dot { background: var(--rojo); }
+        .resource-title { font-family: 'Playfair Display', Georgia, serif; font-size: clamp(24px, 4vw, 34px); font-weight: 700; line-height: 1.18; letter-spacing: -.3px; margin-bottom: 14px; }
+        .resource-sub { font-size: 15px; color: var(--muted); line-height: 1.6; margin-bottom: 18px; max-width: 560px; }
+        .resource-meta { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--faint); display: flex; gap: 16px; flex-wrap: wrap; }
+        .resource-meta span { display: flex; align-items: center; gap: 5px; }
+        .meta-dot { width: 3px; height: 3px; border-radius: 50%; background: var(--faint); }
+
+        /* LEARN BOX */
+        .learn-box { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 18px 22px; margin-bottom: 28px; }
+        .learn-box-title { font-family: 'JetBrains Mono', monospace; font-size: 9px; color: var(--faint); letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 12px; }
+        .learn-list { list-style: none; display: flex; flex-direction: column; gap: 8px; }
+        .learn-item { display: flex; align-items: flex-start; gap: 8px; font-size: 13px; color: var(--text); line-height: 1.45; }
+        .learn-item::before { content: '→'; color: var(--rojo); font-family: 'JetBrains Mono', monospace; font-size: 11px; flex-shrink: 0; margin-top: 1px; }
+
+        /* TOC */
+        .toc { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 16px 20px; margin-bottom: 48px; }
+        .toc-label { font-family: 'JetBrains Mono', monospace; font-size: 9px; color: var(--faint); letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 10px; }
+        .toc-links { display: flex; flex-wrap: wrap; gap: 6px; }
+        .toc-links a { font-size: 12px; color: var(--muted); text-decoration: none; padding: 4px 10px; border-radius: 6px; border: 1px solid var(--border); transition: border-color .15s, color .15s, background .15s; white-space: nowrap; }
+        .toc-links a:hover { border-color: var(--rojo); color: var(--rojo); background: var(--rojo-d); }
+
+        /* SECTIONS */
+        .section { margin-bottom: 52px; scroll-margin-top: 32px; }
+        .section-num { font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--rojo); font-weight: 600; letter-spacing: 1px; margin-bottom: 8px; }
+        .section h2 { font-family: 'Playfair Display', serif; font-size: 22px; font-weight: 700; line-height: 1.3; margin-bottom: 16px; }
+        .section p { color: var(--text); margin-bottom: 14px; }
+        .section p:last-child { margin-bottom: 0; }
+        .section-sub { font-family: 'JetBrains Mono', monospace; font-size: 9px; font-weight: 600; color: var(--rojo); letter-spacing: 1.2px; text-transform: uppercase; margin: 28px 0 10px; }
+
+        /* CALLOUT */
+        .callout { border-left: 3px solid var(--amber); background: var(--amber-dim); border-radius: 0 8px 8px 0; padding: 14px 18px; margin: 20px 0; }
+        .callout-label { font-family: 'JetBrains Mono', monospace; font-size: 9px; font-weight: 600; color: var(--amber); letter-spacing: 1.2px; text-transform: uppercase; margin-bottom: 6px; }
+        .callout p { font-size: 14px; color: var(--text); margin: 0; }
+        .callout.verde { border-left-color: var(--verde); background: var(--verde-d); }
+        .callout.verde .callout-label { color: var(--verde); }
+        .callout.azul { border-left-color: var(--azul); background: var(--azul-d); }
+        .callout.azul .callout-label { color: var(--azul); }
+
+        /* MYTH BLOCK */
+        .myth-block { background: var(--surface); border: 1.5px solid rgba(220,38,38,0.2); border-radius: 14px; padding: 22px 24px; margin: 16px 0; }
+        .myth-header { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; }
+        .myth-num { font-family: 'JetBrains Mono', monospace; font-size: 9px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: var(--rojo); }
+        .myth-claim { font-family: 'Playfair Display', serif; font-size: 15.5px; font-style: italic; color: var(--text); margin-bottom: 12px; line-height: 1.45; padding: 11px 15px; background: rgba(220,38,38,0.04); border-radius: 8px; border-left: 3px solid rgba(220,38,38,0.35); }
+        .myth-story { font-size: 13px; color: var(--muted); line-height: 1.65; margin-bottom: 14px; }
+        .myth-truth { background: var(--verde-d); border-radius: 8px; padding: 12px 16px; display: flex; gap: 10px; align-items: flex-start; border: 1px solid rgba(5,150,105,0.15); }
+        .myth-truth-label { font-family: 'JetBrains Mono', monospace; font-size: 9px; font-weight: 700; color: var(--verde); letter-spacing: 1px; text-transform: uppercase; flex-shrink: 0; margin-top: 2px; white-space: nowrap; }
+        .myth-truth-text { font-size: 13px; color: var(--text); line-height: 1.55; }
+
+        /* ERROR BLOCK */
+        .error-block { background: var(--surface); border: 1.5px solid var(--border); border-radius: 14px; padding: 22px 24px; margin: 16px 0; }
+        .error-header { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
+        .error-num { font-family: 'JetBrains Mono', monospace; font-size: 9px; font-weight: 700; color: var(--amber); letter-spacing: 1.5px; text-transform: uppercase; }
+        .error-title { font-size: 14px; font-weight: 700; color: var(--text); }
+        .error-story { font-size: 13px; color: var(--muted); line-height: 1.65; margin-bottom: 14px; }
+        .error-fix { background: var(--verde-d); border-radius: 8px; padding: 12px 16px; display: flex; gap: 10px; align-items: flex-start; border: 1px solid rgba(5,150,105,0.15); }
+        .error-fix-label { font-family: 'JetBrains Mono', monospace; font-size: 9px; font-weight: 700; color: var(--verde); letter-spacing: 1px; text-transform: uppercase; flex-shrink: 0; margin-top: 2px; white-space: nowrap; }
+        .error-fix-text { font-size: 13px; color: var(--text); line-height: 1.55; }
+
+        /* OWL MINI (inline badge) */
+        .owl-mini { display: inline-block; vertical-align: middle; flex-shrink: 0; }
+
+        /* GOLD QUOTE */
+        .gold-quote { background: linear-gradient(135deg, var(--amber-dim) 0%, rgba(217,119,6,0.03) 100%); border: 1.5px solid rgba(180,83,9,0.2); border-radius: 12px; padding: 22px 28px 20px; margin: 24px 0; text-align: center; position: relative; }
+        .gold-quote::before { content: '"'; position: absolute; top: 2px; left: 16px; font-family: 'Playfair Display', serif; font-size: 52px; line-height: 1; color: rgba(180,83,9,0.12); }
+        .gold-quote-text { font-family: 'Playfair Display', serif; font-size: 17px; font-weight: 700; line-height: 1.5; color: var(--text); padding: 0 8px; }
+        .gold-quote-text em { color: var(--amber); font-style: normal; }
+
+        /* PROGRESSIVE REVELATION */
+        .reveal-stack { display: flex; flex-direction: column; gap: 0; margin: 20px 0; }
+        .reveal-layer { border: 1.5px solid; border-radius: 10px; padding: 18px 22px; }
+        .reveal-layer.disc { border-color: rgba(37,99,235,0.3); background: rgba(37,99,235,0.04); }
+        .reveal-layer.exec { border-color: rgba(5,150,105,0.3); background: rgba(5,150,105,0.04); }
+        .reveal-layer-label { font-family: 'JetBrains Mono', monospace; font-size: 9px; font-weight: 700; letter-spacing: 1.2px; text-transform: uppercase; margin-bottom: 12px; }
+        .reveal-layer.disc .reveal-layer-label { color: var(--azul); }
+        .reveal-layer.exec .reveal-layer-label { color: var(--verde); }
+        .reveal-items { display: flex; flex-direction: column; gap: 7px; }
+        .reveal-item { display: flex; align-items: flex-start; gap: 10px; font-size: 13px; color: var(--text); line-height: 1.45; }
+        .reveal-item-dot { width: 5px; height: 5px; border-radius: 50%; flex-shrink: 0; margin-top: 7px; }
+        .reveal-layer.disc .reveal-item-dot { background: var(--azul); }
+        .reveal-layer.exec .reveal-item-dot { background: var(--verde); }
+        .reveal-connector { text-align: center; padding: 12px 0; font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--faint); display: flex; align-items: center; justify-content: center; gap: 10px; }
+        .reveal-connector::before, .reveal-connector::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+
+        /* ANTI-PATTERN CARD */
+        .antipattern-card { border: 1.5px solid rgba(220,38,38,0.3); border-radius: 12px; padding: 18px 22px; margin: 20px 0; background: rgba(220,38,38,0.03); }
+        .antipattern-label { font-family: 'JetBrains Mono', monospace; font-size: 9px; font-weight: 700; color: var(--rojo); letter-spacing: 1.2px; text-transform: uppercase; margin-bottom: 8px; }
+        .antipattern-title { font-size: 14px; font-weight: 700; color: var(--text); margin-bottom: 6px; }
+        .antipattern-desc { font-size: 13px; color: var(--muted); line-height: 1.55; }
+
+        /* NIVEL COMPLETE CARD */
+        .nivel-complete { background: linear-gradient(135deg, rgba(124,58,237,0.06) 0%, rgba(37,99,235,0.04) 100%); border: 2px solid rgba(124,58,237,0.25); border-radius: 16px; padding: 32px 28px; margin: 28px 0; text-align: center; }
+        .nivel-complete-badge { font-family: 'JetBrains Mono', monospace; font-size: 9px; font-weight: 700; color: var(--morad); letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 16px; }
+        .nivel-complete-title { font-family: 'Playfair Display', serif; font-size: 22px; font-weight: 700; color: var(--text); margin-bottom: 10px; line-height: 1.3; }
+        .nivel-complete-sub { font-size: 13.5px; color: var(--muted); line-height: 1.6; max-width: 460px; margin: 0 auto 22px; }
+        .nivel-back-btn { display: inline-flex; align-items: center; gap: 8px; background: var(--morad); color: white; text-decoration: none; padding: 11px 22px; border-radius: 8px; font-size: 13px; font-weight: 600; transition: opacity .15s; }
+        .nivel-back-btn:hover { opacity: .85; }
+
+        /* ACTION WRITE */
+        .action-write { background: var(--surface); border: 2px dashed var(--border); border-radius: 12px; padding: 26px 28px; margin: 24px 0; text-align: center; }
+        .action-write-label { font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--amber); font-weight: 600; letter-spacing: 1.2px; text-transform: uppercase; margin-bottom: 14px; }
+        .action-write-prompt { font-family: 'Playfair Display', serif; font-size: 18px; font-weight: 700; color: var(--text); margin-bottom: 16px; line-height: 1.35; }
+        .action-write-line { display: block; width: 100%; max-width: 440px; margin: 0 auto; border: none; border-bottom: 2px solid var(--border); background: transparent; padding: 8px 4px; font-family: 'Inter', sans-serif; font-size: 15px; color: var(--text); text-align: center; outline: none; transition: border-color .2s; }
+        .action-write-line:focus { border-bottom-color: var(--rojo); }
+        .action-write-line::placeholder { color: var(--faint); }
+        .action-write-hint { font-size: 12px; color: var(--faint); margin-top: 10px; font-style: italic; }
+
+        /* CHECKLIST */
+        .checklist-section { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 24px 26px; margin-bottom: 52px; }
+        .checklist-title { font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--amber); font-weight: 600; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 16px; }
+        .checklist-items { list-style: none; display: flex; flex-direction: column; gap: 10px; }
+        .checklist-items li { display: flex; align-items: flex-start; gap: 10px; font-size: 13.5px; color: var(--text); line-height: 1.5; cursor: pointer; user-select: none; }
+        .check-box { width: 17px; height: 17px; border: 1.5px solid var(--border); border-radius: 4px; flex-shrink: 0; margin-top: 1px; transition: border-color .15s, background .15s; display: flex; align-items: center; justify-content: center; font-size: 10px; color: white; }
+        .checklist-items li.done .check-box { background: var(--verde); border-color: var(--verde); }
+        .checklist-items li.done .check-text { text-decoration: line-through; color: var(--muted); }
+
+        /* FOOTER */
+        .resource-footer { border-top: 1px solid var(--border); padding: 32px 0 56px; display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
+        .footer-back { font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--muted); text-decoration: none; display: flex; align-items: center; gap: 6px; transition: color .15s; }
+        .footer-back:hover { color: var(--amber); }
+
+        @media (max-width: 600px) {
+            .wrap { padding: 0 16px; }
+            .resource-title { font-size: 22px; }
+            .myth-truth, .error-fix { flex-direction: column; gap: 6px; }
+        }
+    </style>
+</head>
+<body>
+<div class="wrap">
+
+    <!-- NAV -->
+    <nav class="top-nav">
+        <a href="../index.html">alex.decode</a>
+        <span class="sep">/</span>
+        <span>Biblioteca</span>
+        <span class="sep">/</span>
+        <span>Nivel 3</span>
+        <span class="sep">/</span>
+        <span>Mitos y errores</span>
+        <a href="../index.html" class="nav-owl" aria-label="Volver a la biblioteca">
+            <svg width="28" height="32" viewBox="0 0 140 160" fill="none">
+                <polygon points="44,32 36,6 52,26" fill="#92400E"/>
+                <polygon points="96,32 104,6 88,26" fill="#92400E"/>
+                <circle cx="70" cy="56" r="38" fill="#B45309"/>
+                <ellipse cx="70" cy="58" rx="26" ry="24" fill="#D97706" opacity="0.28"/>
+                <circle cx="56" cy="52" r="13" fill="#FEF3C7"/>
+                <circle cx="84" cy="52" r="13" fill="#FEF3C7"/>
+                <circle cx="56" cy="52" r="6.5" fill="#1C1917"/>
+                <circle cx="84" cy="52" r="6.5" fill="#1C1917"/>
+                <circle cx="59" cy="49" r="2.2" fill="white"/>
+                <circle cx="87" cy="49" r="2.2" fill="white"/>
+                <polygon points="63,64 77,64 70,75" fill="#D97706"/>
+                <ellipse cx="70" cy="120" rx="34" ry="36" fill="#B45309"/>
+                <ellipse cx="70" cy="126" rx="20" ry="24" fill="#D97706" opacity="0.22"/>
+            </svg>
+        </a>
+    </nav>
+
+    <!-- COVER SVG -->
+    <div class="cover-wrap">
+        <svg viewBox="0 0 800 350" xmlns="http://www.w3.org/2000/svg" font-family="Inter, system-ui, sans-serif">
+            <!-- BG -->
+            <rect width="800" height="350" fill="#FAFAF7"/>
+            <rect x="0" y="0" width="248" height="350" fill="#1C1917"/>
+            <line x1="248" y1="0" x2="248" y2="350" stroke="#2D2926" stroke-width="1"/>
+
+            <!-- ── BÚHO PROFESOR ── -->
+            <!-- Ear tufts -->
+            <polygon points="98,54 90,28 106,46" fill="#92400E"/>
+            <polygon points="150,54 142,28 158,46" fill="#92400E"/>
+
+            <!-- Mortarboard cap -->
+            <rect x="80" y="34" width="88" height="12" rx="2" fill="#292524"/>
+            <ellipse cx="124" cy="34" rx="52" ry="8" fill="#1a1817"/>
+            <!-- Tassel -->
+            <line x1="166" y1="34" x2="178" y2="56" stroke="#B45309" stroke-width="2"/>
+            <circle cx="179" cy="60" r="4" fill="#B45309"/>
+
+            <!-- Head -->
+            <circle cx="124" cy="108" r="50" fill="#B45309"/>
+            <ellipse cx="124" cy="112" rx="34" ry="30" fill="#D97706" opacity="0.22"/>
+
+            <!-- Eye whites -->
+            <circle cx="107" cy="100" r="14" fill="#FEF3C7"/>
+            <circle cx="141" cy="100" r="14" fill="#FEF3C7"/>
+            <!-- Pupils -->
+            <circle cx="107" cy="100" r="7" fill="#1C1917"/>
+            <circle cx="141" cy="100" r="7" fill="#1C1917"/>
+            <!-- Shine -->
+            <circle cx="110" cy="96" r="2.2" fill="white"/>
+            <circle cx="144" cy="96" r="2.2" fill="white"/>
+
+            <!-- GLASSES -->
+            <circle cx="107" cy="100" r="16" fill="none" stroke="#1a1817" stroke-width="2"/>
+            <circle cx="141" cy="100" r="16" fill="none" stroke="#1a1817" stroke-width="2"/>
+            <line x1="123" y1="100" x2="125" y2="100" stroke="#1a1817" stroke-width="2"/>
+            <line x1="91" y1="96" x2="84" y2="94" stroke="#1a1817" stroke-width="2" stroke-linecap="round"/>
+            <line x1="157" y1="96" x2="164" y2="94" stroke="#1a1817" stroke-width="2" stroke-linecap="round"/>
+
+            <!-- Beak -->
+            <polygon points="115,115 133,115 124,126" fill="#D97706"/>
+
+            <!-- Body -->
+            <ellipse cx="124" cy="242" rx="44" ry="50" fill="#B45309"/>
+            <ellipse cx="124" cy="250" rx="26" ry="34" fill="#D97706" opacity="0.2"/>
+
+            <!-- Pointer (wing) toward content -->
+            <path d="M162,212 Q200,196 226,175" stroke="#92400E" stroke-width="3" stroke-linecap="round" fill="none"/>
+            <polygon points="221,165 234,176 219,183" fill="#92400E"/>
+
+            <!-- ── CONTENT SIDE ── -->
+            <!-- MITOS row -->
+            <rect x="265" y="42" width="514" height="70" rx="8" fill="rgba(220,38,38,0.05)" stroke="rgba(220,38,38,0.2)" stroke-width="1.5"/>
+            <rect x="265" y="42" width="5" height="70" rx="2" fill="#DC2626"/>
+            <text x="285" y="65" font-family="JetBrains Mono, monospace" font-size="9" fill="#DC2626" font-weight="700" letter-spacing="1">MITOS — 5 creencias que frenan</text>
+            <text x="285" y="85" font-family="Inter, sans-serif" font-size="12.5" fill="#78716C">Lo que se dice. Lo que realmente pasa.</text>
+            <text x="285" y="103" font-family="Inter, sans-serif" font-size="12.5" fill="#78716C">La verdad que rompe cada mito.</text>
+
+            <!-- ERRORES row -->
+            <rect x="265" y="128" width="514" height="70" rx="8" fill="rgba(180,83,9,0.05)" stroke="rgba(180,83,9,0.2)" stroke-width="1.5"/>
+            <rect x="265" y="128" width="5" height="70" rx="2" fill="#B45309"/>
+            <text x="285" y="151" font-family="JetBrains Mono, monospace" font-size="9" fill="#B45309" font-weight="700" letter-spacing="1">ERRORES + SOLUCIONES — los 5 más caros</text>
+            <text x="285" y="171" font-family="Inter, sans-serif" font-size="12.5" fill="#78716C">Lo que aprendí haciéndolo mal.</text>
+            <text x="285" y="189" font-family="Inter, sans-serif" font-size="12.5" fill="#78716C">La versión corta para que no tengas que.</text>
+
+            <!-- BONUS row -->
+            <rect x="265" y="214" width="514" height="70" rx="8" fill="rgba(5,150,105,0.05)" stroke="rgba(5,150,105,0.2)" stroke-width="1.5"/>
+            <rect x="265" y="214" width="5" height="70" rx="2" fill="#059669"/>
+            <text x="285" y="237" font-family="JetBrains Mono, monospace" font-size="9" fill="#059669" font-weight="700" letter-spacing="1">BONUS — REVELACIÓN PROGRESIVA DE SKILLS</text>
+            <text x="285" y="257" font-family="Inter, sans-serif" font-size="12.5" fill="#78716C">El patrón que previene la mayoría de estos</text>
+            <text x="285" y="275" font-family="Inter, sans-serif" font-size="12.5" fill="#78716C">errores antes de que ocurran.</text>
+
+            <!-- Nivel badge -->
+            <rect x="285" y="300" width="116" height="24" rx="12" fill="rgba(124,58,237,0.15)"/>
+            <text x="343" y="316" font-family="JetBrains Mono, monospace" font-size="8.5" fill="#7C3AED" text-anchor="middle" font-weight="700" letter-spacing="1">NIVEL 3 · CIERRE</text>
+        </svg>
+    </div>
+
+    <!-- HEADER -->
+    <div class="resource-header">
+        <div class="tag rojo"><span class="dot"></span>Mitos</div>
+        <h1 class="resource-title">Cuándo los agentes de IA crean más problemas de los que resuelven</h1>
+        <p class="resource-sub">El cierre del Nivel 3. Sin drama — cada error tiene solución y cada mito tiene una verdad más útil. El búho ya lo ha visto todo.</p>
+        <div class="resource-meta">
+            <span>Nivel 3</span>
+            <span class="meta-dot"></span>
+            <span>3.5 — Cierre</span>
+            <span class="meta-dot"></span>
+            <span>20 min</span>
+        </div>
+    </div>
+
+    <!-- LEARN BOX -->
+    <div class="learn-box">
+        <div class="learn-box-title">Lo que vas a encontrar aquí</div>
+        <ul class="learn-list">
+            <li class="learn-item">Los 5 mitos más extendidos sobre agentes de IA — y la verdad que los rompe</li>
+            <li class="learn-item">Los 5 errores que más se repiten — con solución directa para cada uno</li>
+            <li class="learn-item">El patrón de Revelación Progresiva: cómo mantener el contexto limpio para que los errores no ocurran</li>
+            <li class="learn-item">Un checklist final para salir del Nivel 3 con criterio propio</li>
+        </ul>
+    </div>
+
+    <!-- TOC -->
+    <div class="toc">
+        <div class="toc-label">Contenido</div>
+        <div class="toc-links">
+            <a href="#s01">Los 5 mitos</a>
+            <a href="#s02">Los 5 errores</a>
+            <a href="#s03">Bonus: Revelación Progresiva</a>
+            <a href="#s04">Cierre del Nivel 3</a>
+        </div>
+    </div>
+
+    <!-- ── S01: MITOS ── -->
+    <section class="section" id="s01">
+        <div class="section-num">01 — Los mitos</div>
+        <h2>Lo que se dice. Lo que realmente pasa.</h2>
+
+        <p>Estos cinco mitos circulan porque tienen una parte que suena bien. El problema no es que sean mentiras — es que son medias verdades que llevan a decisiones equivocadas. El búho los ha oído todos.</p>
+
+        <!-- MITO 01 -->
+        <div class="myth-block">
+            <div class="myth-header">
+                <svg class="owl-mini" width="26" height="26" viewBox="0 0 80 80" fill="none">
+                    <polygon points="26,18 20,2 32,14" fill="#92400E"/>
+                    <polygon points="54,18 48,2 60,14" fill="#92400E"/>
+                    <circle cx="40" cy="38" r="24" fill="#B45309"/>
+                    <circle cx="28" cy="32" r="9" fill="#FEF3C7"/>
+                    <circle cx="52" cy="32" r="9" fill="#FEF3C7"/>
+                    <circle cx="28" cy="32" r="4.5" fill="#1C1917"/>
+                    <circle cx="52" cy="32" r="4.5" fill="#1C1917"/>
+                    <circle cx="30" cy="29" r="1.5" fill="white"/>
+                    <circle cx="54" cy="29" r="1.5" fill="white"/>
+                    <polygon points="34,44 46,44 40,53" fill="#D97706"/>
+                    <circle cx="28" cy="32" r="11" fill="none" stroke="#1C1917" stroke-width="2.5"/>
+                    <circle cx="52" cy="32" r="11" fill="none" stroke="#1C1917" stroke-width="2.5"/>
+                    <line x1="39" y1="32" x2="41" y2="32" stroke="#1C1917" stroke-width="2"/>
+                    <rect x="14" y="16" width="52" height="8" rx="1.5" fill="#1a1817"/>
+                    <ellipse cx="40" cy="16" rx="32" ry="5" fill="#222"/>
+                </svg>
+                <div class="myth-num">Mito 01 de 05</div>
+            </div>
+            <div class="myth-claim">"Los agentes de IA son chatbots más avanzados"</div>
+            <div class="myth-story">Tiene mucho sentido pensarlo. Los dos usan el mismo modelo, los dos responden en lenguaje natural. Pero hay una diferencia que lo cambia todo: el chatbot espera tu siguiente mensaje. El agente no te espera — ya está en el paso 7 mientras tú ni has visto el resultado del paso 1. Uno conversa. El otro ejecuta.</div>
+            <div class="myth-truth">
+                <div class="myth-truth-label">La verdad</div>
+                <div class="myth-truth-text">La diferencia no es de modelo ni de inteligencia. Es de arquitectura: loop + verificación + autonomía. Sin esas tres, es una conversación más sofisticada — no un agente.</div>
+            </div>
+        </div>
+
+        <!-- MITO 02 -->
+        <div class="myth-block">
+            <div class="myth-header">
+                <svg class="owl-mini" width="26" height="26" viewBox="0 0 80 80" fill="none">
+                    <polygon points="26,18 20,2 32,14" fill="#92400E"/>
+                    <polygon points="54,18 48,2 60,14" fill="#92400E"/>
+                    <circle cx="40" cy="38" r="24" fill="#B45309"/>
+                    <circle cx="28" cy="32" r="9" fill="#FEF3C7"/>
+                    <circle cx="52" cy="32" r="9" fill="#FEF3C7"/>
+                    <circle cx="28" cy="32" r="4.5" fill="#1C1917"/>
+                    <circle cx="52" cy="32" r="4.5" fill="#1C1917"/>
+                    <circle cx="30" cy="29" r="1.5" fill="white"/>
+                    <circle cx="54" cy="29" r="1.5" fill="white"/>
+                    <polygon points="34,44 46,44 40,53" fill="#D97706"/>
+                    <circle cx="28" cy="32" r="11" fill="none" stroke="#1C1917" stroke-width="2.5"/>
+                    <circle cx="52" cy="32" r="11" fill="none" stroke="#1C1917" stroke-width="2.5"/>
+                    <line x1="39" y1="32" x2="41" y2="32" stroke="#1C1917" stroke-width="2"/>
+                    <rect x="14" y="16" width="52" height="8" rx="1.5" fill="#1a1817"/>
+                    <ellipse cx="40" cy="16" rx="32" ry="5" fill="#222"/>
+                </svg>
+                <div class="myth-num">Mito 02 de 05</div>
+            </div>
+            <div class="myth-claim">"Con más instrucciones, el agente hace más cosas bien"</div>
+            <div class="myth-story">Parece lógico: más contexto = más capacidad. Escribes 400 líneas en el CLAUDE.md, le añades 6 skills, le asignas 8 responsabilidades. El agente las asume... y cada una sale a un 60% de lo que podría. El contexto no se multiplica — se divide. Cuantas más instrucciones compiten, menos atención tiene cada una.</div>
+            <div class="myth-truth">
+                <div class="myth-truth-label">La verdad</div>
+                <div class="myth-truth-text">La atención del agente es finita. Cuanto más estrecho es el rol y más claro es el objetivo, mejor es el output. Un agente con una tarea supera siempre a un agente con diez.</div>
+            </div>
+        </div>
+
+        <!-- MITO 03 -->
+        <div class="myth-block">
+            <div class="myth-header">
+                <svg class="owl-mini" width="26" height="26" viewBox="0 0 80 80" fill="none">
+                    <polygon points="26,18 20,2 32,14" fill="#92400E"/>
+                    <polygon points="54,18 48,2 60,14" fill="#92400E"/>
+                    <circle cx="40" cy="38" r="24" fill="#B45309"/>
+                    <circle cx="28" cy="32" r="9" fill="#FEF3C7"/>
+                    <circle cx="52" cy="32" r="9" fill="#FEF3C7"/>
+                    <circle cx="28" cy="32" r="4.5" fill="#1C1917"/>
+                    <circle cx="52" cy="32" r="4.5" fill="#1C1917"/>
+                    <circle cx="30" cy="29" r="1.5" fill="white"/>
+                    <circle cx="54" cy="29" r="1.5" fill="white"/>
+                    <polygon points="34,44 46,44 40,53" fill="#D97706"/>
+                    <circle cx="28" cy="32" r="11" fill="none" stroke="#1C1917" stroke-width="2.5"/>
+                    <circle cx="52" cy="32" r="11" fill="none" stroke="#1C1917" stroke-width="2.5"/>
+                    <line x1="39" y1="32" x2="41" y2="32" stroke="#1C1917" stroke-width="2"/>
+                    <rect x="14" y="16" width="52" height="8" rx="1.5" fill="#1a1817"/>
+                    <ellipse cx="40" cy="16" rx="32" ry="5" fill="#222"/>
+                </svg>
+                <div class="myth-num">Mito 03 de 05</div>
+            </div>
+            <div class="myth-claim">"Más agentes siempre es mejor resultado"</div>
+            <div class="myth-story">Suena como añadir trabajadores al equipo: más manos, más rápido. Pero cada agente nuevo es un punto de fallo nuevo, una dependencia nueva, un archivo de output que el siguiente necesita leer correctamente. Un sistema de 10 agentes mal coordinados produce peor resultado que 3 bien conectados.</div>
+            <div class="myth-truth">
+                <div class="myth-truth-label">La verdad</div>
+                <div class="myth-truth-text">El número óptimo no es el máximo posible — es el mínimo necesario para que cada agente tenga una sola tarea con un criterio claro de "listo". Empieza con el mínimo y añade solo cuando tengas una razón concreta.</div>
+            </div>
+        </div>
+
+        <!-- MITO 04 -->
+        <div class="myth-block">
+            <div class="myth-header">
+                <svg class="owl-mini" width="26" height="26" viewBox="0 0 80 80" fill="none">
+                    <polygon points="26,18 20,2 32,14" fill="#92400E"/>
+                    <polygon points="54,18 48,2 60,14" fill="#92400E"/>
+                    <circle cx="40" cy="38" r="24" fill="#B45309"/>
+                    <circle cx="28" cy="32" r="9" fill="#FEF3C7"/>
+                    <circle cx="52" cy="32" r="9" fill="#FEF3C7"/>
+                    <circle cx="28" cy="32" r="4.5" fill="#1C1917"/>
+                    <circle cx="52" cy="32" r="4.5" fill="#1C1917"/>
+                    <circle cx="30" cy="29" r="1.5" fill="white"/>
+                    <circle cx="54" cy="29" r="1.5" fill="white"/>
+                    <polygon points="34,44 46,44 40,53" fill="#D97706"/>
+                    <circle cx="28" cy="32" r="11" fill="none" stroke="#1C1917" stroke-width="2.5"/>
+                    <circle cx="52" cy="32" r="11" fill="none" stroke="#1C1917" stroke-width="2.5"/>
+                    <line x1="39" y1="32" x2="41" y2="32" stroke="#1C1917" stroke-width="2"/>
+                    <rect x="14" y="16" width="52" height="8" rx="1.5" fill="#1a1817"/>
+                    <ellipse cx="40" cy="16" rx="32" ry="5" fill="#222"/>
+                </svg>
+                <div class="myth-num">Mito 04 de 05</div>
+            </div>
+            <div class="myth-claim">"Si el sistema falla, el problema está en el último agente"</div>
+            <div class="myth-story">El Diseñador construye algo inservible y el instinto es culparle. Pero el Diseñador tomó lo que el Distribuidor le pasó, que tomó lo que el Investigador produjo, que tomó lo que el Guionista decidió. El último agente es el mensajero. El error llegó antes — solo que nadie lo vio porque no había checkpoint.</div>
+            <div class="myth-truth">
+                <div class="myth-truth-label">La verdad</div>
+                <div class="myth-truth-text">Busca el primer agente que recibió input correcto y entregó output incorrecto. Ahí está el origen. El resto solo amplificó. Por eso el checkpoint después del primer agente es el más importante.</div>
+            </div>
+        </div>
+
+        <!-- MITO 05 -->
+        <div class="myth-block">
+            <div class="myth-header">
+                <svg class="owl-mini" width="26" height="26" viewBox="0 0 80 80" fill="none">
+                    <polygon points="26,18 20,2 32,14" fill="#92400E"/>
+                    <polygon points="54,18 48,2 60,14" fill="#92400E"/>
+                    <circle cx="40" cy="38" r="24" fill="#B45309"/>
+                    <circle cx="28" cy="32" r="9" fill="#FEF3C7"/>
+                    <circle cx="52" cy="32" r="9" fill="#FEF3C7"/>
+                    <circle cx="28" cy="32" r="4.5" fill="#1C1917"/>
+                    <circle cx="52" cy="32" r="4.5" fill="#1C1917"/>
+                    <circle cx="30" cy="29" r="1.5" fill="white"/>
+                    <circle cx="54" cy="29" r="1.5" fill="white"/>
+                    <polygon points="34,44 46,44 40,53" fill="#D97706"/>
+                    <circle cx="28" cy="32" r="11" fill="none" stroke="#1C1917" stroke-width="2.5"/>
+                    <circle cx="52" cy="32" r="11" fill="none" stroke="#1C1917" stroke-width="2.5"/>
+                    <line x1="39" y1="32" x2="41" y2="32" stroke="#1C1917" stroke-width="2"/>
+                    <rect x="14" y="16" width="52" height="8" rx="1.5" fill="#1a1817"/>
+                    <ellipse cx="40" cy="16" rx="32" ry="5" fill="#222"/>
+                </svg>
+                <div class="myth-num">Mito 05 de 05</div>
+            </div>
+            <div class="myth-claim">"Automatizar significa que ya no tienes que mirar"</div>
+            <div class="myth-story">Esta es la más peligrosa porque es la que más queremos que sea verdad. Lanzas el sistema, te vas a dormir, por la mañana está todo hecho. Y técnicamente puede ser así. Pero "todo hecho" no significa "todo bien hecho". Si el primer agente tomó la dirección equivocada, el sistema completó esa dirección de forma impecable.</div>
+            <div class="myth-truth">
+                <div class="myth-truth-label">La verdad</div>
+                <div class="myth-truth-text">Automatizar bien es supervisar en los puntos que importan, no en todos. La diferencia está en dónde miras, no en si miras. Dos checkpoints estratégicos protegen más que revisar cada output.</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ── S02: ERRORES ── -->
+    <section class="section" id="s02">
+        <div class="section-num">02 — Los errores</div>
+        <h2>Lo que aprendí haciéndolo mal. La versión corta.</h2>
+
+        <p>Estos cinco errores tienen algo en común: todos parecen razonables en el momento en que se cometen. La buena noticia es que todos tienen solución, y ninguna es complicada.</p>
+
+        <!-- ERROR 01 -->
+        <div class="error-block">
+            <div class="error-header">
+                <svg class="owl-mini" width="22" height="22" viewBox="0 0 80 80" fill="none">
+                    <polygon points="26,18 20,2 32,14" fill="#92400E"/>
+                    <polygon points="54,18 48,2 60,14" fill="#92400E"/>
+                    <circle cx="40" cy="38" r="24" fill="#B45309"/>
+                    <circle cx="28" cy="32" r="9" fill="#FEF3C7"/>
+                    <circle cx="52" cy="32" r="9" fill="#FEF3C7"/>
+                    <circle cx="28" cy="32" r="4.5" fill="#1C1917"/>
+                    <circle cx="52" cy="32" r="4.5" fill="#1C1917"/>
+                    <circle cx="30" cy="29" r="1.5" fill="white"/>
+                    <circle cx="54" cy="29" r="1.5" fill="white"/>
+                    <polygon points="34,44 46,44 40,53" fill="#D97706"/>
+                    <circle cx="28" cy="32" r="11" fill="none" stroke="#1C1917" stroke-width="2.5"/>
+                    <circle cx="52" cy="32" r="11" fill="none" stroke="#1C1917" stroke-width="2.5"/>
+                    <line x1="39" y1="32" x2="41" y2="32" stroke="#1C1917" stroke-width="2"/>
+                    <rect x="14" y="16" width="52" height="8" rx="1.5" fill="#1a1817"/>
+                    <ellipse cx="40" cy="16" rx="32" ry="5" fill="#222"/>
+                </svg>
+                <div class="error-num">Error 01</div>
+                <div class="error-title">Construir sin diagnóstico previo</div>
+            </div>
+            <div class="error-story">Tienes la tarea, sabes que los agentes existen, la conexión parece obvia. Montas el agente. Funciona los primeros pasos y luego se pierde, da vueltas o entrega algo que no responde al objetivo. El problema no fue la ejecución — fue no preguntar antes si el agente era la herramienta correcta para esa tarea concreta.</div>
+            <div class="error-fix">
+                <div class="error-fix-label">Lo que funciona</div>
+                <div class="error-fix-text">Tres preguntas antes de construir cualquier agente: ¿La tarea requiere múltiples pasos que se verifican entre sí? ¿Necesita tomar decisiones según resultados intermedios? ¿El criterio de "listo" es evaluable sin intervención humana? Si alguna es no, una skill sola puede ser suficiente.</div>
+            </div>
+        </div>
+
+        <!-- ERROR 02 -->
+        <div class="error-block">
+            <div class="error-header">
+                <svg class="owl-mini" width="22" height="22" viewBox="0 0 80 80" fill="none">
+                    <polygon points="26,18 20,2 32,14" fill="#92400E"/>
+                    <polygon points="54,18 48,2 60,14" fill="#92400E"/>
+                    <circle cx="40" cy="38" r="24" fill="#B45309"/>
+                    <circle cx="28" cy="32" r="9" fill="#FEF3C7"/>
+                    <circle cx="52" cy="32" r="9" fill="#FEF3C7"/>
+                    <circle cx="28" cy="32" r="4.5" fill="#1C1917"/>
+                    <circle cx="52" cy="32" r="4.5" fill="#1C1917"/>
+                    <circle cx="30" cy="29" r="1.5" fill="white"/>
+                    <circle cx="54" cy="29" r="1.5" fill="white"/>
+                    <polygon points="34,44 46,44 40,53" fill="#D97706"/>
+                    <circle cx="28" cy="32" r="11" fill="none" stroke="#1C1917" stroke-width="2.5"/>
+                    <circle cx="52" cy="32" r="11" fill="none" stroke="#1C1917" stroke-width="2.5"/>
+                    <line x1="39" y1="32" x2="41" y2="32" stroke="#1C1917" stroke-width="2"/>
+                    <rect x="14" y="16" width="52" height="8" rx="1.5" fill="#1a1817"/>
+                    <ellipse cx="40" cy="16" rx="32" ry="5" fill="#222"/>
+                </svg>
+                <div class="error-num">Error 02</div>
+                <div class="error-title">Dar todos los permisos al configurar</div>
+            </div>
+            <div class="error-story">Claude Code pregunta qué puede hacer. La respuesta natural es "todo lo que necesites". Y el agente... lo hace. A veces modifica archivos que no debería, gasta créditos en MCPs que no necesitaba, o escribe fuera del scope del proyecto. No por malicia — porque nadie le dijo que no podía.</div>
+            <div class="error-fix">
+                <div class="error-fix-label">Lo que funciona</div>
+                <div class="error-fix-text">Permisos mínimos siempre: leer el proyecto + escribir en output/. Red solo si hay MCPs activos. Comandos de terminal solo si los necesita explícitamente. El resto se añade cuando haga falta — no antes.</div>
+            </div>
+        </div>
+
+        <!-- ERROR 03 -->
+        <div class="error-block">
+            <div class="error-header">
+                <svg class="owl-mini" width="22" height="22" viewBox="0 0 80 80" fill="none">
+                    <polygon points="26,18 20,2 32,14" fill="#92400E"/>
+                    <polygon points="54,18 48,2 60,14" fill="#92400E"/>
+                    <circle cx="40" cy="38" r="24" fill="#B45309"/>
+                    <circle cx="28" cy="32" r="9" fill="#FEF3C7"/>
+                    <circle cx="52" cy="32" r="9" fill="#FEF3C7"/>
+                    <circle cx="28" cy="32" r="4.5" fill="#1C1917"/>
+                    <circle cx="52" cy="32" r="4.5" fill="#1C1917"/>
+                    <circle cx="30" cy="29" r="1.5" fill="white"/>
+                    <circle cx="54" cy="29" r="1.5" fill="white"/>
+                    <polygon points="34,44 46,44 40,53" fill="#D97706"/>
+                    <circle cx="28" cy="32" r="11" fill="none" stroke="#1C1917" stroke-width="2.5"/>
+                    <circle cx="52" cy="32" r="11" fill="none" stroke="#1C1917" stroke-width="2.5"/>
+                    <line x1="39" y1="32" x2="41" y2="32" stroke="#1C1917" stroke-width="2"/>
+                    <rect x="14" y="16" width="52" height="8" rx="1.5" fill="#1a1817"/>
+                    <ellipse cx="40" cy="16" rx="32" ry="5" fill="#222"/>
+                </svg>
+                <div class="error-num">Error 03</div>
+                <div class="error-title">Sobrecargar una skill con múltiples tareas</div>
+            </div>
+            <div class="error-story">"Ya que estoy, que también haga X." La trampa de la eficiencia. Le añades responsabilidades a la skill porque parece redundante crear otra para algo pequeño. El resultado: la skill hace cuatro cosas a un 60%. Con dos skills separadas, cada una las hace al 100%. Y cuando falla, sabes exactamente dónde mirar.</div>
+            <div class="error-fix">
+                <div class="error-fix-label">Lo que funciona</div>
+                <div class="error-fix-text">Una skill, una tarea. Si tienes dudas, aplica la prueba: ¿puedo describir lo que hace esta skill en una frase sin usar "y"? Si no puedes, son dos skills. El agente con tres responsabilidades tiene tres razones distintas para fallar.</div>
+            </div>
+        </div>
+
+        <!-- ERROR 04 -->
+        <div class="error-block">
+            <div class="error-header">
+                <svg class="owl-mini" width="22" height="22" viewBox="0 0 80 80" fill="none">
+                    <polygon points="26,18 20,2 32,14" fill="#92400E"/>
+                    <polygon points="54,18 48,2 60,14" fill="#92400E"/>
+                    <circle cx="40" cy="38" r="24" fill="#B45309"/>
+                    <circle cx="28" cy="32" r="9" fill="#FEF3C7"/>
+                    <circle cx="52" cy="32" r="9" fill="#FEF3C7"/>
+                    <circle cx="28" cy="32" r="4.5" fill="#1C1917"/>
+                    <circle cx="52" cy="32" r="4.5" fill="#1C1917"/>
+                    <circle cx="30" cy="29" r="1.5" fill="white"/>
+                    <circle cx="54" cy="29" r="1.5" fill="white"/>
+                    <polygon points="34,44 46,44 40,53" fill="#D97706"/>
+                    <circle cx="28" cy="32" r="11" fill="none" stroke="#1C1917" stroke-width="2.5"/>
+                    <circle cx="52" cy="32" r="11" fill="none" stroke="#1C1917" stroke-width="2.5"/>
+                    <line x1="39" y1="32" x2="41" y2="32" stroke="#1C1917" stroke-width="2"/>
+                    <rect x="14" y="16" width="52" height="8" rx="1.5" fill="#1a1817"/>
+                    <ellipse cx="40" cy="16" rx="32" ry="5" fill="#222"/>
+                </svg>
+                <div class="error-num">Error 04</div>
+                <div class="error-title">Lanzar el sistema sin checkpoint en el primer agente</div>
+            </div>
+            <div class="error-story">El sistema arranca, los agentes trabajan, llegas al final y el resultado está construido correctamente... sobre las decisiones equivocadas del primer agente. Has automatizado la dirección incorrecta de forma impecable. El sistema funcionó perfectamente. El resultado no sirve.</div>
+            <div class="error-fix">
+                <div class="error-fix-label">Lo que funciona</div>
+                <div class="error-fix-text">Un checkpoint obligatorio después del primer agente. Leer el output antes de que el siguiente empiece. Son cinco minutos que pueden salvar tres horas de trabajo. El primer agente es el que más impacto tiene en el resultado final — es el único que merece revisión siempre.</div>
+            </div>
+        </div>
+
+        <!-- ERROR 05 -->
+        <div class="error-block">
+            <div class="error-header">
+                <svg class="owl-mini" width="22" height="22" viewBox="0 0 80 80" fill="none">
+                    <polygon points="26,18 20,2 32,14" fill="#92400E"/>
+                    <polygon points="54,18 48,2 60,14" fill="#92400E"/>
+                    <circle cx="40" cy="38" r="24" fill="#B45309"/>
+                    <circle cx="28" cy="32" r="9" fill="#FEF3C7"/>
+                    <circle cx="52" cy="32" r="9" fill="#FEF3C7"/>
+                    <circle cx="28" cy="32" r="4.5" fill="#1C1917"/>
+                    <circle cx="52" cy="32" r="4.5" fill="#1C1917"/>
+                    <circle cx="30" cy="29" r="1.5" fill="white"/>
+                    <circle cx="54" cy="29" r="1.5" fill="white"/>
+                    <polygon points="34,44 46,44 40,53" fill="#D97706"/>
+                    <circle cx="28" cy="32" r="11" fill="none" stroke="#1C1917" stroke-width="2.5"/>
+                    <circle cx="52" cy="32" r="11" fill="none" stroke="#1C1917" stroke-width="2.5"/>
+                    <line x1="39" y1="32" x2="41" y2="32" stroke="#1C1917" stroke-width="2"/>
+                    <rect x="14" y="16" width="52" height="8" rx="1.5" fill="#1a1817"/>
+                    <ellipse cx="40" cy="16" rx="32" ry="5" fill="#222"/>
+                </svg>
+                <div class="error-num">Error 05</div>
+                <div class="error-title">Saturar el contexto desde el principio</div>
+            </div>
+            <div class="error-story">Cargas todas las instrucciones, todos los ejemplos, todas las skills, todos los casos edge — porque no sabes cuáles va a necesitar. El agente empieza con el contexto repleto y mezcla instrucciones que no tienen relación entre sí. No porque sea incapaz: está atendiendo a demasiadas cosas a la vez desde el minuto uno.</div>
+            <div class="error-fix">
+                <div class="error-fix-label">Lo que funciona</div>
+                <div class="error-fix-text">No cargues todo desde el principio. Carga solo lo que necesitas en el momento en que lo necesitas. Para esto existe un patrón concreto — y es el bonus de este recurso.</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ── S03: BONUS REVELACIÓN PROGRESIVA ── -->
+    <section class="section" id="s03">
+        <div class="section-num">03 — Bonus</div>
+        <h2>Revelación Progresiva de Skills</h2>
+
+        <p>Este patrón arquitectónico es la respuesta directa al Error 05 — y previene varios de los anteriores. La idea es simple: <strong>separar el descubrimiento de la ejecución</strong>.</p>
+
+        <p>En lugar de cargar todas las instrucciones de todas las skills desde el inicio, el sistema opera en dos capas:</p>
+
+        <div class="reveal-stack">
+            <div class="reveal-layer disc">
+                <div class="reveal-layer-label">Capa 1 — Descubrimiento (siempre cargada)</div>
+                <div class="reveal-items">
+                    <div class="reveal-item"><div class="reveal-item-dot"></div><span>Nombre de la skill y descripción breve (1-2 líneas)</span></div>
+                    <div class="reveal-item"><div class="reveal-item-dot"></div><span>Tags: qué tipo de tarea resuelve</span></div>
+                    <div class="reveal-item"><div class="reveal-item-dot"></div><span>Esquema de entrada y salida esperada</span></div>
+                    <div class="reveal-item"><div class="reveal-item-dot"></div><span>Palabras clave para búsqueda semántica</span></div>
+                </div>
+            </div>
+
+            <div class="reveal-connector">solo cuando el agente la necesita ↓</div>
+
+            <div class="reveal-layer exec">
+                <div class="reveal-layer-label">Capa 2 — Ejecución (cargada bajo demanda)</div>
+                <div class="reveal-items">
+                    <div class="reveal-item"><div class="reveal-item-dot"></div><span>Instrucciones detalladas paso a paso</span></div>
+                    <div class="reveal-item"><div class="reveal-item-dot"></div><span>Checklists de verificación interna</span></div>
+                    <div class="reveal-item"><div class="reveal-item-dot"></div><span>Ejemplos concretos (few-shot)</span></div>
+                    <div class="reveal-item"><div class="reveal-item-dot"></div><span>Reglas de output y criterio de "listo"</span></div>
+                </div>
+            </div>
+        </div>
+
+        <p>Cuando el agente recibe una tarea, escanea primero solo los metadatos ligeros de todas sus skills, identifica cuál es relevante mediante similitud semántica y entonces carga las instrucciones completas de esa skill específica. El resto permanece fuera del contexto.</p>
+
+        <div class="callout verde">
+            <div class="callout-label">El resultado</div>
+            <p>Contexto más limpio. Menos instrucciones compitiendo por atención. Outputs más predecibles. Y cuando algo falla, es más fácil saber qué skill fue — porque solo había una activa.</p>
+        </div>
+
+        <div class="antipattern-card">
+            <div class="antipattern-label">Anti-patrón a evitar</div>
+            <div class="antipattern-title">La "God Skill"</div>
+            <div class="antipattern-desc">Una skill que abarca demasiado: investiga Y redacta Y optimiza Y publica. Parece eficiente pero es el Error 03 a escala. Cuanto más grande es la skill, más instrucciones compiten en el contexto de ejecución — y más probable es que el agente mezcle razonamientos que no tienen relación entre sí. Skills pequeñas y encadenables siempre superan a skills grandes y completas.</div>
+        </div>
+
+        <div class="gold-quote">
+            <div class="gold-quote-text">El contexto limpio es el <em>activo más valioso</em> de un sistema agentico.<br>Todo lo demás se puede ajustar. El contexto saturado no.</div>
+        </div>
+    </section>
+
+    <!-- ── S04: CIERRE ── -->
+    <section class="section" id="s04">
+        <div class="section-num">04 — Cierre</div>
+        <h2>Ya no eres el mismo que empezó el Nivel 3</h2>
+
+        <p>Entraste al Nivel 3 sabiendo que los agentes existían. Sales sabiendo cómo funcionan, cómo se construyen, cómo se coordinan y — lo más importante — cuándo no usarlos y qué falla cuando se usan mal.</p>
+
+        <p>Eso no es poca cosa. La mayoría de personas que hablan de agentes de IA en 2026 no tienen claro ni la mitad de lo que acabas de leer.</p>
+
+        <div class="action-write">
+            <div class="action-write-label">Antes de cerrar</div>
+            <div class="action-write-prompt">El error que más me ha costado identificarme fue...</div>
+            <input class="action-write-line" type="text" placeholder="El mito / error que más resonó">
+            <div class="action-write-hint">No para el búho — para ti. Saber cuál es el tuyo es el primer paso para no repetirlo.</div>
+        </div>
+
+        <div class="nivel-complete">
+            <div class="nivel-complete-badge">Nivel 3 completado</div>
+            <div class="nivel-complete-title">Automatizar. Ya sabes cómo.</div>
+            <div class="nivel-complete-sub">Entiendes los conceptos, conoces las herramientas, has construido tu primer agente y has visto el sistema en producción. Con criterio propio para saber cuándo funciona y cuándo no.</div>
+            <a href="../index.html" class="nivel-back-btn">
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M10 3L5 8l5 5" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                Volver a la biblioteca
+            </a>
+        </div>
+    </section>
+
+    <!-- CHECKLIST -->
+    <div class="checklist-section">
+        <div class="checklist-title">Cierre del Nivel 3</div>
+        <ul class="checklist-items" id="checklist">
+            <li onclick="toggleCheck(this)"><span class="check-box"></span><span class="check-text">Sé distinguir un agente de un chatbot y de una skill — y cuándo usar cada uno</span></li>
+            <li onclick="toggleCheck(this)"><span class="check-box"></span><span class="check-text">Entiendo que más instrucciones no es más capacidad — es menos foco</span></li>
+            <li onclick="toggleCheck(this)"><span class="check-box"></span><span class="check-text">Sé que el error de un sistema casi siempre viene del primer agente, no del último</span></li>
+            <li onclick="toggleCheck(this)"><span class="check-box"></span><span class="check-text">Tengo claro dónde poner los checkpoints humanos y por qué el primero es el más crítico</span></li>
+            <li onclick="toggleCheck(this)"><span class="check-box"></span><span class="check-text">Entiendo el patrón de Revelación Progresiva y por qué el contexto limpio importa</span></li>
+            <li onclick="toggleCheck(this)"><span class="check-box"></span><span class="check-text">Podría montar un sistema de 2-3 agentes coordinados con criterio propio</span></li>
+        </ul>
+    </div>
+
+    <!-- FOOTER -->
+    <footer class="resource-footer">
+        <a href="3-4.html" class="footer-back">← 3.4 Sistema real</a>
+    </footer>
+
+</div>
+
+<canvas id="confetti-canvas" style="position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:9999;"></canvas>
+
+<script>
+    function toggleCheck(el) {
+        el.classList.toggle('done');
+        if (el.classList.contains('done')) el.querySelector('.check-box').textContent = '✓';
+        else el.querySelector('.check-box').textContent = '';
+        const all = document.querySelectorAll('#checklist li');
+        const done = document.querySelectorAll('#checklist li.done');
+        if (all.length === done.length) launchConfetti();
+    }
+
+    function launchConfetti() {
+        const canvas = document.getElementById('confetti-canvas');
+        const ctx = canvas.getContext('2d');
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+        const colors = ['#DC2626','#7C3AED','#2563EB','#059669','#D97706','#B45309'];
+        const pieces = Array.from({length: 140}, () => ({
+            x: Math.random() * canvas.width,
+            y: Math.random() * -canvas.height,
+            r: Math.random() * 7 + 3,
+            c: colors[Math.floor(Math.random() * colors.length)],
+            s: Math.random() * 3 + 1.5,
+            a: Math.random() * Math.PI * 2,
+            ra: (Math.random() - 0.5) * 0.18
+        }));
+        let frame;
+        function draw() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            pieces.forEach(p => {
+                ctx.save();
+                ctx.translate(p.x, p.y);
+                ctx.rotate(p.a);
+                ctx.fillStyle = p.c;
+                ctx.fillRect(-p.r, -p.r / 2, p.r * 2, p.r);
+                ctx.restore();
+                p.y += p.s;
+                p.a += p.ra;
+                if (p.y > canvas.height) p.y = -10;
+            });
+            frame = requestAnimationFrame(draw);
+        }
+        draw();
+        setTimeout(() => { cancelAnimationFrame(frame); ctx.clearRect(0, 0, canvas.width, canvas.height); }, 4000);
+    }
+</script>
+</body>
+</html>
