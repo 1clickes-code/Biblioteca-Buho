@@ -179,6 +179,33 @@
             .resource-title { font-size: 22px; }
             .myth-truth, .error-fix { flex-direction: column; gap: 6px; }
         }
+
+        /* COMPLETION MODAL */
+        .modal-overlay { position: fixed; inset: 0; background: rgba(28,25,23,0.6); z-index: 10000; display: flex; align-items: center; justify-content: center; padding: 24px; opacity: 0; pointer-events: none; transition: opacity .4s ease; }
+        .modal-overlay.visible { opacity: 1; pointer-events: all; }
+        .modal-card { background: var(--surface); border-radius: 18px; padding: 36px 32px 30px; max-width: 440px; width: 100%; border: 1.5px solid var(--border); box-shadow: 0 24px 64px rgba(0,0,0,0.2); transform: translateY(28px) scale(0.97); transition: transform .45s cubic-bezier(.16,1,.3,1); }
+        .modal-overlay.visible .modal-card { transform: translateY(0) scale(1); }
+        .modal-badge { font-family: 'JetBrains Mono', monospace; font-size: 9px; font-weight: 700; color: var(--amber); letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 20px; }
+        .modal-owl-wrap { display: flex; justify-content: center; margin-bottom: 18px; }
+        .modal-title { font-family: 'Playfair Display', serif; font-size: 28px; font-weight: 700; line-height: 1.15; color: var(--text); margin-bottom: 14px; }
+        .modal-body { font-size: 14px; color: var(--muted); line-height: 1.72; margin-bottom: 0; }
+        .modal-body strong { color: var(--text); font-weight: 600; }
+        .modal-highlight { background: var(--amber-dim); border-left: 3px solid var(--amber); border-radius: 0 8px 8px 0; padding: 13px 18px; margin: 18px 0; font-family: 'Playfair Display', serif; font-size: 15px; font-style: italic; color: var(--text); line-height: 1.5; }
+        .modal-divider { height: 1px; background: var(--border); margin: 20px 0; }
+        .modal-final { font-size: 13.5px; color: var(--muted); line-height: 1.65; margin-bottom: 22px; }
+        .modal-btn { display: flex; align-items: center; justify-content: center; gap: 8px; background: var(--amber); color: white; border: none; padding: 13px 24px; border-radius: 8px; font-family: 'Inter', sans-serif; font-size: 14px; font-weight: 600; cursor: pointer; width: 100%; transition: opacity .15s; letter-spacing: .1px; }
+        .modal-btn:hover { opacity: .88; }
+        .modal-btn svg { flex-shrink: 0; }
+
+        /* NIVEL FINAL CARD */
+        .nivel-final { border-radius: 14px; padding: 26px 28px; margin: 28px 0; position: relative; overflow: hidden; }
+        .nivel-final::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 5px; border-radius: 3px 0 0 3px; }
+        .nivel-final-label { font-family: 'JetBrains Mono', monospace; font-size: 9px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 8px; }
+        .nivel-final-name { font-family: 'Playfair Display', serif; font-size: 20px; font-weight: 700; color: var(--text); margin-bottom: 14px; line-height: 1.25; }
+        .nivel-final-text { font-size: 14px; color: var(--muted); line-height: 1.72; }
+        .nivel-final.n3 { background: rgba(124,58,237,0.06); border: 1.5px solid rgba(124,58,237,0.2); }
+        .nivel-final.n3::before { background: #7C3AED; }
+        .nivel-final.n3 .nivel-final-label { color: #7C3AED; }
     </style>
 </head>
 <body>
@@ -215,10 +242,39 @@
     <!-- COVER SVG -->
     <div class="cover-wrap">
         <svg viewBox="0 0 800 350" xmlns="http://www.w3.org/2000/svg" font-family="Inter, system-ui, sans-serif">
+            <defs>
+                <radialGradient id="owlAura" cx="50%" cy="38%" r="55%">
+                    <stop offset="0%" stop-color="#D97706" stop-opacity="0.13"/>
+                    <stop offset="100%" stop-color="#D97706" stop-opacity="0"/>
+                </radialGradient>
+                <radialGradient id="leftZone" cx="50%" cy="50%" r="70%">
+                    <stop offset="0%" stop-color="#FEF3C7" stop-opacity="0.55"/>
+                    <stop offset="100%" stop-color="#FAFAF7" stop-opacity="0"/>
+                </radialGradient>
+            </defs>
+
             <!-- BG -->
             <rect width="800" height="350" fill="#FAFAF7"/>
-            <rect x="0" y="0" width="248" height="350" fill="#1C1917"/>
-            <line x1="248" y1="0" x2="248" y2="350" stroke="#2D2926" stroke-width="1"/>
+            <!-- Left zone: warm cream tint -->
+            <rect x="0" y="0" width="248" height="350" fill="rgba(254,243,199,0.38)"/>
+            <rect x="0" y="0" width="248" height="350" fill="url(#leftZone)"/>
+
+            <!-- Floating color dots (mitos / errores / bonus) -->
+            <circle cx="22" cy="28" r="5" fill="rgba(220,38,38,0.22)"/>
+            <circle cx="225" cy="32" r="3.5" fill="rgba(124,58,237,0.2)"/>
+            <circle cx="18" cy="318" r="4" fill="rgba(5,150,105,0.2)"/>
+            <circle cx="230" cy="312" r="3" fill="rgba(37,99,235,0.2)"/>
+            <circle cx="15" cy="170" r="2.5" fill="rgba(180,83,9,0.25)"/>
+            <circle cx="236" cy="175" r="2.5" fill="rgba(217,119,6,0.22)"/>
+            <!-- Small star accents -->
+            <circle cx="38" cy="290" r="1.8" fill="rgba(220,38,38,0.18)"/>
+            <circle cx="210" cy="60" r="1.8" fill="rgba(5,150,105,0.18)"/>
+
+            <!-- Warm aura behind owl -->
+            <circle cx="124" cy="135" r="110" fill="url(#owlAura)"/>
+
+            <!-- Divider subtle -->
+            <line x1="248" y1="16" x2="248" y2="334" stroke="rgba(180,83,9,0.18)" stroke-width="1" stroke-dasharray="4,4"/>
 
             <!-- ── BÚHO PROFESOR ── -->
             <!-- Ear tufts -->
@@ -229,12 +285,14 @@
             <rect x="80" y="34" width="88" height="12" rx="2" fill="#292524"/>
             <ellipse cx="124" cy="34" rx="52" ry="8" fill="#1a1817"/>
             <!-- Tassel -->
-            <line x1="166" y1="34" x2="178" y2="56" stroke="#B45309" stroke-width="2"/>
-            <circle cx="179" cy="60" r="4" fill="#B45309"/>
+            <line x1="166" y1="34" x2="182" y2="58" stroke="#D97706" stroke-width="2.5"/>
+            <circle cx="183" cy="62" r="5" fill="#D97706"/>
 
+            <!-- Head shadow -->
+            <circle cx="126" cy="112" r="50" fill="rgba(146,64,14,0.12)"/>
             <!-- Head -->
             <circle cx="124" cy="108" r="50" fill="#B45309"/>
-            <ellipse cx="124" cy="112" rx="34" ry="30" fill="#D97706" opacity="0.22"/>
+            <ellipse cx="124" cy="112" rx="34" ry="30" fill="#D97706" opacity="0.28"/>
 
             <!-- Eye whites -->
             <circle cx="107" cy="100" r="14" fill="#FEF3C7"/>
@@ -243,8 +301,8 @@
             <circle cx="107" cy="100" r="7" fill="#1C1917"/>
             <circle cx="141" cy="100" r="7" fill="#1C1917"/>
             <!-- Shine -->
-            <circle cx="110" cy="96" r="2.2" fill="white"/>
-            <circle cx="144" cy="96" r="2.2" fill="white"/>
+            <circle cx="110" cy="96" r="2.5" fill="white"/>
+            <circle cx="144" cy="96" r="2.5" fill="white"/>
 
             <!-- GLASSES -->
             <circle cx="107" cy="100" r="16" fill="none" stroke="#1a1817" stroke-width="2"/>
@@ -256,13 +314,45 @@
             <!-- Beak -->
             <polygon points="115,115 133,115 124,126" fill="#D97706"/>
 
+            <!-- Body shadow -->
+            <ellipse cx="126" cy="246" rx="44" ry="50" fill="rgba(146,64,14,0.1)"/>
             <!-- Body -->
             <ellipse cx="124" cy="242" rx="44" ry="50" fill="#B45309"/>
-            <ellipse cx="124" cy="250" rx="26" ry="34" fill="#D97706" opacity="0.2"/>
+            <ellipse cx="124" cy="250" rx="26" ry="34" fill="#D97706" opacity="0.25"/>
 
-            <!-- Pointer (wing) toward content -->
-            <path d="M162,212 Q200,196 226,175" stroke="#92400E" stroke-width="3" stroke-linecap="round" fill="none"/>
-            <polygon points="221,165 234,176 219,183" fill="#92400E"/>
+            <!-- LEFT WING holding book -->
+            <path d="M82,238 Q60,254 46,272" stroke="#92400E" stroke-width="13" stroke-linecap="round" fill="none"/>
+            <!-- Book (closed, dark cover, slightly tilted) -->
+            <g transform="rotate(-12, 36, 295)">
+                <rect x="14" y="270" width="44" height="54" rx="2" fill="#292524"/>
+                <rect x="14" y="270" width="8" height="54" rx="2" fill="#B45309"/>
+                <rect x="18" y="270" width="40" height="54" rx="1" fill="#1C1917"/>
+                <rect x="24" y="279" width="26" height="4" rx="1" fill="rgba(180,83,9,0.6)"/>
+                <line x1="24" y1="290" x2="52" y2="290" stroke="rgba(255,255,255,0.2)" stroke-width="1"/>
+                <line x1="24" y1="298" x2="52" y2="298" stroke="rgba(255,255,255,0.2)" stroke-width="1"/>
+                <line x1="24" y1="306" x2="52" y2="306" stroke="rgba(255,255,255,0.2)" stroke-width="1"/>
+                <line x1="24" y1="314" x2="44" y2="314" stroke="rgba(255,255,255,0.13)" stroke-width="1"/>
+            </g>
+
+            <!-- RIGHT WING holding certificate -->
+            <path d="M166,220 Q176,206 180,196" stroke="#92400E" stroke-width="12" stroke-linecap="round" fill="none"/>
+            <!-- Certificate / Diploma -->
+            <rect x="158" y="158" width="78" height="52" rx="3" fill="#FFFBEB"/>
+            <rect x="158" y="158" width="78" height="52" rx="3" fill="none" stroke="#D97706" stroke-width="1.5"/>
+            <!-- Gold header band -->
+            <rect x="158" y="158" width="78" height="10" rx="3" fill="rgba(217,119,6,0.25)"/>
+            <!-- Text lines on certificate -->
+            <line x1="167" y1="178" x2="228" y2="178" stroke="rgba(146,64,14,0.3)" stroke-width="1.2"/>
+            <line x1="167" y1="187" x2="228" y2="187" stroke="rgba(146,64,14,0.3)" stroke-width="1.2"/>
+            <line x1="167" y1="196" x2="214" y2="196" stroke="rgba(146,64,14,0.22)" stroke-width="1"/>
+            <!-- Wax seal -->
+            <circle cx="225" cy="200" r="8" fill="#D97706"/>
+            <circle cx="225" cy="200" r="6" fill="none" stroke="#92400E" stroke-width="1"/>
+            <text x="225" y="203" font-family="Inter, sans-serif" font-size="7" text-anchor="middle" fill="white" font-weight="700">★</text>
+
+            <!-- Feet -->
+            <ellipse cx="106" cy="292" rx="14" ry="6" fill="#92400E"/>
+            <ellipse cx="142" cy="292" rx="14" ry="6" fill="#92400E"/>
 
             <!-- ── CONTENT SIDE ── -->
             <!-- MITOS row -->
@@ -698,11 +788,17 @@
     <!-- ── S04: CIERRE ── -->
     <section class="section" id="s04">
         <div class="section-num">04 — Cierre</div>
-        <h2>Ya no eres el mismo que empezó el Nivel 3</h2>
+        <h2>Ya no eres el mismo que empezó esto</h2>
 
-        <p>Entraste al Nivel 3 sabiendo que los agentes existían. Sales sabiendo cómo funcionan, cómo se construyen, cómo se coordinan y — lo más importante — cuándo no usarlos y qué falla cuando se usan mal.</p>
+        <p>Entraste al Nivel 3 sabiendo que los agentes existían. Sales sabiendo cómo funcionan, cómo se construyen, cómo se coordinan y cuándo no usarlos. Pero si retrocedes al principio de todo — al primer recurso de esta biblioteca — había una advertencia:</p>
 
-        <p>Eso no es poca cosa. La mayoría de personas que hablan de agentes de IA en 2026 no tienen claro ni la mitad de lo que acabas de leer.</p>
+        <div class="gold-quote">
+            <div class="gold-quote-text">La IA no te va a quitar el trabajo.<br>Pero <em>esta persona</em> sí.</div>
+        </div>
+
+        <p>Esa persona — la que distingue un agente de un chatbot, monta sistemas con criterio, conoce los mitos que frenan a los demás, entiende cuándo el sistema falla y por qué, y sabe dónde poner los checkpoints — ahora eres tú. Cuatro niveles. Veinte recursos. De entender qué es la IA a construir sistemas que se ejecutan solos. No hace falta ser el mejor. Solo hace falta saber más que quien no llegó hasta aquí.</p>
+
+        <p>Y llegaste.</p>
 
         <div class="action-write">
             <div class="action-write-label">Antes de cerrar</div>
@@ -712,15 +808,22 @@
         </div>
 
         <div class="nivel-complete">
-            <div class="nivel-complete-badge">Nivel 3 completado</div>
-            <div class="nivel-complete-title">Automatizar. Ya sabes cómo.</div>
-            <div class="nivel-complete-sub">Entiendes los conceptos, conoces las herramientas, has construido tu primer agente y has visto el sistema en producción. Con criterio propio para saber cuándo funciona y cuándo no.</div>
+            <div class="nivel-complete-badge">Biblioteca completada — Niveles 0 · 1 · 2 · 3</div>
+            <div class="nivel-complete-title">Eres esa persona.</div>
+            <div class="nivel-complete-sub">Cuatro niveles. Veinte recursos. Conceptos, herramientas, mitos, acciones y sistemas reales. Con criterio propio para construir — y para saber cuándo no construir.</div>
             <a href="../index.html" class="nivel-back-btn">
                 <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M10 3L5 8l5 5" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
                 Volver a la biblioteca
             </a>
         </div>
     </section>
+
+    <!-- NIVEL FINAL CARD -->
+    <div class="nivel-final n3">
+        <div class="nivel-final-label">Final del Nivel 3 — Automatizar</div>
+        <div class="nivel-final-name">El sistema trabaja. Tú supervisas lo que importa.</div>
+        <p class="nivel-final-text">Montaste el piloto automático. Entiendes cómo funcionan los agentes, cómo se coordinan y cuándo no usarlos. Conoces los mitos que frenan a los demás y los errores que más cuestan. Automatizar con criterio no es delegar y esperar — es supervisar los puntos correctos y dejar correr el resto.</p>
+    </div>
 
     <!-- CHECKLIST -->
     <div class="checklist-section">
@@ -743,6 +846,48 @@
 </div>
 
 <canvas id="confetti-canvas" style="position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:9999;"></canvas>
+
+<!-- COMPLETION MODAL -->
+<div class="modal-overlay" id="completion-modal" onclick="handleModalClick(event)">
+    <div class="modal-card">
+        <div class="modal-badge">Biblioteca completa · Niveles 0 · 1 · 2 · 3</div>
+        <div class="modal-owl-wrap">
+            <svg width="56" height="64" viewBox="0 0 140 160" fill="none">
+                <polygon points="44,32 36,6 52,26" fill="#92400E"/>
+                <polygon points="96,32 104,6 88,26" fill="#92400E"/>
+                <rect x="28" y="18" width="84" height="14" rx="2" fill="#292524"/>
+                <ellipse cx="70" cy="18" rx="50" ry="8" fill="#1a1817"/>
+                <line x1="104" y1="18" x2="116" y2="38" stroke="#D97706" stroke-width="3"/>
+                <circle cx="117" cy="43" r="6" fill="#D97706"/>
+                <circle cx="70" cy="70" r="46" fill="#B45309"/>
+                <ellipse cx="70" cy="74" rx="30" ry="26" fill="#D97706" opacity="0.24"/>
+                <circle cx="53" cy="62" r="15" fill="#FEF3C7"/>
+                <circle cx="87" cy="62" r="15" fill="#FEF3C7"/>
+                <circle cx="53" cy="62" r="8" fill="#1C1917"/>
+                <circle cx="87" cy="62" r="8" fill="#1C1917"/>
+                <circle cx="57" cy="57" r="2.8" fill="white"/>
+                <circle cx="91" cy="57" r="2.8" fill="white"/>
+                <circle cx="53" cy="62" r="18" fill="none" stroke="#1a1817" stroke-width="2.5"/>
+                <circle cx="87" cy="62" r="18" fill="none" stroke="#1a1817" stroke-width="2.5"/>
+                <line x1="71" y1="62" x2="69" y2="62" stroke="#1a1817" stroke-width="2.5"/>
+                <line x1="35" y1="57" x2="26" y2="54" stroke="#1a1817" stroke-width="2.5" stroke-linecap="round"/>
+                <line x1="105" y1="57" x2="114" y2="54" stroke="#1a1817" stroke-width="2.5" stroke-linecap="round"/>
+                <polygon points="61,82 79,82 70,94" fill="#D97706"/>
+                <ellipse cx="70" cy="136" rx="40" ry="46" fill="#B45309"/>
+                <ellipse cx="70" cy="144" rx="24" ry="30" fill="#D97706" opacity="0.22"/>
+            </svg>
+        </div>
+        <div class="modal-title">Enhorabuena.</div>
+        <p class="modal-body">Has completado los cuatro niveles. <strong>Has conocido el camino que nadie te da.</strong></p>
+        <div class="modal-highlight">Conceptos, herramientas, mitos, acciones y sistemas reales. De entender qué es la IA a construir el que se ejecuta solo. El recorrido completo.</div>
+        <div class="modal-divider"></div>
+        <p class="modal-final">Ahora sabes lo que la mayoría no sabe. Eso cambia lo que puedes construir.<br><br>El siguiente paso no está aquí. Está en lo que hagas con esto. <strong>Ahora empieza tu propio camino.</strong></p>
+        <button class="modal-btn" onclick="closeModal()">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 8h10M9 4l4 4-4 4" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            Empezar mi camino
+        </button>
+    </div>
+</div>
 
 <script>
     function toggleCheck(el) {
@@ -788,6 +933,21 @@
         draw();
         setTimeout(() => { cancelAnimationFrame(frame); ctx.clearRect(0, 0, canvas.width, canvas.height); }, 4000);
     }
+
+    function handleModalClick(e) {
+        if (e.target === document.getElementById('completion-modal')) closeModal();
+    }
+
+    function closeModal() {
+        document.getElementById('completion-modal').classList.remove('visible');
+    }
+
+    window.addEventListener('DOMContentLoaded', function() {
+        setTimeout(launchConfetti, 300);
+        setTimeout(function() {
+            document.getElementById('completion-modal').classList.add('visible');
+        }, 1000);
+    });
 </script>
 </body>
 </html>

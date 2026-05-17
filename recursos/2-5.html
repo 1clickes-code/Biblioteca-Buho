@@ -657,6 +657,16 @@
             .team-compare { grid-template-columns: 1fr; }
             .live-status-grid { grid-template-columns: 1fr; }
         }
+
+        /* NIVEL FINAL CARD */
+        .nivel-final { border-radius: 14px; padding: 26px 28px; margin: 28px 0; position: relative; overflow: hidden; }
+        .nivel-final::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 5px; border-radius: 3px 0 0 3px; }
+        .nivel-final-label { font-family: 'JetBrains Mono', monospace; font-size: 9px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 8px; }
+        .nivel-final-name { font-family: 'Playfair Display', serif; font-size: 20px; font-weight: 700; color: var(--text); margin-bottom: 14px; line-height: 1.25; }
+        .nivel-final-text { font-size: 14px; color: var(--muted); line-height: 1.72; }
+        .nivel-final.n2 { background: rgba(37,99,235,0.06); border: 1.5px solid rgba(37,99,235,0.2); }
+        .nivel-final.n2::before { background: #2563EB; }
+        .nivel-final.n2 .nivel-final-label { color: #2563EB; }
     </style>
 </head>
 <body>
@@ -1261,6 +1271,13 @@
             <div class="nivel3-hook-badge">Nivel 3 — próximamente</div>
         </div>
     </section>
+
+    <!-- NIVEL FINAL CARD -->
+    <div class="nivel-final n2">
+        <div class="nivel-final-label">Final del Nivel 2 — Crear</div>
+        <div class="nivel-final-name">Construiste con criterio. Ya no improvisas.</div>
+        <p class="nivel-final-text">Diseñaste sistemas, elegiste herramientas con fundamento y viste en producción cómo una persona con las skills correctas puede hacer el trabajo de cuatro. El sistema existe y funciona. El Nivel 3 lo pone en piloto automático — y te enseña cuándo no debería estarlo.</p>
+    </div>
 
     <!-- CHECKLIST -->
     <div class="checklist-section" id="checklist">

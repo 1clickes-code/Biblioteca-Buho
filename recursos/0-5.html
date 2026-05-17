@@ -450,6 +450,16 @@
             * { transition-duration: 0.01ms !important; }
             .nav-owl { animation: none; }
         }
+
+        /* NIVEL FINAL CARD */
+        .nivel-final { border-radius: 14px; padding: 26px 28px; margin: 28px 0; position: relative; overflow: hidden; }
+        .nivel-final::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 5px; border-radius: 3px 0 0 3px; }
+        .nivel-final-label { font-family: 'JetBrains Mono', monospace; font-size: 9px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 8px; }
+        .nivel-final-name { font-family: 'Playfair Display', serif; font-size: 20px; font-weight: 700; color: var(--text); margin-bottom: 14px; line-height: 1.25; }
+        .nivel-final-text { font-size: 14px; color: var(--muted); line-height: 1.72; }
+        .nivel-final.n0 { background: rgba(120,113,108,0.07); border: 1.5px solid rgba(120,113,108,0.2); }
+        .nivel-final.n0::before { background: #78716C; }
+        .nivel-final.n0 .nivel-final-label { color: #78716C; }
     </style>
 </head>
 <body>
@@ -880,6 +890,13 @@
             </div>
         </div>
     </section>
+
+    <!-- NIVEL FINAL CARD -->
+    <div class="nivel-final n0">
+        <div class="nivel-final-label">Final del Nivel 0 — Entender</div>
+        <div class="nivel-final-name">La IA es una herramienta. Ahora sabes cómo usarla.</div>
+        <p class="nivel-final-text">Desmontaste los mitos, entendiste el contexto, construiste tu primer prompt con criterio y viste cómo funciona un sistema real en 30 días. La IA no es magia ni amenaza — es una ventaja para quien la usa con cabeza. El Nivel 1 convierte ese entendimiento en tu primera prueba real.</p>
+    </div>
 
     <!-- CHECKLIST -->
     <div class="checklist-section" id="checklist">

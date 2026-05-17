@@ -511,6 +511,16 @@
             .result-stats { grid-template-columns: repeat(3, 1fr); }
             .app-feature-grid { grid-template-columns: 1fr; }
         }
+
+        /* NIVEL FINAL CARD */
+        .nivel-final { border-radius: 14px; padding: 26px 28px; margin: 28px 0; position: relative; overflow: hidden; }
+        .nivel-final::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 5px; border-radius: 3px 0 0 3px; }
+        .nivel-final-label { font-family: 'JetBrains Mono', monospace; font-size: 9px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 8px; }
+        .nivel-final-name { font-family: 'Playfair Display', serif; font-size: 20px; font-weight: 700; color: var(--text); margin-bottom: 14px; line-height: 1.25; }
+        .nivel-final-text { font-size: 14px; color: var(--muted); line-height: 1.72; }
+        .nivel-final.n1 { background: rgba(5,150,105,0.06); border: 1.5px solid rgba(5,150,105,0.2); }
+        .nivel-final.n1::before { background: #059669; }
+        .nivel-final.n1 .nivel-final-label { color: #059669; }
     </style>
 </head>
 <body>
@@ -883,6 +893,13 @@
             <div class="nivel-bridge-sub">En el Nivel 1 construiste algo. En el Nivel 2 empiezas a conectar herramientas, automatizar partes del proceso y tomar decisiones técnicas con más control. El salto no es más difícil — es más tuyo.</div>
         </div>
     </section>
+
+    <!-- NIVEL FINAL CARD -->
+    <div class="nivel-final n1">
+        <div class="nivel-final-label">Final del Nivel 1 — Probar</div>
+        <div class="nivel-final-name">Pasaste de entender a tener algo funcionando.</div>
+        <p class="nivel-final-text">Empezaste con las herramientas correctas, sin gastar dinero, y construiste algo que existe fuera de tu cabeza. Una app en tu móvil que no existía antes de este nivel. Eso cambia la forma de ver lo que es posible. El Nivel 2 convierte ese algo en un sistema con criterio propio.</p>
+    </div>
 
     <!-- CHECKLIST -->
     <div class="checklist-section" id="checklist">
