@@ -1,0 +1,994 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tu primer agente de IA: paso a paso con buenas prácticas — alex.decode</title>
+    <meta name="description" content="Crea tu primer agente de IA con buenas prácticas: arquitectura CLAUDE.md, skills especializadas y /agents. Un agente listo para trabajar en equipo.">
+    <meta name="keywords" content="crear agente IA, Claude Code agente tutorial, CLAUDE.md agente, skills Claude Code, primer agente IA paso a paso, agente colaborativo IA 2026">
+    <link rel="icon" type="image/svg+xml" href="../favicon.svg">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        :root {
+            --bg:        #FAFAF7;
+            --surface:   #FFFFFF;
+            --border:    #E8E2D9;
+            --text:      #1C1917;
+            --muted:     #78716C;
+            --faint:     #B0A89E;
+            --amber:     #B45309;
+            --amber-mid: #D97706;
+            --amber-dim: rgba(180,83,9,0.07);
+            --rojo:  #DC2626; --rojo-d:  rgba(220,38,38,0.07);
+            --amar:  #D97706; --amar-d:  rgba(217,119,6,0.07);
+            --azul:  #2563EB; --azul-d:  rgba(37,99,235,0.07);
+            --verde: #059669; --verde-d: rgba(5,150,105,0.07);
+            --morad: #7C3AED; --morad-d: rgba(124,58,237,0.07);
+        }
+
+        html { scroll-behavior: smooth; }
+        body {
+            background: var(--bg);
+            color: var(--text);
+            font-family: 'Inter', system-ui, sans-serif;
+            font-size: 15px;
+            line-height: 1.7;
+            min-height: 100vh;
+        }
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0; left: 0; right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, #92400E 0%, #B45309 50%, #92400E 100%);
+            z-index: 100;
+        }
+
+        .wrap { max-width: 720px; margin: 0 auto; padding: 0 24px; }
+
+        /* ── NAV ── */
+        .top-nav {
+            padding: 28px 0 0;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 11px;
+            color: var(--faint);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
+        .top-nav a { color: var(--amber); text-decoration: none; transition: opacity .15s; }
+        .top-nav a:hover { opacity: .7; }
+        .top-nav .sep { color: var(--faint); }
+        .nav-owl {
+            margin-left: auto;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            color: var(--faint);
+            text-decoration: none;
+            font-size: 10px;
+            letter-spacing: .5px;
+            transition: opacity .15s;
+            animation: owlFloat 5s ease-in-out 1s infinite;
+        }
+        .nav-owl:hover { opacity: .7; color: var(--amber); }
+        @keyframes owlFloat { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-4px)} }
+
+        /* ── COVER ── */
+        .cover-wrap { margin: 28px 0 0; border-radius: 12px; overflow: hidden; border: 1px solid var(--border); }
+        .cover-wrap svg { display: block; width: 100%; height: auto; }
+
+        /* ── HEADER ── */
+        .resource-header { padding: 28px 0; border-bottom: 1px solid var(--border); margin-bottom: 28px; }
+        .tag {
+            display: inline-flex; align-items: center; gap: 5px;
+            font-size: 10px; font-weight: 600; padding: 3px 10px;
+            border-radius: 100px; margin-bottom: 16px;
+        }
+        .tag .dot { width: 5px; height: 5px; border-radius: 50%; flex-shrink: 0; }
+        .tag.amar { background: var(--amar-d); color: var(--amar); }
+        .tag.amar .dot { background: var(--amar); }
+        .resource-title {
+            font-family: 'Playfair Display', Georgia, serif;
+            font-size: clamp(24px, 4vw, 34px);
+            font-weight: 700;
+            line-height: 1.18;
+            letter-spacing: -.3px;
+            margin-bottom: 14px;
+        }
+        .resource-sub { font-size: 15px; color: var(--muted); line-height: 1.6; margin-bottom: 18px; max-width: 560px; }
+        .resource-meta {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 11px;
+            color: var(--faint);
+            display: flex;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+        .resource-meta span { display: flex; align-items: center; gap: 5px; }
+        .meta-dot { width: 3px; height: 3px; border-radius: 50%; background: var(--faint); }
+
+        /* ── PREREQ BOX ── */
+        .prereq-box {
+            background: var(--azul-d);
+            border: 1px solid rgba(37,99,235,0.2);
+            border-radius: 10px;
+            padding: 14px 18px;
+            margin-bottom: 24px;
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+        }
+        .prereq-icon { font-family: 'JetBrains Mono', monospace; font-size: 10px; font-weight: 700; color: var(--azul); flex-shrink: 0; margin-top: 2px; }
+        .prereq-body { font-size: 13px; color: var(--text); line-height: 1.5; }
+        .prereq-body strong { color: var(--azul); }
+
+        /* ── LEARN BOX ── */
+        .learn-box { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 18px 22px; margin-bottom: 28px; }
+        .learn-box-title { font-family: 'JetBrains Mono', monospace; font-size: 9px; color: var(--faint); letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 12px; }
+        .learn-list { list-style: none; display: flex; flex-direction: column; gap: 8px; }
+        .learn-item { display: flex; align-items: flex-start; gap: 8px; font-size: 13px; color: var(--text); line-height: 1.45; }
+        .learn-item::before { content: '→'; color: var(--amar); font-family: 'JetBrains Mono', monospace; font-size: 11px; flex-shrink: 0; margin-top: 1px; }
+
+        /* ── TOC ── */
+        .toc { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 16px 20px; margin-bottom: 48px; }
+        .toc-label { font-family: 'JetBrains Mono', monospace; font-size: 9px; color: var(--faint); letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 10px; }
+        .toc-links { display: flex; flex-wrap: wrap; gap: 6px; }
+        .toc-links a {
+            font-size: 12px; color: var(--muted); text-decoration: none;
+            padding: 4px 10px; border-radius: 6px; border: 1px solid var(--border);
+            transition: border-color .15s, color .15s, background .15s; white-space: nowrap;
+        }
+        .toc-links a:hover { border-color: var(--amar); color: var(--amar); background: var(--amar-d); }
+
+        /* ── SECTIONS ── */
+        .section { margin-bottom: 52px; scroll-margin-top: 32px; }
+        .section-num { font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--amar); font-weight: 600; letter-spacing: 1px; margin-bottom: 8px; }
+        .section h2 { font-family: 'Playfair Display', serif; font-size: 22px; font-weight: 700; line-height: 1.3; margin-bottom: 16px; }
+        .section p { color: var(--text); margin-bottom: 14px; }
+        .section p:last-child { margin-bottom: 0; }
+        .section-sub { font-family: 'JetBrains Mono', monospace; font-size: 9px; font-weight: 600; color: var(--amar); letter-spacing: 1.2px; text-transform: uppercase; margin: 28px 0 10px; }
+
+        /* ── CALLOUT ── */
+        .callout { border-left: 3px solid var(--amber); background: var(--amber-dim); border-radius: 0 8px 8px 0; padding: 14px 18px; margin: 20px 0; }
+        .callout-label { font-family: 'JetBrains Mono', monospace; font-size: 9px; font-weight: 600; color: var(--amber); letter-spacing: 1.2px; text-transform: uppercase; margin-bottom: 6px; }
+        .callout p { font-size: 14px; color: var(--text); margin: 0; }
+        .callout.verde { border-left-color: var(--verde); background: var(--verde-d); }
+        .callout.verde .callout-label { color: var(--verde); }
+        .callout.azul { border-left-color: var(--azul); background: var(--azul-d); }
+        .callout.azul .callout-label { color: var(--azul); }
+        .callout.rojo { border-left-color: var(--rojo); background: var(--rojo-d); }
+        .callout.rojo .callout-label { color: var(--rojo); }
+
+        /* ── FOLDER TREE ── */
+        .folder-tree { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 18px 22px; margin: 20px 0; font-family: 'JetBrains Mono', monospace; font-size: 12.5px; line-height: 1.8; }
+        .folder-root { font-weight: 600; color: var(--text); margin-bottom: 4px; }
+        .folder-root-icon { color: var(--amar); }
+        .folder-line { color: var(--faint); }
+        .folder-item { display: flex; gap: 10px; }
+        .folder-item-name { color: var(--text); font-weight: 500; min-width: 160px; }
+        .folder-item-name.dir { color: var(--verde); }
+        .folder-item-name.key { color: var(--amber); }
+        .folder-item-comment { color: var(--faint); font-size: 11px; }
+        .folder-sub { margin-left: 20px; }
+
+        /* ── CODE BLOCK ── */
+        .code-wrap {
+            background: #1C1917;
+            border-radius: 10px;
+            padding: 18px 22px;
+            margin: 20px 0;
+            overflow-x: auto;
+        }
+        .code-label { font-family: 'JetBrains Mono', monospace; font-size: 9px; color: #78716C; letter-spacing: 1.2px; text-transform: uppercase; margin-bottom: 10px; }
+        .code-wrap pre {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 12.5px;
+            line-height: 1.7;
+            color: #E8E2D9;
+            white-space: pre;
+        }
+        .code-wrap .c-comment { color: #6B7280; }
+        .code-wrap .c-key { color: #D97706; }
+        .code-wrap .c-val { color: #86EFAC; }
+        .code-wrap .c-head { color: #93C5FD; }
+
+        /* ── CMD CARD ── */
+        .cmd-card {
+            background: #1C1917;
+            border-radius: 10px;
+            padding: 14px 20px;
+            margin: 16px 0;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+        .cmd-prefix { font-family: 'JetBrains Mono', monospace; font-size: 13px; color: var(--amar); font-weight: 600; flex-shrink: 0; }
+        .cmd-text { font-family: 'JetBrains Mono', monospace; font-size: 13px; color: #E8E2D9; }
+
+        /* ── BUILD STEPS ── */
+        .build-steps { display: flex; flex-direction: column; gap: 0; margin: 20px 0; }
+        .build-step { display: flex; gap: 16px; position: relative; }
+        .build-step:not(:last-child)::after {
+            content: '';
+            position: absolute;
+            left: 16px;
+            top: 36px;
+            bottom: 0;
+            width: 1px;
+            background: var(--border);
+        }
+        .build-step-num {
+            width: 33px;
+            height: 33px;
+            border-radius: 50%;
+            background: var(--amar-d);
+            border: 1.5px solid rgba(217,119,6,0.35);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--amar);
+            flex-shrink: 0;
+            z-index: 1;
+        }
+        .build-step-body { flex: 1; padding-bottom: 28px; }
+        .build-step-title { font-size: 14px; font-weight: 700; color: var(--text); margin-bottom: 6px; line-height: 1.35; padding-top: 6px; }
+        .build-step-desc { font-size: 13px; color: var(--muted); line-height: 1.5; }
+
+        /* ── RULE CARD ── */
+        .rule-card {
+            background: var(--surface);
+            border: 2px solid var(--amar);
+            border-radius: 12px;
+            padding: 20px 24px;
+            margin: 20px 0;
+            text-align: center;
+        }
+        .rule-card-label { font-family: 'JetBrains Mono', monospace; font-size: 9px; color: var(--amar); font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 10px; }
+        .rule-card-text { font-family: 'Playfair Display', serif; font-size: 19px; font-weight: 700; color: var(--text); line-height: 1.4; }
+        .rule-card-text em { color: var(--amar); font-style: normal; }
+        .rule-card-sub { font-size: 13px; color: var(--muted); margin-top: 8px; }
+
+        /* ── AGENT CONFIG TABLE ── */
+        .config-table { margin: 20px 0; border: 1px solid var(--border); border-radius: 10px; overflow: hidden; }
+        .config-row { display: grid; grid-template-columns: 120px 1fr 1fr; border-bottom: 1px solid var(--border); }
+        .config-row:last-child { border-bottom: none; }
+        .config-row.config-header .config-cell { font-family: 'JetBrains Mono', monospace; font-size: 9px; font-weight: 600; letter-spacing: 1.2px; text-transform: uppercase; color: var(--faint); background: var(--bg); padding: 10px 14px; }
+        .config-cell { padding: 14px 16px; font-size: 13px; color: var(--text); line-height: 1.5; border-right: 1px solid var(--border); }
+        .config-cell:last-child { border-right: none; }
+        .config-cell.field { font-family: 'JetBrains Mono', monospace; font-size: 12px; font-weight: 700; color: var(--amar); }
+        .config-cell.example { font-family: 'JetBrains Mono', monospace; font-size: 11.5px; color: var(--muted); background: var(--bg); }
+
+        /* ── AGENT COMPARE ── */
+        .agent-compare { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin: 20px 0; }
+        .agent-side { border: 1.5px solid; border-radius: 12px; padding: 18px 20px; }
+        .agent-side.good { border-color: rgba(5,150,105,0.35); background: rgba(5,150,105,0.04); }
+        .agent-side.bad  { border-color: rgba(220,38,38,0.3);  background: rgba(220,38,38,0.04); }
+        .agent-side-header { display: flex; align-items: center; gap: 8px; margin-bottom: 14px; }
+        .agent-side-badge { font-family: 'JetBrains Mono', monospace; font-size: 9px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; padding: 2px 8px; border-radius: 100px; flex-shrink: 0; }
+        .agent-side.good .agent-side-badge { background: var(--verde-d); color: var(--verde); }
+        .agent-side.bad  .agent-side-badge { background: var(--rojo-d);  color: var(--rojo); }
+        .agent-side-title { font-size: 12.5px; font-weight: 700; color: var(--text); }
+        .skill-row { margin-bottom: 10px; }
+        .skill-row-label { font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--muted); margin-bottom: 4px; display: flex; justify-content: space-between; }
+        .skill-bar-wrap { height: 6px; background: var(--border); border-radius: 3px; overflow: hidden; }
+        .skill-bar { height: 100%; border-radius: 3px; }
+        .agent-side.good .skill-bar { background: var(--verde); }
+        .agent-side.bad  .skill-bar { background: var(--rojo); }
+        .agent-output-label { font-family: 'JetBrains Mono', monospace; font-size: 9px; color: var(--faint); letter-spacing: 1px; text-transform: uppercase; margin: 14px 0 6px; }
+        .agent-output-tags { display: flex; flex-wrap: wrap; gap: 5px; }
+        .agent-output-tag { font-size: 11px; padding: 2px 8px; border-radius: 6px; }
+        .agent-side.good .agent-output-tag { background: var(--verde-d); color: var(--verde); font-weight: 500; }
+        .agent-side.bad  .agent-output-tag { background: var(--rojo-d);  color: var(--rojo);  font-weight: 500; }
+        .agent-compare-note { font-size: 13px; color: var(--muted); text-align: center; margin-top: 6px; line-height: 1.5; }
+        .agent-compare-note strong { color: var(--text); }
+
+        /* ── SPOILER TEASER ── */
+        .teaser-box {
+            border: 1.5px dashed rgba(220,38,38,0.35);
+            border-radius: 12px;
+            padding: 18px 22px;
+            margin: 28px 0;
+            background: rgba(220,38,38,0.03);
+        }
+        .teaser-label { font-family: 'JetBrains Mono', monospace; font-size: 9px; font-weight: 600; color: var(--rojo); letter-spacing: 1.2px; text-transform: uppercase; margin-bottom: 8px; }
+        .teaser-text { font-size: 13.5px; color: var(--text); line-height: 1.55; }
+        .teaser-text a { color: var(--amber); text-decoration: none; font-weight: 500; }
+
+        /* ── OUTPUT FLOW ── */
+        .output-flow { display: flex; flex-direction: column; gap: 8px; margin: 20px 0; }
+        .output-item { display: flex; align-items: center; gap: 14px; background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 12px 18px; }
+        .output-arrow { font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--faint); flex-shrink: 0; width: 20px; text-align: center; }
+        .output-arrow.active { color: var(--amar); }
+        .output-file { font-family: 'JetBrains Mono', monospace; font-size: 12px; font-weight: 600; color: var(--text); min-width: 200px; }
+        .output-note { font-size: 12.5px; color: var(--muted); }
+
+        /* ── GOLD QUOTE ── */
+        .gold-quote {
+            background: linear-gradient(135deg, var(--amber-dim) 0%, rgba(217,119,6,0.04) 100%);
+            border: 1.5px solid rgba(180,83,9,0.2);
+            border-radius: 12px;
+            padding: 22px 28px 20px;
+            margin: 24px 0;
+            text-align: center;
+            position: relative;
+        }
+        .gold-quote::before { content: '"'; position: absolute; top: 2px; left: 16px; font-family: 'Playfair Display', serif; font-size: 52px; line-height: 1; color: rgba(180,83,9,0.12); }
+        .gold-quote-text { font-family: 'Playfair Display', serif; font-size: 17px; font-weight: 700; line-height: 1.5; color: var(--text); padding: 0 8px; }
+        .gold-quote-text em { color: var(--amber); font-style: normal; }
+
+        /* ── ACTION WRITE ── */
+        .action-write {
+            background: var(--surface);
+            border: 2px dashed var(--border);
+            border-radius: 12px;
+            padding: 26px 28px;
+            margin: 24px 0;
+            text-align: center;
+        }
+        .action-write-label { font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--amber); font-weight: 600; letter-spacing: 1.2px; text-transform: uppercase; margin-bottom: 14px; }
+        .action-write-prompt { font-family: 'Playfair Display', serif; font-size: 18px; font-weight: 700; color: var(--text); margin-bottom: 16px; line-height: 1.35; }
+        .action-write-line {
+            display: block; width: 100%; max-width: 440px; margin: 0 auto;
+            border: none; border-bottom: 2px solid var(--border);
+            background: transparent; padding: 8px 4px;
+            font-family: 'Inter', sans-serif; font-size: 15px; color: var(--text);
+            text-align: center; outline: none; transition: border-color .2s;
+        }
+        .action-write-line:focus { border-bottom-color: var(--amar); }
+        .action-write-line::placeholder { color: var(--faint); }
+        .action-write-hint { font-size: 12px; color: var(--faint); margin-top: 10px; font-style: italic; }
+
+        /* ── NEXT HOOK ── */
+        .next-hook {
+            display: flex; align-items: center; gap: 12px;
+            background: var(--azul-d); border: 1px solid rgba(37,99,235,0.15);
+            border-radius: 10px; padding: 16px 20px; margin: 28px 0 0;
+            text-decoration: none; transition: background .15s, gap .15s;
+        }
+        .next-hook:hover { background: rgba(37,99,235,0.12); gap: 16px; }
+        .next-hook-arrow { width: 32px; height: 32px; border-radius: 50%; background: var(--azul); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+        .next-hook-text { flex: 1; }
+        .next-hook-label { font-family: 'JetBrains Mono', monospace; font-size: 9px; color: var(--azul); letter-spacing: 1.2px; text-transform: uppercase; margin-bottom: 3px; }
+        .next-hook-title { font-size: 13.5px; font-weight: 600; color: var(--text); line-height: 1.3; }
+
+        /* ── CHECKLIST ── */
+        .checklist-section { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 24px 26px; margin-bottom: 52px; }
+        .checklist-title { font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--amber); font-weight: 600; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 16px; }
+        .checklist-items { list-style: none; display: flex; flex-direction: column; gap: 10px; }
+        .checklist-items li { display: flex; align-items: flex-start; gap: 10px; font-size: 13.5px; color: var(--text); line-height: 1.5; cursor: pointer; }
+        .check-box { width: 17px; height: 17px; border: 1.5px solid var(--border); border-radius: 4px; flex-shrink: 0; margin-top: 1px; transition: border-color .15s, background .15s; display: flex; align-items: center; justify-content: center; font-size: 10px; color: white; }
+        .checklist-items li.done .check-box { background: var(--verde); border-color: var(--verde); }
+        .checklist-items li.done .check-text { text-decoration: line-through; color: var(--muted); }
+
+        /* ── FOOTER ── */
+        .resource-footer { border-top: 1px solid var(--border); padding: 32px 0 56px; display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
+        .footer-back { font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--muted); text-decoration: none; display: flex; align-items: center; gap: 6px; transition: color .15s; }
+        .footer-back:hover { color: var(--amber); }
+        .footer-next { font-size: 13px; font-weight: 500; color: var(--amber); text-decoration: none; display: flex; align-items: center; gap: 6px; transition: gap .15s; }
+        .footer-next:hover { gap: 10px; }
+
+        /* ── RESPONSIVE ── */
+        @media (max-width: 600px) {
+            .wrap { padding: 0 16px; }
+            .resource-title { font-size: 22px; }
+            .config-row { grid-template-columns: 90px 1fr; }
+            .config-cell.example { display: none; }
+        }
+    </style>
+</head>
+<body>
+<div class="wrap">
+
+    <!-- NAV -->
+    <nav class="top-nav">
+        <a href="../index.html">alex.decode</a>
+        <span class="sep">/</span>
+        <span>Biblioteca</span>
+        <span class="sep">/</span>
+        <span>Nivel 3</span>
+        <span class="sep">/</span>
+        <span>Tu primer agente</span>
+        <a href="../index.html" class="nav-owl" aria-label="Volver a la biblioteca">
+            <svg width="28" height="32" viewBox="0 0 140 160" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <polygon points="44,32 36,6 52,26" fill="#92400E"/>
+                <polygon points="96,32 104,6 88,26" fill="#92400E"/>
+                <circle cx="70" cy="56" r="38" fill="#B45309"/>
+                <ellipse cx="70" cy="58" rx="26" ry="24" fill="#D97706" opacity="0.28"/>
+                <circle cx="56" cy="52" r="13" fill="#FEF3C7"/>
+                <circle cx="84" cy="52" r="13" fill="#FEF3C7"/>
+                <circle cx="56" cy="52" r="6.5" fill="#1C1917"/>
+                <circle cx="84" cy="52" r="6.5" fill="#1C1917"/>
+                <circle cx="59" cy="49" r="2.2" fill="white"/>
+                <circle cx="87" cy="49" r="2.2" fill="white"/>
+                <polygon points="63,64 77,64 70,75" fill="#D97706"/>
+                <ellipse cx="70" cy="120" rx="34" ry="36" fill="#B45309"/>
+                <ellipse cx="70" cy="126" rx="20" ry="24" fill="#D97706" opacity="0.22"/>
+            </svg>
+        </a>
+    </nav>
+
+    <!-- COVER SVG -->
+    <div class="cover-wrap">
+        <svg viewBox="0 0 800 350" xmlns="http://www.w3.org/2000/svg" font-family="Inter, system-ui, sans-serif">
+            <defs>
+                <marker id="am33" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto">
+                    <path d="M0,0 L8,4 L0,8 Z" fill="#B45309"/>
+                </marker>
+                <marker id="gr33" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto">
+                    <path d="M0,0 L8,4 L0,8 Z" fill="#6B7280"/>
+                </marker>
+            </defs>
+
+            <!-- BG -->
+            <rect width="800" height="350" fill="#FAFAF7"/>
+
+            <!-- Left zone: project structure -->
+            <rect x="0" y="0" width="370" height="350" fill="rgba(0,0,0,0.015)"/>
+            <rect x="370" y="0" width="60" height="350" fill="rgba(180,83,9,0.05)"/>
+            <rect x="430" y="0" width="370" height="350" fill="rgba(217,119,6,0.04)"/>
+
+            <!-- Divider lines -->
+            <line x1="370" y1="0" x2="370" y2="350" stroke="#E8E2D9" stroke-width="1"/>
+            <line x1="430" y1="0" x2="430" y2="350" stroke="#E8E2D9" stroke-width="1"/>
+
+            <!-- Zone labels -->
+            <text x="185" y="28" font-family="JetBrains Mono, monospace" font-size="9" fill="#B0A89E" text-anchor="middle" letter-spacing="1.5" font-weight="600">ARQUITECTURA DEL PROYECTO</text>
+            <text x="615" y="28" font-family="JetBrains Mono, monospace" font-size="9" fill="#92400E" text-anchor="middle" letter-spacing="1.5" font-weight="600">AGENTE EN EJECUCIÓN</text>
+
+            <!-- Center arrow -->
+            <text x="400" y="178" font-size="22" fill="#B45309" text-anchor="middle" font-weight="700">→</text>
+            <text x="400" y="198" font-family="JetBrains Mono, monospace" font-size="8" fill="#B0A89E" text-anchor="middle">/agents</text>
+
+            <!-- Left: folder structure -->
+            <!-- CLAUDE.md -->
+            <rect x="22" y="52" width="330" height="46" rx="8" fill="white" stroke="rgba(180,83,9,0.3)" stroke-width="1.5"/>
+            <rect x="22" y="52" width="5" height="46" rx="2" fill="#B45309"/>
+            <text x="40" y="72" font-family="JetBrains Mono, monospace" font-size="13" font-weight="700" fill="#B45309">CLAUDE.md</text>
+            <text x="40" y="90" font-family="JetBrains Mono, monospace" font-size="10" fill="#78716C">instrucciones del proyecto</text>
+
+            <!-- context/ -->
+            <rect x="22" y="110" width="330" height="46" rx="8" fill="white" stroke="#E8E2D9" stroke-width="1"/>
+            <rect x="22" y="110" width="5" height="46" rx="2" fill="#059669"/>
+            <text x="40" y="130" font-family="JetBrains Mono, monospace" font-size="13" font-weight="700" fill="#059669">context/</text>
+            <text x="40" y="148" font-family="JetBrains Mono, monospace" font-size="10" fill="#78716C">perfil.md · audiencia.md · referencias/</text>
+
+            <!-- output/ -->
+            <rect x="22" y="168" width="330" height="46" rx="8" fill="white" stroke="#E8E2D9" stroke-width="1"/>
+            <rect x="22" y="168" width="5" height="46" rx="2" fill="#059669"/>
+            <text x="40" y="188" font-family="JetBrains Mono, monospace" font-size="13" font-weight="700" fill="#059669">output/</text>
+            <text x="40" y="206" font-family="JetBrains Mono, monospace" font-size="10" fill="#78716C">donde el agente deja sus resultados</text>
+
+            <!-- .claude/skills/ -->
+            <rect x="22" y="226" width="330" height="46" rx="8" fill="white" stroke="#E8E2D9" stroke-width="1"/>
+            <rect x="22" y="226" width="5" height="46" rx="2" fill="#2563EB"/>
+            <text x="40" y="246" font-family="JetBrains Mono, monospace" font-size="13" font-weight="700" fill="#2563EB">.claude/skills/</text>
+            <text x="40" y="264" font-family="JetBrains Mono, monospace" font-size="10" fill="#78716C">instrucciones especializadas por tarea</text>
+
+            <!-- Right: agent running loop -->
+            <!-- Loop circle bg -->
+            <circle cx="615" cy="185" r="110" fill="rgba(217,119,6,0.06)" stroke="rgba(180,83,9,0.1)" stroke-width="1"/>
+
+            <!-- Loop nodes -->
+            <!-- Objetivo (top) -->
+            <rect x="565" y="60" width="100" height="32" rx="16" fill="white" stroke="rgba(180,83,9,0.4)" stroke-width="1.5"/>
+            <text x="615" y="81" font-family="JetBrains Mono, monospace" font-size="10" fill="#B45309" text-anchor="middle" font-weight="600">Objetivo</text>
+
+            <!-- Actúa (right) -->
+            <rect x="693" y="169" width="90" height="32" rx="16" fill="white" stroke="#E8E2D9" stroke-width="1"/>
+            <text x="738" y="190" font-family="JetBrains Mono, monospace" font-size="10" fill="#1C1917" text-anchor="middle" font-weight="600">Actúa</text>
+
+            <!-- Verifica (bottom) -->
+            <rect x="563" y="278" width="104" height="32" rx="16" fill="white" stroke="#E8E2D9" stroke-width="1"/>
+            <text x="615" y="299" font-family="JetBrains Mono, monospace" font-size="10" fill="#1C1917" text-anchor="middle" font-weight="600">Verifica</text>
+
+            <!-- Entrega (left) -->
+            <rect x="448" y="169" width="88" height="32" rx="16" fill="rgba(5,150,105,0.08)" stroke="rgba(5,150,105,0.3)" stroke-width="1.5"/>
+            <text x="492" y="190" font-family="JetBrains Mono, monospace" font-size="10" fill="#059669" text-anchor="middle" font-weight="600">Entrega</text>
+
+            <!-- Loop arrows -->
+            <path d="M 648 92 Q 720 100 720 169" stroke="#D1CBC3" stroke-width="1.5" fill="none" marker-end="url(#gr33)"/>
+            <path d="M 724 201 Q 720 268 658 278" stroke="#D1CBC3" stroke-width="1.5" fill="none" marker-end="url(#gr33)"/>
+            <path d="M 563 294 Q 508 278 508 201" stroke="#D1CBC3" stroke-width="1.5" fill="none" marker-end="url(#gr33)"/>
+            <path d="M 508 169 Q 528 110 565 92" stroke="#B45309" stroke-width="1.5" fill="none" marker-end="url(#am33)" stroke-dasharray="4,3"/>
+
+            <!-- Repeat label -->
+            <text x="615" y="188" font-family="JetBrains Mono, monospace" font-size="9" fill="#B0A89E" text-anchor="middle">sin que tú</text>
+            <text x="615" y="202" font-family="JetBrains Mono, monospace" font-size="9" fill="#B0A89E" text-anchor="middle">pulses siguiente</text>
+
+            <!-- Bottom tagline -->
+            <text x="400" y="328" font-family="Georgia, serif" font-size="16" font-weight="700" fill="#1C1917" text-anchor="middle">Una tarea. Un agente. Una sola responsabilidad.</text>
+        </svg>
+    </div>
+
+    <!-- HEADER -->
+    <header class="resource-header">
+        <div class="tag amar"><span class="dot"></span>Acción</div>
+        <h1 class="resource-title">Tu primer agente: una tarea que se ejecuta sola mientras no estás</h1>
+        <p class="resource-sub">Sabemos qué es un agente y con qué herramientas trabaja. Ahora construimos uno. Paso a paso, con la arquitectura correcta desde el principio — para que pueda formar parte de un equipo de agentes desde el primer día.</p>
+        <div class="resource-meta">
+            <span>20 min de lectura</span>
+            <span class="meta-dot"></span>
+            <span>Nivel 3</span>
+            <span class="meta-dot"></span>
+            <span>Mayo 2026</span>
+        </div>
+    </header>
+
+    <!-- PREREQ -->
+    <div class="prereq-box">
+        <div class="prereq-icon">!</div>
+        <div class="prereq-body"><strong>Claude Pro ($20/mes) es obligatorio</strong> para usar Claude Code con subagentes. Sin ese plan, no es posible ejecutar lo que se enseña aquí. Sin él, puedes leer el recurso, pero no podrás construir.</div>
+    </div>
+
+    <!-- LEARN BOX -->
+    <div class="learn-box">
+        <div class="learn-box-title">Lo que vas a tener al terminar</div>
+        <ul class="learn-list">
+            <li class="learn-item">La arquitectura completa del proyecto montada: CLAUDE.md, context/, output/, skills/</li>
+            <li class="learn-item">Un CLAUDE.md real — el documento que hace que el agente trabaje con criterio, no a ciegas</li>
+            <li class="learn-item">Tu primera skill creada y asignada — con la regla que decide si necesitas una o dos</li>
+            <li class="learn-item">El agente configurado con /agents: modelo, color, scope e instrucciones</li>
+            <li class="learn-item">Cómo pasar contexto entre agentes vía output/ — el puente para el trabajo colaborativo</li>
+        </ul>
+    </div>
+
+    <!-- TOC -->
+    <nav class="toc" aria-label="Contenido">
+        <div class="toc-label">En este recurso</div>
+        <div class="toc-links">
+            <a href="#s01">01 La arquitectura</a>
+            <a href="#s02">02 CLAUDE.md</a>
+            <a href="#s03">03 Skills</a>
+            <a href="#s04">04 Crear el agente</a>
+            <a href="#s05">05 Ejecutar</a>
+            <a href="#checklist">Checklist</a>
+        </div>
+    </nav>
+
+    <!-- ── S01: ARQUITECTURA ── -->
+    <section class="section" id="s01">
+        <div class="section-num">01</div>
+        <h2>La arquitectura: cuatro carpetas que lo hacen funcionar</h2>
+        <p>Antes de lanzar ningún agente, el proyecto tiene que estar en orden. Un agente que arranca sin esta estructura trabaja sin brújula — produce resultados, pero no puede coordinarse con otros agentes ni mantener coherencia entre sesiones.</p>
+
+        <div class="folder-tree">
+            <div class="folder-root"><span class="folder-root-icon">▶</span> tu-proyecto/</div>
+            <div class="folder-sub">
+                <div class="folder-item">
+                    <span class="folder-line">├──</span>
+                    <span class="folder-item-name key">CLAUDE.md</span>
+                    <span class="folder-item-comment">← empieza aquí. Sin esto no hay agente</span>
+                </div>
+                <div class="folder-item">
+                    <span class="folder-line">├──</span>
+                    <span class="folder-item-name dir">context/</span>
+                    <span class="folder-item-comment">← quién eres y a quién le hablas</span>
+                </div>
+                <div class="folder-sub">
+                    <div class="folder-item">
+                        <span class="folder-line">│&nbsp;&nbsp;├──</span>
+                        <span class="folder-item-name">perfil.md</span>
+                        <span class="folder-item-comment">← tu voz, tu tono, tu forma de trabajar</span>
+                    </div>
+                    <div class="folder-item">
+                        <span class="folder-line">│&nbsp;&nbsp;├──</span>
+                        <span class="folder-item-name">audiencia.md</span>
+                        <span class="folder-item-comment">← a quién va dirigido el output</span>
+                    </div>
+                    <div class="folder-item">
+                        <span class="folder-line">│&nbsp;&nbsp;└──</span>
+                        <span class="folder-item-name dir">referencias/</span>
+                        <span class="folder-item-comment">← ejemplos del resultado que quieres</span>
+                    </div>
+                </div>
+                <div class="folder-item">
+                    <span class="folder-line">├──</span>
+                    <span class="folder-item-name dir">output/</span>
+                    <span class="folder-item-comment">← donde el agente deja lo que produce</span>
+                </div>
+                <div class="folder-sub">
+                    <div class="folder-item">
+                        <span class="folder-line">│&nbsp;&nbsp;├──</span>
+                        <span class="folder-item-name dir">investigacion/</span>
+                    </div>
+                    <div class="folder-item">
+                        <span class="folder-line">│&nbsp;&nbsp;├──</span>
+                        <span class="folder-item-name dir">guiones/</span>
+                    </div>
+                    <div class="folder-item">
+                        <span class="folder-line">│&nbsp;&nbsp;└──</span>
+                        <span class="folder-item-name dir">titulos/</span>
+                    </div>
+                </div>
+                <div class="folder-item">
+                    <span class="folder-line">└──</span>
+                    <span class="folder-item-name dir">.claude/skills/</span>
+                    <span class="folder-item-comment">← instrucciones especializadas por tarea</span>
+                </div>
+                <div class="folder-sub">
+                    <div class="folder-item">
+                        <span class="folder-line">&nbsp;&nbsp;&nbsp;└──</span>
+                        <span class="folder-item-name dir">[nombre-skill]/</span>
+                    </div>
+                    <div class="folder-sub">
+                        <div class="folder-item">
+                            <span class="folder-line">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;└──</span>
+                            <span class="folder-item-name">skill.md</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="callout">
+            <div class="callout-label">Por qué el orden importa</div>
+            <p>Claude Code lee el CLAUDE.md primero, siempre. Luego el agente accede al contexto que necesita. La carpeta output/ es el canal de comunicación entre agentes — si no existe, los agentes no pueden pasarse información. Créala antes de lanzar el primero.</p>
+        </div>
+    </section>
+
+    <!-- ── S02: CLAUDE.md ── -->
+    <section class="section" id="s02">
+        <div class="section-num">02</div>
+        <h2>El CLAUDE.md: el primer archivo que escribe el arquitecto</h2>
+        <p>Es el documento más importante de cualquier proyecto con agentes. Claude Code lo lee en cada sesión antes de hacer cualquier cosa. Si no existe, el agente empieza sin saber qué proyecto es, qué tiene que producir ni cómo tiene que comportarse.</p>
+
+        <p>No necesita ser largo. Necesita ser claro en cuatro cosas:</p>
+
+        <div class="code-wrap">
+            <div class="code-label">Ejemplo — CLAUDE.md mínimo y funcional</div>
+            <pre><span class="c-head"># Proyecto: [nombre del proyecto]</span>
+
+<span class="c-head">## Qué es este proyecto</span>
+<span class="c-val">[Una frase. Qué se produce aquí y para quién.]</span>
+
+<span class="c-head">## Objetivo del agente</span>
+<span class="c-val">[Qué tiene que conseguir. Acotado. Sin ambigüedad.]</span>
+
+<span class="c-head">## Cómo funciona la estructura</span>
+<span class="c-val">- Contexto: context/perfil.md + context/audiencia.md</span>
+<span class="c-val">- Resultados: dejar siempre en output/[carpeta]/</span>
+<span class="c-val">- Skills disponibles: .claude/skills/[nombre]/skill.md</span>
+
+<span class="c-head">## Reglas de operación</span>
+<span class="c-val">- Una skill = una tarea. No asignar más de las necesarias.</span>
+<span class="c-val">- No modificar archivos fuera del proyecto.</span>
+<span class="c-val">- Verificar el output antes de marcarlo como entregado.</span></pre>
+        </div>
+
+        <div class="callout verde">
+            <div class="callout-label">La prueba del CLAUDE.md</div>
+            <p>Si alguien que no conoce el proyecto lee tu CLAUDE.md y en 30 segundos sabe qué produce, cómo está estructurado y qué reglas sigue el agente — está bien escrito. Si necesita preguntar, está incompleto.</p>
+        </div>
+    </section>
+
+    <!-- ── S03: SKILLS ── -->
+    <section class="section" id="s03">
+        <div class="section-num">03</div>
+        <h2>Skills: una por tarea, no más</h2>
+        <p>Una skill es un archivo Markdown con instrucciones especializadas para una tarea concreta. El agente la carga cuando la necesita. Cuantas más skills asignes a un solo agente, peor trabaja — porque tiene que decidir entre instrucciones que compiten entre sí.</p>
+
+        <div class="rule-card">
+            <div class="rule-card-label">La regla que no cambia</div>
+            <div class="rule-card-text">Una skill = <em>una tarea</em>.<br>Dos tareas = dos skills. Dos skills = dos agentes.</div>
+            <div class="rule-card-sub">Si el agente necesita saber más de tres cosas para hacer su trabajo, son dos agentes, no uno.</div>
+        </div>
+
+        <div class="agent-compare">
+            <div class="agent-side good">
+                <div class="agent-side-header">
+                    <div class="agent-side-badge">correcto</div>
+                    <div class="agent-side-title">Un agente, una skill</div>
+                </div>
+                <div class="skill-row">
+                    <div class="skill-row-label"><span>investigar</span><span>100%</span></div>
+                    <div class="skill-bar-wrap"><div class="skill-bar" style="width:100%"></div></div>
+                </div>
+                <div class="agent-output-label">Output</div>
+                <div class="agent-output-tags">
+                    <span class="agent-output-tag">Especializado</span>
+                    <span class="agent-output-tag">Profundo</span>
+                    <span class="agent-output-tag">Fácil de depurar</span>
+                </div>
+            </div>
+            <div class="agent-side bad">
+                <div class="agent-side-header">
+                    <div class="agent-side-badge">error</div>
+                    <div class="agent-side-title">Un agente, tres skills</div>
+                </div>
+                <div class="skill-row">
+                    <div class="skill-row-label"><span>investigar</span><span>33%</span></div>
+                    <div class="skill-bar-wrap"><div class="skill-bar" style="width:33%"></div></div>
+                </div>
+                <div class="skill-row">
+                    <div class="skill-row-label"><span>redactar</span><span>33%</span></div>
+                    <div class="skill-bar-wrap"><div class="skill-bar" style="width:33%"></div></div>
+                </div>
+                <div class="skill-row">
+                    <div class="skill-row-label"><span>titular</span><span>33%</span></div>
+                    <div class="skill-bar-wrap"><div class="skill-bar" style="width:33%"></div></div>
+                </div>
+                <div class="agent-output-label">Output</div>
+                <div class="agent-output-tags">
+                    <span class="agent-output-tag">Mediocre en todo</span>
+                    <span class="agent-output-tag">Inconsistente</span>
+                </div>
+            </div>
+        </div>
+        <p class="agent-compare-note">La respuesta a <strong>"¿y si quiero más de una tarea?"</strong> no es una skill más — son dos agentes coordinados. Cada uno especializado. Coordinados vía output/.</p>
+
+        <div class="section-sub">Cómo crear una skill</div>
+
+        <div class="build-steps">
+            <div class="build-step">
+                <div class="build-step-num">1</div>
+                <div class="build-step-body">
+                    <div class="build-step-title">Abre Claude Code y ejecuta /plugins</div>
+                    <div class="build-step-desc">En cualquier entorno (terminal, VS Code, Antigravity). El menú de plugins aparece con las opciones disponibles.</div>
+                </div>
+            </div>
+            <div class="build-step">
+                <div class="build-step-num">2</div>
+                <div class="build-step-body">
+                    <div class="build-step-title">Selecciona Skill Creator</div>
+                    <div class="build-step-desc">El plugin que viene integrado en Claude Code. Te guía en la creación de la skill con preguntas: nombre, objetivo, instrucciones clave.</div>
+                </div>
+            </div>
+            <div class="build-step">
+                <div class="build-step-num">3</div>
+                <div class="build-step-body">
+                    <div class="build-step-title">Define una sola cosa que hace la skill</div>
+                    <div class="build-step-desc">Responde a "¿qué hace?" en una frase. Si necesitas usar "y" para describirla, es dos skills. Skill Creator genera el archivo y lo guarda en la ruta correcta.</div>
+                </div>
+            </div>
+            <div class="build-step">
+                <div class="build-step-num">4</div>
+                <div class="build-step-body">
+                    <div class="build-step-title">Verifica la ruta</div>
+                    <div class="build-step-desc">La skill queda en <code style="font-family:'JetBrains Mono',monospace;font-size:12px;">.claude/skills/[nombre]/skill.md</code>. Si necesitas usarla también en Antigravity, copia a <code style="font-family:'JetBrains Mono',monospace;font-size:12px;">.agents/skills/</code>.</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="callout azul">
+            <div class="callout-label">Alternativa manual</div>
+            <p>Crea el archivo directamente: <code style="font-family:'JetBrains Mono',monospace;font-size:12px;">.claude/skills/[nombre]/skill.md</code>. Escribe el objetivo en la primera línea, las instrucciones en el cuerpo. Skill Creator lo hace más rápido, pero no es obligatorio.</p>
+        </div>
+    </section>
+
+    <!-- ── S04: CREAR EL AGENTE ── -->
+    <section class="section" id="s04">
+        <div class="section-num">04</div>
+        <h2>Crear el agente con /agents</h2>
+        <p>Con la arquitectura montada y al menos una skill creada, el agente se configura desde Claude Code en cuatro campos. Cada campo tiene su razón — ninguno es decorativo.</p>
+
+        <div class="cmd-card">
+            <div class="cmd-prefix">/</div>
+            <div class="cmd-text">agents</div>
+        </div>
+
+        <div class="config-table">
+            <div class="config-row config-header">
+                <div class="config-cell">Campo</div>
+                <div class="config-cell">Qué define</div>
+                <div class="config-cell">Ejemplo</div>
+            </div>
+            <div class="config-row">
+                <div class="config-cell field">Modelo</div>
+                <div class="config-cell">La potencia y el coste. Sonnet como punto de entrada: equilibra calidad y consumo del plan. Haiku para tareas repetitivas y simples. Opus solo si el resultado necesita razonamiento complejo.</div>
+                <div class="config-cell example">claude-sonnet — punto de entrada recomendado</div>
+            </div>
+            <div class="config-row">
+                <div class="config-cell field">Color</div>
+                <div class="config-cell">Diferenciación visual en la terminal cuando varios agentes corren a la vez. No afecta al comportamiento — sí facilita la supervisión.</div>
+                <div class="config-cell example">Amarillo para el agente principal</div>
+            </div>
+            <div class="config-row">
+                <div class="config-cell field">Scope</div>
+                <div class="config-cell">A qué tiene acceso. "Proyecto" es la opción correcta para empezar: el agente lee y escribe dentro del directorio del proyecto, nada más. No expandas el scope sin razón concreta.</div>
+                <div class="config-cell example">Proyecto (no global)</div>
+            </div>
+            <div class="config-row">
+                <div class="config-cell field">Instrucciones</div>
+                <div class="config-cell">Qué tiene que hacer este agente. Una sola responsabilidad. Cuanto más acotado, mejor funciona. El agente guarda estas instrucciones como fichero Markdown en la carpeta <code style="font-family:'JetBrains Mono',monospace;font-size:12px;">agent/</code>.</div>
+                <div class="config-cell example">Investiga tendencias del tema dado. Lee @context/audiencia.md. Deja el briefing en output/investigacion/.</div>
+            </div>
+        </div>
+
+        <div class="callout">
+            <div class="callout-label">Lo que hace /agents internamente</div>
+            <p>Crea un fichero Markdown en la carpeta <code style="font-family:'JetBrains Mono',monospace;font-size:12px;">agent/</code> con la configuración completa. Puedes editarlo directamente si necesitas ajustar instrucciones sin volver al menú.</p>
+        </div>
+    </section>
+
+    <!-- ── S05: EJECUTAR ── -->
+    <section class="section" id="s05">
+        <div class="section-num">05</div>
+        <h2>Ejecutarlo: el @archivo y el error del 80%</h2>
+        <p>El agente está configurado. Para lanzarlo, escribes la instrucción en el chat de Claude Code y referencias los archivos que necesita con el símbolo <code style="font-family:'JetBrains Mono',monospace;font-size:13px;">@</code>. Ese símbolo es la forma en que los agentes se pasan contexto entre ellos.</p>
+
+        <div class="section-sub">Sintaxis de ejecución</div>
+
+        <div class="code-wrap">
+            <pre><span class="c-comment"># Lanzar el agente con contexto específico</span>
+<span class="c-val">Investiga los últimos ángulos sobre automatización de contenido.</span>
+<span class="c-val">Usa la información de @context/audiencia.md como referencia.</span>
+<span class="c-val">Deja el resultado en output/investigacion/briefing.md</span>
+
+<span class="c-comment"># El siguiente agente recoge ese resultado</span>
+<span class="c-val">Genera el guion completo usando el briefing de</span>
+<span class="c-val">@output/investigacion/briefing.md</span>
+<span class="c-val">Sigue las instrucciones de voz en @context/perfil.md</span></pre>
+        </div>
+
+        <p>Los agentes no se comunican directamente entre sí — se pasan contexto a través de archivos en <code style="font-family:'JetBrains Mono',monospace;font-size:13px;">output/</code>. Cada agente lee el output del anterior con <code style="font-family:'JetBrains Mono',monospace;font-size:13px;">@</code> y produce el suyo. Esa es la cadena.</p>
+
+        <div class="output-flow">
+            <div class="output-item">
+                <div class="output-arrow active">→</div>
+                <div class="output-file">output/investigacion/briefing.md</div>
+                <div class="output-note">Agente investigador lo produce</div>
+            </div>
+            <div class="output-item">
+                <div class="output-arrow active">→</div>
+                <div class="output-file">output/guiones/guion.md</div>
+                <div class="output-note">Agente guionista lo lee y produce</div>
+            </div>
+            <div class="output-item">
+                <div class="output-arrow active">→</div>
+                <div class="output-file">output/titulos/opciones.md</div>
+                <div class="output-note">Agente distribuidor lo lee y produce</div>
+            </div>
+        </div>
+
+        <div class="section-sub">El error que comete el 80%</div>
+
+        <div class="callout rojo">
+            <div class="callout-label">Error más común — y más costoso</div>
+            <p>Pedir al agente que investigue Y redacte Y genere títulos Y optimice en una sola instrucción. El resultado es mediocre en todo. El agente tiene que distribuir su atención entre tareas que compiten — y ninguna sale bien. <strong>Un agente = una especialización.</strong> Si necesitas tres cosas, son tres agentes.</p>
+        </div>
+
+        <div class="gold-quote">
+            <div class="gold-quote-text">El agente que lo hace todo<br>no hace bien <em>ninguna cosa.</em></div>
+        </div>
+
+        <div class="section-sub">Cómo verificar que funciona</div>
+
+        <div class="build-steps">
+            <div class="build-step">
+                <div class="build-step-num">1</div>
+                <div class="build-step-body">
+                    <div class="build-step-title">Revisa que el archivo de output existe</div>
+                    <div class="build-step-desc">El agente tiene que haber dejado algo en la carpeta que le indicaste. Si la carpeta está vacía, el agente no completó la tarea — revisa las instrucciones y el scope.</div>
+                </div>
+            </div>
+            <div class="build-step">
+                <div class="build-step-num">2</div>
+                <div class="build-step-body">
+                    <div class="build-step-title">Lee el output antes de pasarlo al siguiente agente</div>
+                    <div class="build-step-desc">Un mal briefing produce un mal guion. Un buen briefing produce un buen guion. El output de cada agente es el input del siguiente — supervisar ese punto es trabajo humano, no opcional.</div>
+                </div>
+            </div>
+            <div class="build-step">
+                <div class="build-step-num">3</div>
+                <div class="build-step-body">
+                    <div class="build-step-title">Si algo no funciona, empieza por el CLAUDE.md</div>
+                    <div class="build-step-desc">El 90% de los fallos del agente tienen origen en instrucciones ambiguas o contexto insuficiente. Antes de cambiar el modelo o la skill, aclara las instrucciones. Un CLAUDE.md más específico resuelve más problemas que un modelo más potente.</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="teaser-box">
+            <div class="teaser-label">Próximo en el nivel</div>
+            <div class="teaser-text">Cuando el agente falla, la razón casi siempre estaba ahí desde el principio — solo que nadie te la dijo. En el último recurso del Nivel 3 vamos a documentar todos los errores que se cometen creando y haciendo funcionar agentes: saturación, cascadas de fallos, contexto insuficiente, y cuándo la respuesta correcta es directamente no montar el agente. Todo con los casos reales de Alex — incluyendo los que fallaron a las malas.</div>
+        </div>
+
+        <div class="action-write">
+            <div class="action-write-label">Tu turno</div>
+            <div class="action-write-prompt">La única tarea que va a hacer mi primer agente es…</div>
+            <input class="action-write-line" type="text" placeholder="una cosa concreta, sin &quot;y&quot;" maxlength="120"/>
+            <p class="action-write-hint">Si necesitas el "y", son dos agentes. En el siguiente recurso verás los cuatro agentes del sistema real.</p>
+        </div>
+
+        <a href="3-4.html" class="next-hook">
+            <div class="next-hook-arrow">
+                <svg width="14" height="14" fill="none" stroke="white" stroke-width="2.5" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+            </div>
+            <div class="next-hook-text">
+                <div class="next-hook-label">Siguiente — 3.4 · Casos reales</div>
+                <div class="next-hook-title">4 agentes en producción: así funciona el sistema real</div>
+            </div>
+        </a>
+    </section>
+
+    <!-- ── CHECKLIST ── -->
+    <div class="checklist-section" id="checklist">
+        <div class="checklist-title">Lista de comprobación</div>
+        <ul class="checklist-items" id="checklistItems">
+            <li onclick="toggleCheck(this)"><span class="check-box"></span><span class="check-text">Tengo la arquitectura montada: CLAUDE.md, context/, output/ y .claude/skills/ existen en mi proyecto</span></li>
+            <li onclick="toggleCheck(this)"><span class="check-box"></span><span class="check-text">Mi CLAUDE.md define qué produce el proyecto, cómo está estructurado y las reglas del agente</span></li>
+            <li onclick="toggleCheck(this)"><span class="check-box"></span><span class="check-text">Mi primera skill hace exactamente una cosa — si necesita el "y", la voy a dividir en dos</span></li>
+            <li onclick="toggleCheck(this)"><span class="check-box"></span><span class="check-text">El agente está configurado con modelo Sonnet, scope de proyecto e instrucciones acotadas a una responsabilidad</span></li>
+            <li onclick="toggleCheck(this)"><span class="check-box"></span><span class="check-text">Sé usar @output/archivo.md para pasar contexto al siguiente agente — y sé que eso es lo que hace que el equipo funcione</span></li>
+        </ul>
+    </div>
+
+    <!-- FOOTER -->
+    <footer class="resource-footer">
+        <a href="3-2.html" class="footer-back">
+            <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+            Nivel 3 · Herramientas del agente
+        </a>
+        <a href="3-4.html" class="footer-next">
+            4 agentes en producción
+            <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </a>
+    </footer>
+
+</div>
+
+<script>
+function toggleCheck(li) {
+    li.classList.toggle('done');
+    li.querySelector('.check-box').textContent = li.classList.contains('done') ? '✓' : '';
+    const items = document.querySelectorAll('#checklistItems li');
+    if ([...items].every(i => i.classList.contains('done'))) launchConfetti();
+}
+
+function launchConfetti() {
+    const canvas = document.getElementById('confettiCanvas');
+    if (!canvas) return;
+    canvas.style.display = 'block';
+    const ctx = canvas.getContext('2d');
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+    const colors = ['#B45309','#D97706','#FDE68A','#059669','#7C3AED','#2563EB','#F59E0B','#10B981','#DC2626'];
+    const pieces = Array.from({length: 140}, () => ({
+        x: Math.random() * canvas.width,
+        y: -10 - Math.random() * canvas.height * 0.6,
+        w: Math.random() * 11 + 5,
+        h: Math.random() * 6 + 3,
+        color: colors[Math.floor(Math.random() * colors.length)],
+        vx: (Math.random() - 0.5) * 4,
+        vy: Math.random() * 3 + 1.5,
+        rot: Math.random() * 360,
+        vrot: (Math.random() - 0.5) * 10,
+        alpha: 1,
+        shape: Math.random() > 0.5 ? 'rect' : 'circle'
+    }));
+    let frame = 0;
+    (function animate() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        pieces.forEach(p => {
+            p.x += p.vx; p.y += p.vy; p.rot += p.vrot; p.vy += 0.06;
+            if (frame > 90) p.alpha = Math.max(0, p.alpha - 0.012);
+            ctx.save();
+            ctx.globalAlpha = p.alpha;
+            ctx.translate(p.x + p.w / 2, p.y + p.h / 2);
+            ctx.rotate(p.rot * Math.PI / 180);
+            ctx.fillStyle = p.color;
+            if (p.shape === 'circle') {
+                ctx.beginPath(); ctx.arc(0, 0, p.w / 2, 0, Math.PI * 2); ctx.fill();
+            } else {
+                ctx.fillRect(-p.w / 2, -p.h / 2, p.w, p.h);
+            }
+            ctx.restore();
+        });
+        frame++;
+        if (frame < 170) requestAnimationFrame(animate);
+        else canvas.style.display = 'none';
+    })();
+}
+</script>
+
+<canvas id="confettiCanvas" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:9999;"></canvas>
+</body>
+</html>
