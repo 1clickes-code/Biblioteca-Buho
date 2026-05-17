@@ -662,7 +662,7 @@ const data = [
     {id:"3.1",n:3,tag:"azul", tl:"Conceptos",   ok:true,  title:"Qué es un agente de IA y para qué sirve realmente",                       desc:"Qué es realmente un agente de IA: el loop que lo define, cómo difiere de una skill, por qué RAG no es lo mismo, y cuándo construir uno.", t:"10 min", href:"recursos/3-1.html"},
     {id:"3.2",n:3,tag:"verde",tl:"Herramientas", ok:true,  title:"El cerebro, los brazos y la mesa de trabajo",                              desc:"Plugin, skill y agente no son lo mismo. MCPs, archivos de contexto, permisos y el stack real de herramientas para montar tu primer agente.", t:"12 min", href:"recursos/3-2.html"},
     {id:"3.3",n:3,tag:"amar", tl:"Acción",      ok:true,  title:"Tu primer agente: una tarea que se ejecuta sola mientras no estás",       desc:"Arquitectura, CLAUDE.md, skills y /agents. Paso a paso, con las buenas prácticas desde el principio.", t:"20 min", href:"recursos/3-3.html"},
-    {id:"3.4",n:3,tag:"morad",tl:"Casos reales",ok:false, title:"Un sistema completo con agentes: así funciona el mío ahora",              desc:"Mi sistema completo con agentes. Así funciona hoy.",                                        t:"18 min", href:"#"},
+    {id:"3.4",n:3,tag:"morad",tl:"Casos reales",ok:true,  title:"4 agentes en producción: así funciona el sistema real",                 desc:"Goal global, contextos locales, flujo de outputs y supervisión. El sistema real en acción.", t:"18 min", href:"recursos/3-4.html"},
     {id:"3.5",n:3,tag:"rojo", tl:"Mitos",       ok:false, title:"Cuándo los agentes de IA crean más problemas de los que resuelven",       desc:"Cuándo los agentes son un problema. Y qué hacer en su lugar.",                              t:"8 min",  href:"#"}
 ];
 
@@ -696,7 +696,7 @@ const data = [
     h1.appendChild(cur());
     const iv = setInterval(()=>{
         const total = segs.filter(s=>s.ch!=='\n'&&s.ch!==' ').length;
-        if(res>=total){ clearInterval(iv); h1.innerHTML=lines[0]+'<br>'+lines[1]; sub.classList.add('visible'); statsEl.classList.add('visible'); countUp(document.getElementById('stat-r'),18,900); countUp(document.getElementById('stat-n'),4,600); countUp(document.getElementById('stat-p'),100,1100); return; }
+        if(res>=total){ clearInterval(iv); h1.innerHTML=lines[0]+'<br>'+lines[1]; sub.classList.add('visible'); statsEl.classList.add('visible'); countUp(document.getElementById('stat-r'),19,900); countUp(document.getElementById('stat-n'),4,600); countUp(document.getElementById('stat-p'),100,1100); return; }
         res+=0.45; h1.innerHTML=render(Math.floor(res)); h1.appendChild(cur());
     },32);
 })();
