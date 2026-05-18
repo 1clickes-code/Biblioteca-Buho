@@ -452,14 +452,14 @@
         }
 
         /* NIVEL FINAL CARD */
-        .nivel-final { border-radius: 14px; padding: 26px 28px; margin: 28px 0; position: relative; overflow: hidden; }
-        .nivel-final::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 5px; border-radius: 3px 0 0 3px; }
-        .nivel-final-label { font-family: 'JetBrains Mono', monospace; font-size: 9px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 8px; }
-        .nivel-final-name { font-family: 'Playfair Display', serif; font-size: 20px; font-weight: 700; color: var(--text); margin-bottom: 14px; line-height: 1.25; }
-        .nivel-final-text { font-size: 14px; color: var(--muted); line-height: 1.72; }
-        .nivel-final.n0 { background: rgba(120,113,108,0.07); border: 1.5px solid rgba(120,113,108,0.2); }
-        .nivel-final.n0::before { background: #78716C; }
-        .nivel-final.n0 .nivel-final-label { color: #78716C; }
+        .nivel-final { border-radius: 16px; padding: 44px 36px 38px; margin: 52px 0 32px; position: relative; overflow: hidden; background: #1C1917; text-align: center; border: 1px solid rgba(255,255,255,0.06); }
+        .nivel-final-top { position: absolute; top: 0; left: 0; right: 0; height: 4px; border-radius: 16px 16px 0 0; }
+        .nivel-final-decor { font-family: 'Playfair Display', serif; font-size: 140px; font-weight: 700; line-height: 1; position: absolute; right: 28px; top: 50%; transform: translateY(-50%); opacity: 0.04; color: white; user-select: none; pointer-events: none; }
+        .nivel-final-badge { display: inline-flex; align-items: center; font-family: 'JetBrains Mono', monospace; font-size: 9px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; padding: 5px 14px; border-radius: 100px; margin-bottom: 22px; }
+        .nivel-final-name { font-family: 'Playfair Display', serif; font-size: 24px; font-weight: 700; color: white; margin-bottom: 16px; line-height: 1.3; }
+        .nivel-final-text { font-size: 14px; color: rgba(255,255,255,0.52); line-height: 1.72; max-width: 480px; margin: 0 auto; }
+        .nivel-final.n0 .nivel-final-top { background: #78716C; }
+        .nivel-final.n0 .nivel-final-badge { background: rgba(120,113,108,0.22); color: #A8A29E; border: 1px solid rgba(120,113,108,0.35); }
     </style>
 </head>
 <body>
@@ -893,7 +893,9 @@
 
     <!-- NIVEL FINAL CARD -->
     <div class="nivel-final n0">
-        <div class="nivel-final-label">Final del Nivel 0 — Entender</div>
+        <div class="nivel-final-top"></div>
+        <div class="nivel-final-decor">0</div>
+        <div class="nivel-final-badge">Nivel 0 cerrado · Entender</div>
         <div class="nivel-final-name">La IA es una herramienta. Ahora sabes cómo usarla.</div>
         <p class="nivel-final-text">Desmontaste los mitos, entendiste el contexto, construiste tu primer prompt con criterio y viste cómo funciona un sistema real en 30 días. La IA no es magia ni amenaza — es una ventaja para quien la usa con cabeza. El Nivel 1 convierte ese entendimiento en tu primera prueba real.</p>
     </div>
